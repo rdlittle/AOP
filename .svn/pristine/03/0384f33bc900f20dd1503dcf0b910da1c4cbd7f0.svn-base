@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./layout.xhtml">
+
+            <ui:define name="content">
+                <h:form id="form">  
+
+                    <p:dataTable id="cars" var="car" value="#{tableBean.mediumCarsModel}" paginator="true" rows="10"  
+                                 selection="#{tableBean.selectedCar}">  
+
+                        <f:facet name="header">  
+                            RadioButton Based Selection  
+                        </f:facet>  
+
+                        <p:column selectionMode="single" style="width:2%" />  
+
+                        <p:column headerText="Model" style="width:25%">  
+                            #{car.model}  
+                        </p:column>  
+
+                        <p:column headerText="Year" style="width:25%">  
+                            #{car.year}  
+                        </p:column>  
+
+                        <p:column headerText="Manufacturer" style="width:24%">  
+                            #{car.manufacturer}  
+                        </p:column>  
+
+                        <p:column headerText="Color" style="width:24%">  
+                            #{car.color}  
+                        </p:column>  
+
+                        <f:facet name="footer">  
+                            <p:commandButton id="viewButton" value="View" icon="ui-icon-search"  
+                                             update=":form:displaySingle" oncomplete="PF('singleCarDialog').show()"/>  
+                        </f:facet>  
+                    </p:dataTable>  
+
+                    <br />  
+
+                    <p:dataTable id="multiCars" var="car" value="#{tableBean.mediumCarsModel}" paginator="true" rows="10"  
+                                 selection="#{tableBean.selectedCars}">  
+
+                        <f:facet name="header">  
+                            Checkbox Based Selection  
+                        </f:facet>  
+
+                        <p:column selectionMode="multiple" style="width:2%" />  
+
+                        <p:column headerText="Model" style="width:25%">  
+                            #{car.model}  
+                        </p:column>  
+
+                        <p:column headerText="Year" style="width:25%">  
+                            #{car.year}  
+                        </p:column>  
+
+                        <p:column headerText="Manufacturer" style="width:24%">  
+                            #{car.manufacturer}  
+                        </p:column>  
+
+                        <p:column headerText="Color" style="width:24%">  
+                            #{car.color}  
+                        </p:column>  
+
+                        <f:facet name="footer">  
+                            <p:commandButton id="multiViewButton" value="View" icon="ui-icon-search"  
+                                             update=":form:displayMulti" oncomplete="PF('multiCarDialog').show()"/>  
+                        </f:facet>  
+                    </p:dataTable>  
+
+                    <p:dialog id="dialog" header="Car Detail" widgetVar="singleCarDialog" resizable="false"  
+                              showEffect="fade" hideEffect="explode">  
+
+                        <h:panelGrid id="displaySingle" columns="2" cellpadding="4">  
+
+                            <f:facet name="header">  
+                                <p:graphicImage value="/images/cars/#{tableBean.selectedCar.manufacturer}.jpg"/>  
+                            </f:facet>  
+
+                            <h:outputText value="Model:" />  
+                            <h:outputText value="#{tableBean.selectedCar.model}" style="font-weight:bold"/>  
+
+                            <h:outputText value="Year:" />  
+                            <h:outputText value="#{tableBean.selectedCar.year}" style="font-weight:bold"/>  
+
+                            <h:outputText value="Manufacturer:" />  
+                            <h:outputText value="#{tableBean.selectedCar.manufacturer}" style="font-weight:bold"/>  
+
+                            <h:outputText value="Color:" />  
+                            <h:outputText value="#{tableBean.selectedCar.color}" style="font-weight:bold"/>  
+                        </h:panelGrid>  
+                    </p:dialog>  
+
+                    <p:dialog id="multiDialog" header="Car Detail" widgetVar="multiCarDialog"  
+                              height="300" showEffect="fade" hideEffect="explode">  
+
+                        <p:dataList id="displayMulti" value="#{tableBean.selectedCars}" var="selectedCar">  
+                            Model: #{selectedCar.model}, Year: #{selectedCar.year}  
+                        </p:dataList>  
+
+                    </p:dialog>  
+
+                </h:form>  
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

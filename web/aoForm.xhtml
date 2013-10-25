@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <ui:fragment>
+        <h:panelGrid columns="2" width="100%">
+            <h:outputText value="Store ID"/>
+            <h:outputText value="#{order.storeId}"/>
+            <h:outputText value="Store Name"/>
+            <h:outputText value="#{order.storeName}"/>                                
+            <h:outputText value="Vendor Order Reference"/>
+            <h:outputText value="#{order.vendorOrderNum}"/>
+            <h:outputText value="Purchase Date"/>
+            <h:outputText value="#{order.vendorOrderDate}"/>
+            <h:outputText value="Paying ID"/>
+            <h:outputText value="#{order.payingId}"/>
+            <h:outputText value="Address 1"/>
+            <h:outputText value="#{order.payingIdAddr1}"/>
+            <h:outputText value="Address 2"/>
+            <h:outputText value="#{order.payingIdAddr2}"/>
+            <h:outputText value="City, ST Zip"/>
+            <h:outputText value="#{order.payingIdCityStZip}"/>                                
+            <h:outputText value="Filing ID"/>
+            <h:outputText value="#{order.filingId}"/>
+            <h:outputText value="Order Date"/>
+            <h:outputText value="#{order.orderDate}"/>
+            <h:outputText value="MA Order #"/>
+            <h:outputText value="#{order.orderRef}"/>
+            <h:outputText value="IBV"/>
+            <h:outputText value="#{order.ibvTotal}"/>
+            <h:outputText value="Placement"/>
+            <h:outputText value="#{order.placementId}"/>
+            <h:outputText value="Commission"/>
+            <h:outputText value="#{order.commissionTotal}"/>
+            <h:outputText value="Batch ID"/>
+            <h:outputText value="#{order.batchId}"/>
+        </h:panelGrid>
+        
+    </ui:fragment>
+</html>

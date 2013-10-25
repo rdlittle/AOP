@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <body>
+        <ui:composition template="./layout.xhtml">
+            <ui:define name="content">
+                <h:form id="mgmtForm" enctype="multipart/form-data">
+                    <h:panelGrid columns="2">
+                        <h:inputHidden id="internalDate" value="#{webDEBean.todayInternal}"/>
+                        <h:inputHidden id="externalDate" value="#{webDEBean.todayExternal}"/>
+                        <h:outputText value="#{webDEBean.todayExternal}" styleClass="leftColumn"/>
+                        <h:outputText value=""/>
+                        <h:outputText value="Vendor ID   : " styleClass="leftColumn"/>
+                        <p:selectOneMenu value="#{batchManagementBean.vendorId}" style="width: 500px; margin-left: 15px;">
+                            <f:selectItems id="vendorID" value="#{webDEBean.vendorList}" var="vendor" 
+                                           itemLabel="#{vendor.value}"
+                                           itemValue="#{vendor.key}">
+                            </f:selectItems>
+                        </p:selectOneMenu>
+                        <h:outputText value="Check Amount: " styleClass="leftColumn"/>
+                        <p:inputText id="checkAmt" style="margin-left: 15px;" value="#{batchManagementBean.checkAmt}"/>
+                        <h:outputText value="Role        : " styleClass="leftColumn"/>
+                        <p:selectOneRadio value="#{batchManagementBean.mgmtRole}">
+                            <f:selectItems value="#{batchManagementBean.mgmtRoles}" />
+                        </p:selectOneRadio>
+                    </h:panelGrid>
+                    <h:inputHidden id="userId" value="#{batchManagementBean.userId}"/>
+                    <p:commandButton value="Next" ajax="false" action="#{batchManagementBean.nextPage}"/>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>
