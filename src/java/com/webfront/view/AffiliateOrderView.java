@@ -36,7 +36,11 @@ public final class AffiliateOrderView {
         Map map = RequestContext.getCurrentInstance().getAttributes();
         String str = map.toString();
         str = "";
-        RequestContext.getCurrentInstance().closeDialog("newxhtml?faces-redirect=true");
+        RequestContext.getCurrentInstance().closeDialog("batchManager?faces-redirect=true");
+    }
+    
+    public String prepareUpdate() {
+        return "batchManager?faces-redirect=true";
     }
 
     /**
