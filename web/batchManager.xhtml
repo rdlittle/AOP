@@ -39,6 +39,8 @@
                         </h:panelGrid>
                     </h:form>
                 </h:panelGrid>
+
+
                 <h:form id="tableForm">
                     <p:treeTable id="batchTable" var="row" value="#{batchTree.root}"
                                  widgetVar="batchTable" selection="#{batchTree.selectedNode}"
@@ -72,7 +74,7 @@
                         </p:column>
                         <p:column sortBy="appliedAmount" headerText="Applied Amt" style="text-align: right; width: 8%;">
                             <h:outputText value="#{row.appliedAmount}">
-                                
+
                             </h:outputText>
                         </p:column>                        
                         <p:column id="psApproveColumn" headerText="PS">
@@ -83,12 +85,14 @@
                                         :tableForm:batchTable:psName 
                                         :tableForm:batchTable:psDate"/>
                             </p:selectBooleanCheckbox>
-                            <p:commandButton id="detailButton" icon="ui-icon-search" rendered="#{row.isOrder}" 
-                                             update=":tableForm:orderDetail"
+                            <p:commandButton id="detailButton" icon="ui-icon-search" rendered="false" 
                                              oncomplete="orderDetail.show()"
-                                             >
-                               
+                                             update=":tableForm:orderDetail">
+                                <p:ajax event="dialogReturn" listener="#{affiliateOrderView.handleReturn}"/>
                             </p:commandButton>
+                            <p:commandButton id="detailButton1" icon="ui-icon-search" rendered="#{row.isOrder}" 
+                                             action="#{affiliateOrderView.viewOrder(row.id)}">
+                            </p:commandButton>                            
 
                         </p:column>
                         <p:column headerText="Name">
@@ -97,7 +101,7 @@
                         <p:column headerText="Date">
                             <h:outputText id="psDate" value="#{row.psApprovalDate}"/>
                         </p:column> 
-                        
+
                     </p:treeTable>
 
                     <p:dialog id="orderDetail" widgetVar="orderDetail" 
