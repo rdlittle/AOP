@@ -11,14 +11,22 @@
 
             <ui:define name="content">
                 <h:outputText value="Affiliate Order Detail" style="font-size: x-large;"/>
-                <h:form>
+                <h:form id="orderForm">
                     <p:panelGrid columns="2" style="margin-top: 2em;">
                         <h:outputText value="Batch ID"/>
                         <h:outputText value="#{affiliateOrderView.order.batchId}"/>
                         <h:outputText value="Paying ID"/>
                         <h:outputText value="#{affiliateOrderView.order.payingId}"/>
                     </p:panelGrid>
-                    <p:commandButton value="Apply" action="#{affiliateOrderView.prepareUpdate}"/>
+                    &nbsp;
+                    <h:panelGrid columns="3" cellspacing="5">
+                        <p:commandButton value="Apply" action="#{affiliateOrderView.prepareUpdate}"/>
+                        <p:commandButton value="Defer" action="#{affiliateOrderView.prepareDefer}">
+                            
+                        </p:commandButton>
+                        <p:commandButton value="Cancel" action="#{affiliateOrderView.cancel}"/>
+                    </h:panelGrid>
+                   
                 </h:form>
             </ui:define>
 

@@ -40,7 +40,6 @@ public class BatchItem implements Serializable {
     private ArrayList<String> orderIds;
     public String styleClass;
     
-    
     public BatchItem() {
         this.commission=new Float(0);
     }
@@ -421,7 +420,7 @@ public class BatchItem implements Serializable {
         str+="qaApprovalDate="+qaApprovalDate+" , ";        
         str+="orderCount="+orderCount+" , ";
         str+="errorCount="+errorCount+" , ";
-        str+="batchSeq"+batchSeq+" , ";
+        str+="batchSeq"+getBatchSeq()+" , ";
         str+="linkedKey"+linkedKey+" , ";
         str+="vendorId"+vendorId+" , }";
         return str;

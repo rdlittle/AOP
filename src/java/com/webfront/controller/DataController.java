@@ -14,6 +14,7 @@ import com.webfront.model.AffiliateOrder;
 import com.webfront.model.BatchItem;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -77,6 +78,7 @@ public final class DataController {
                 UniDynArray qaApprovalNames = getRbo().getPropertyToDynArray("qaApprovalNameList");
                 UniDynArray qaApprovalDates = getRbo().getPropertyToDynArray("qaApprovalDateList");
                 UniDynArray linkedKeys = getRbo().getPropertyToDynArray("linkedBatch");
+                UniDynArray batchSequences = getRbo().getPropertyToDynArray("seq");
 
                 int vals = batchIds.dcount(1);
                 String batchId;
@@ -107,6 +109,7 @@ public final class DataController {
                     batchItem.setOrderCount(orderCounts.extract(1, val).toString());
                     batchItem.setErrorCount(errorCounts.extract(1, val).toString());
                     batchItem.setLinkedKey(linkedKeys.extract(1, val).toString());
+                    batchItem.setBatchSeq(batchSequences.extract(1,val).toString());
                     setTotalAppliedAmt((Float) (getTotalAppliedAmt() + batchItem.getAppliedAmt()));
                     tempList.add(batchItem);
                 }
@@ -121,6 +124,72 @@ public final class DataController {
 
     public void setBatchList(List<BatchItem> list) {
         this.batchList = list;
+    }
+
+    public List<BatchItem> getSelectBatchList(String vendorId, String batchId) {
+        List<BatchItem> list = new ArrayList<>();
+        try {
+            setRbo(new RedObject("MUSTANG_WEBDE", "AOP:Batch"));
+            getRbo().setProperty("vendorID", vendorId);
+            getRbo().setProperty("batchID", batchId);
+            getRbo().callMethod("getAOHeaders");
+            UniDynArray batchIds = getRbo().getPropertyToDynArray("batchID");
+            UniDynArray aoIDs = getRbo().getPropertyToDynArray("aoIDList");
+            UniDynArray storeNames = getRbo().getPropertyToDynArray("storeNameList");
+            UniDynArray storeIds = getRbo().getPropertyToDynArray("storeId");
+            UniDynArray vendorDivs = getRbo().getPropertyToDynArray("vendorDiv");
+            UniDynArray processDates = getRbo().getPropertyToDynArray("processDateList");
+            UniDynArray processTimes = getRbo().getPropertyToDynArray("processTimeList");
+            UniDynArray commissions = getRbo().getPropertyToDynArray("commissionList");
+            UniDynArray ibvs = getRbo().getPropertyToDynArray("IBV");
+            UniDynArray appliedAmts = getRbo().getPropertyToDynArray("appliedAmtList");
+            UniDynArray orderCounts = getRbo().getPropertyToDynArray("orderCountList");
+            UniDynArray errorCounts = getRbo().getPropertyToDynArray("errorCountList");
+            UniDynArray psApprovalStatus = getRbo().getPropertyToDynArray("psApprovalStatusList");
+            UniDynArray psApprovalNames = getRbo().getPropertyToDynArray("psApprovalNameList");
+            UniDynArray psApprovalDates = getRbo().getPropertyToDynArray("psApprovalDateList");
+            UniDynArray qaApprovalStatus = getRbo().getPropertyToDynArray("qaApprovalStatusList");
+            UniDynArray qaApprovalNames = getRbo().getPropertyToDynArray("qaApprovalNameList");
+            UniDynArray qaApprovalDates = getRbo().getPropertyToDynArray("qaApprovalDateList");
+            UniDynArray linkedKeys = getRbo().getPropertyToDynArray("linkedBatch");
+            UniDynArray batchSequences = getRbo().getPropertyToDynArray("seq");
+
+            int vals = batchIds.dcount(1);
+
+            BatchItem batchItem;
+            for (int val = 1; val < vals; val++) {
+                batchItem = new BatchItem();
+                batchId = batchIds.extract(1, val).toString();
+                batchItem.setId(batchId);
+                batchItem.setStoreName(storeNames.extract(1, val).toString());
+                batchItem.setStoreID(storeIds.extract(1, val).toString());
+                batchItem.setVendorDiv(vendorDivs.extract(1, val).toString());
+                batchItem.setProcessDate(processDates.extract(1, val).toString());
+                batchItem.setProcessTime(processTimes.extract(1, val).toString());
+                batchItem.setCommission(commissions.extract(1, val).toString());
+                batchItem.setAppliedAmt(appliedAmts.extract(1, val).toString());
+                String junk = psApprovalStatus.extract(1, val).toString();
+                int i = Integer.parseInt(junk);
+                if (i == 1) {
+                    batchItem.setPsApprovalStatus(true);
+                } else {
+                    batchItem.setPsApprovalStatus(false);
+                }
+                batchItem.setPsApprovalDate(psApprovalDates.extract(1, val).toString());
+                batchItem.setPsApprovalName(psApprovalNames.extract(1, val).toString());
+                batchItem.setQaApprovalStatus(qaApprovalStatus.extract(1, val).toString());
+                batchItem.setQaApprovalDate(qaApprovalDates.extract(1, val).toString());
+                batchItem.setQaApprovalName(qaApprovalNames.extract(1, val).toString());
+                batchItem.setOrderCount(orderCounts.extract(1, val).toString());
+                batchItem.setErrorCount(errorCounts.extract(1, val).toString());
+                batchItem.setLinkedKey(linkedKeys.extract(1, val).toString());
+                batchItem.setBatchSeq(batchSequences.extract(1,val).toString());
+                list.add(batchItem);
+            }
+        } catch (RbException ex) {
+            Logger.getLogger(DataController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return list;
     }
 
     public List<String> getOrderIdList(String batchId) {
@@ -189,7 +258,7 @@ public final class DataController {
     }
 
     public AffiliateOrder getAffiliateOrder(String id) {
-        AffiliateOrder ao=new AffiliateOrder();
+        AffiliateOrder ao = new AffiliateOrder();
         try {
             setRbo(new RedObject("MUSTANG_WEBDE", "AOP:AffiliateOrders"));
             RedObject r = getRbo();
@@ -218,7 +287,7 @@ public final class DataController {
             ao.setVendorOrderDate(r.getProperty("vendorOrderDate"));
             ao.setVendorDiv(r.getProperty("vendorDiv"));
             ao.setVendorId(r.getProperty("vendorId"));
-            ao.setHasErrors(Integer.parseInt(ao.getErrorCount())>0);
+            ao.setHasErrors(Integer.parseInt(ao.getErrorCount()) > 0);
         } catch (RbException ex) {
             Logger.getLogger(DataController.class.getName()).log(Level.SEVERE, null, ex);
         }

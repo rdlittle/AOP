@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./layout.xhtml">
+
+            <ui:define name="content">
+                <h:form id="deferForm">
+                    <h:panelGroup id="deferal">
+                        <h:outputText value="Defer to..."/>
+                        <p:dataTable id="deferTable" value="#{affiliateOrderView.batchList}" var="batch" rowKey="#{batch.id}"
+                                     selection="#{affiliateOrderView.newBatch}" selectionMode="single"
+                                     paginator="true" rows="15" rowsPerPageTemplate="5,10,15,25,50"
+                                     style="width: 50%;">
+                            <p:ajax event="rowSelect" listener="#{affiliateOrderView.onRowSelect}"/>
+                            <p:ajax event="rowUnselect" listener="#{affiliateOrderView.onRowUnselect}"/>
+                            <p:column headerText="Seq">
+                                <h:outputText value="#{batch.batchSeq}" />
+                            </p:column>
+                            <p:column headerText="Store" >
+                                <h:outputText value="#{batch.storeName}" />
+                            </p:column>
+                            <p:column headerText="Date" sortBy="processDate">
+                                <h:outputText value="#{batch.processDate}"/>
+                            </p:column>
+                            <p:column headerText="Commission" sortBy="commission" style="text-align: right; width: 10%;">
+                                <h:outputText value="#{batch.commission}"  >
+                                    <f:convertNumber currencyCode="USD" type="currency" />
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGroup>
+                    <h:commandButton id="btnApply" value="Apply" actionListener="#{affiliateOrderView.doDefer}"/>
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>
