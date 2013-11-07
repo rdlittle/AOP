@@ -247,6 +247,7 @@ public final class DataController {
             UniDynArray placementIds = getRbo().getPropertyToDynArray("placementId");
             UniDynArray errorCounts = getRbo().getPropertyToDynArray("errorCount");
             UniDynArray vendorOrderNums = getRbo().getPropertyToDynArray("vendorOrderNum");
+            UniDynArray commissions = getRbo().getPropertyToDynArray("commissionTotal");
             int values = orderIds.dcount(1);
             for (int val = 1; val <= values; val++) {
                 ao.setId(orderIds.extract(1, val).toString());
@@ -256,6 +257,7 @@ public final class DataController {
                 ao.setOrderDate(orderDates.extract(1, val).toString());
                 ao.setOrderRef(orderRefs.extract(1, val).toString());
                 ao.setIbvTotal(ibvTotals.extract(1, val).toString());
+                ao.setCommissionTotal(Float.valueOf(commissions.extract(1, val).toString()));
                 ao.setPlacementId(placementIds.extract(1, val).toString());
                 ao.setVendorOrderNum(vendorOrderNums.extract(1, val).toString());
                 ao.setErrorCount(errorCounts.extract(1, val).toString());
@@ -333,6 +335,19 @@ public final class DataController {
         return "ok";
     }
 
+    public void setApproval(String batchID, String role, boolean tf) {
+        String approvalFlag = tf ? "1" : "0";
+        setRbo(new RedObject("MUSTANG_WEBDE", "AOP:Batch"));
+        getRbo().setProperty("batchId", batchID);
+        getRbo().setProperty("processStatus", approvalFlag);
+        getRbo().setProperty("approvalRole", role);
+        getRbo().setProperty("userID",mgmtBean.getUserId());
+        try {
+            getRbo().callMethod("setAOBatchApproval");
+        } catch (RbException ex) {
+            Logger.getLogger(DataController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     /**
      * @return the rbo
      */

@@ -67,6 +67,7 @@ public final class BatchTree implements Serializable {
             TreeRow row = (TreeRow) getSelectedNode().getData();
             row.setPsApprovalName(psName);
             row.setPsApprovalDate(psDate);
+            getController().setApproval(item.getId(),"PS",item.getPsApprovalStatus());
             root.getChildren().set(rowNum, new DefaultTreeNode(row));
         }
     }
