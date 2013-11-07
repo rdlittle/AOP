@@ -211,7 +211,8 @@ public final class BatchTree implements Serializable {
      */
     public TreeNode getRoot() {
         if (root.getChildCount() == 0) {
-            batchList = new ArrayList<BatchItem>(getController().getBatchList());
+            this.batchList= new ArrayList<BatchItem>();
+            this.batchList = new ArrayList<BatchItem>(getController().getBatchList());
             setData(batchList);
         }
         return root;

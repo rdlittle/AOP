@@ -9,17 +9,19 @@ import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.beans.BatchManagementBean;
 import com.webfront.beans.BatchSummaryBean;
+import com.webfront.beans.Config;
 import com.webfront.beans.WebDEBean;
 import com.webfront.model.AffiliateOrder;
 import com.webfront.model.BatchItem;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import org.primefaces.model.DefaultTreeNode;
 
 /**
  *
@@ -29,8 +31,10 @@ public final class DataController {
 
     BatchManagementBean mgmtBean;
     WebDEBean wdeBean;
-    public List<BatchItem> batchList;
-    public List<AffiliateOrder> orderList;
+    BatchTree batchTree;
+    public Config config;
+    protected ArrayList<BatchItem> batchList;
+    private List<AffiliateOrder> orderList;
     public List<String> orderIdList;
     private String vendorId;
     private RedObject rbo;
@@ -42,8 +46,10 @@ public final class DataController {
 
     public DataController() {
         setMap(FacesContext.getCurrentInstance().getExternalContext().getSessionMap());
+        config = new Config();
         wdeBean = (WebDEBean) getMap().get("webDEBean");
         mgmtBean = (BatchManagementBean) map.get("batchManagementBean");
+        batchTree = (BatchTree) map.get("batchTree");
         vendorId = "";
         selectedItem = new BatchItem();
         setTotalAppliedAmt(Float.valueOf(0));
@@ -51,7 +57,11 @@ public final class DataController {
 
     public List<BatchItem> getBatchList() {
         String newVendorId = mgmtBean.getVendorId();
-        if (!newVendorId.equals(this.vendorId)) {
+        if(this.batchTree==null) {
+            this.batchList=null;
+            this.orderList=null;
+        }
+        if (!newVendorId.equals(this.vendorId) ||this.batchList == null || this.batchList.isEmpty()) {
             setRbo(new RedObject("MUSTANG_WEBDE", "AOP:Batch"));
             try {
                 vendorId = newVendorId;
@@ -122,8 +132,16 @@ public final class DataController {
         return batchList;
     }
 
-    public void setBatchList(List<BatchItem> list) {
+    public void setBatchList(ArrayList<BatchItem> list) {
         this.batchList = list;
+    }
+    
+    public void clearBatchTree() {
+        if(this.batchList != null) {
+            this.batchList.clear();
+        }
+        this.batchTree.setBatchList(null);
+        this.batchTree.setRoot(new DefaultTreeNode());
     }
 
     public List<BatchItem> getSelectBatchList(String vendorId, String batchId) {
@@ -292,6 +310,27 @@ public final class DataController {
             Logger.getLogger(DataController.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ao;
+    }
+    
+    public String deferOrder(String orderId, String batchId) {
+        try {
+            setRbo(new RedObject("MUSTANG_WEBDE", "AOP:AffiliateOrders"));
+            RedObject r=getRbo();
+            r.setProperty("orderId", orderId);
+            r.setProperty("batchId", batchId);
+            r.callMethod("setOrderDefer");
+            String errStat = r.getProperty("errStat");
+            String errCode = r.getProperty("errCode");
+            String errMsg = r.getProperty("errMsg");
+            if(!errStat.isEmpty() || errStat.equals("-1")) {
+                FacesMessage msg = new FacesMessage(errCode+" "+errMsg);
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return "";
+            }
+        } catch (RbException ex) {
+            Logger.getLogger(DataController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "ok";
     }
 
     /**

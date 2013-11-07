@@ -8,6 +8,7 @@ package com.webfront.view;
 import com.webfront.controller.DataController;
 import com.webfront.model.AffiliateOrder;
 import com.webfront.model.BatchItem;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
@@ -39,13 +40,13 @@ public final class AffiliateOrderView {
 
     public String viewOrder(String orderId) {
         setOrder(getController().getAffiliateOrder(orderId));
-        return "affiliateOrder.xhtml?orderId=" + orderId+"&faces-redirect=true";
+        return "affiliateOrder.xhtml?orderId=" + orderId + "&faces-redirect=true";
     }
-    
+
     public void onRowSelect(SelectEvent evt) {
         setIsSelected(true);
     }
-    
+
     public void onRowUnselect(UnselectEvent evt) {
         setIsSelected(false);
     }
@@ -53,7 +54,7 @@ public final class AffiliateOrderView {
     public void handleReturn() {
         RequestContext.getCurrentInstance().closeDialog("batchManager?faces-redirect=true");
     }
-    
+
     public String prepareUpdate() {
         setBatchList(new LinkedList<BatchItem>());
         return "batchManager?faces-redirect=true";
@@ -62,16 +63,27 @@ public final class AffiliateOrderView {
     public String cancel() {
         setBatchList(new LinkedList<BatchItem>());
         return "batchManager?faces-redirect=true";
-    }    
-    
+    }
+
     public String prepareDefer() {
         setBatchList(getController().getSelectBatchList(order.getVendorId(), order.getBatchId()));
         return "affiliateOrderDefer?faces-redirect=true";
     }
-    
+
     public String doDefer() {
+        String orderId = order.getId();
+        String batchId = newBatch.getId();
+        String rmsg = getController().deferOrder(orderId, batchId);
+        if (rmsg.equals("ok")) {
+            getController().clearBatchTree();
+            this.batchList=null;
+            String rtn="batchManager";
+            rtn+="?faces-redirect=true";
+            return rtn;
+        }
         return "";
     }
+
     /**
      * @return the order
      */
@@ -155,5 +167,5 @@ public final class AffiliateOrderView {
     public void setIsSelected(boolean isSelected) {
         this.isSelected = isSelected;
     }
-    
+
 }

@@ -13,6 +13,7 @@
             <ui:define name="content">
                 <h:form id="deferForm">
                     <h:panelGroup id="deferal">
+                        <p:messages showDetail="true"/>
                         <h:outputText value="Defer to..."/>
                         <p:dataTable id="deferTable" value="#{affiliateOrderView.batchList}" var="batch" rowKey="#{batch.id}"
                                      selection="#{affiliateOrderView.newBatch}" selectionMode="single"
@@ -36,7 +37,9 @@
                             </p:column>
                         </p:dataTable>
                     </h:panelGroup>
-                    <h:commandButton id="btnApply" value="Apply" actionListener="#{affiliateOrderView.doDefer}"/>
+                    <h:commandButton id="btnApply" value="Apply" action="#{affiliateOrderView.doDefer}"/>
+                    &nbsp;
+                    <h:commandButton id="btnCancel" value="Cancel" action="#{affiliateOrderView.cancel}"/>
                 </h:form>
             </ui:define>
 
