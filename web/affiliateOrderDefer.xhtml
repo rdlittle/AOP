@@ -30,6 +30,12 @@
                             <p:column headerText="Date" sortBy="processDate">
                                 <h:outputText value="#{batch.processDate}"/>
                             </p:column>
+                            <p:column headerText="Orders">
+                                <h:outputText value="#{batch.orderCount}"/>
+                            </p:column>
+                            <p:column headerText="Errors">
+                                <h:outputText value="#{batch.errorCount}"/>
+                            </p:column>                            
                             <p:column headerText="Commission" sortBy="commission" style="text-align: right; width: 10%;">
                                 <h:outputText value="#{batch.commission}"  >
                                     <f:convertNumber currencyCode="USD" type="currency" />

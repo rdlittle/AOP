@@ -25,6 +25,7 @@ public final class AffiliateOrder {
     private String vendorOrderNum;
     private String errorCount;
     private boolean hasErrors;
+    private boolean isDeferrable;
     private String entryDate;
     private String vendorOrderDate;
     private String payingIdAddr1;
@@ -37,11 +38,16 @@ public final class AffiliateOrder {
     private String errorCode;
     private String errorMessage;
     private String batchId;
+    private String actualPlacementId1;
+    private String actualPlacementId2;
+    private Float ibvPlacedAmt1;
+    private Float ibvPlacedAmt2;
 
     public AffiliateOrder() {
         setOrderTotal("0.00");
         setIbvTotal("0.00");
         setCommissionTotal(Float.valueOf("0.00"));
+        setIsDeferrable(true);
     }
     /**
      * @return the id
@@ -398,5 +404,80 @@ public final class AffiliateOrder {
      */
     public void setBatchId(String batchId) {
         this.batchId = batchId;
+    }
+
+    /**
+     * @return the actualPlacementId1
+     */
+    public String getActualPlacementId1() {
+        return actualPlacementId1;
+    }
+
+    /**
+     * @param actualPlacementId1 the actualPlacementId1 to set
+     */
+    public void setActualPlacementId1(String actualPlacementId1) {
+        this.actualPlacementId1 = actualPlacementId1;
+    }
+
+    /**
+     * @return the actualPlacementId2
+     */
+    public String getActualPlacementId2() {
+        return actualPlacementId2;
+    }
+
+    /**
+     * @param actualPlacementId2 the actualPlacementId2 to set
+     */
+    public void setActualPlacementId2(String actualPlacementId2) {
+        this.actualPlacementId2 = actualPlacementId2;
+    }
+
+    /**
+     * @return the ibvPlacedAmt1
+     */
+    public Float getIbvPlacedAmt1() {
+        return ibvPlacedAmt1;
+    }
+
+    /**
+     * @param ibvPlacedAmt1 the ibvPlacedAmt1 to set
+     */
+    public void setIbvPlacedAmt1(Float ibvPlacedAmt1) {
+        this.ibvPlacedAmt1 = ibvPlacedAmt1;
+    }
+
+    /**
+     * @return the ibvPlacedAmt2
+     */
+    public Float getIbvPlacedAmt2() {
+        return ibvPlacedAmt2;
+    }
+
+    /**
+     * @param ibvPlacedAmt2 the ibvPlacedAmt2 to set
+     */
+    public void setIbvPlacedAmt2(Float ibvPlacedAmt2) {
+        this.ibvPlacedAmt2 = ibvPlacedAmt2;
+    }
+
+    /**
+     * @return the isDeferrable
+     */
+    public boolean isIsDeferrable() {
+        String[] temp = this.getBatchId().split("\\*");
+        int batchSeq=Integer.parseInt(temp[3]);
+        if(batchSeq == 3) {
+            isDeferrable=false;
+        }
+        return isDeferrable;
+    }
+
+    /**
+     * @param isDeferrable the isDeferrable to set
+     */
+    public void setIsDeferrable(boolean isDeferrable) {
+        this.isDeferrable = isDeferrable;
     }
 }

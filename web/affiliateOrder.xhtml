@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <body>
 
@@ -15,14 +16,53 @@
                     <p:panelGrid columns="2" style="margin-top: 2em;">
                         <h:outputText value="Batch ID"/>
                         <h:outputText value="#{affiliateOrderView.order.batchId}"/>
+                        <h:outputText value="Store ID"/>
+                        <h:outputText value="#{affiliateOrderView.order.storeId}"/>
+                        <h:outputText value="Store Name"/>
+                        <h:outputText value="#{affiliateOrderView.order.storeName}"/>                        
+                        <h:outputText value="Division" />
+                        <h:outputText value="#{affiliateOrderView.order.vendorDiv}" />
+                        <h:outputText value="Vendor's Order #" />
+                        <h:outputText value="#{affiliateOrderView.order.vendorOrderNum}" />
+                        <h:outputText value="Vendor's Order Date" />
+                        <h:outputText value="#{affiliateOrderView.order.vendorOrderDate}" />                        
+                        <h:outputText value="Entry Date" />
+                        <h:outputText value="#{affiliateOrderView.order.entryDate}" />  
+                        
                         <h:outputText value="Paying ID"/>
-                        <h:outputText value="#{affiliateOrderView.order.payingId}"/>
+                        <h:outputText value="#{affiliateOrderView.order.payingId}" 
+                                      rendered="#{!affiliateOrderView.order.hasErrors}" />
+                        <h:inputText value="#{affiliateOrderView.order.payingId}" 
+                                     rendered="#{affiliateOrderView.order.hasErrors}">
+                        </h:inputText>
+                        
+                        <h:outputText value="Paying ID Name"/>
+                        <h:outputText value="#{affiliateOrderView.order.payingIdName}"/>
+                        <h:outputText value="Total IBV" />
+                        <h:outputText value="#{affiliateOrderView.order.ibvTotal}" style="text-align: right;">
+                            <f:convertNumber currencyCode="USD" type="currency" />
+                        </h:outputText>
+                        <h:outputText value="Default Placement"/>
+                        <h:outputText value="#{affiliateOrderView.order.placementId}" />
+                        
+                        <h:outputText value="MA Order #" />
+                        <h:outputText value="#{affiliateOrderView.order.orderRef}" />
+                        <h:outputText value="Actual Placement 1" />
+                        <h:outputText value="#{affiliateOrderView.order.actualPlacementId1}" />
+                        <h:outputText value="IBV Amt Placed" />
+                        <h:outputText value="#{affiliateOrderView.order.ibvPlacedAmt1}" />
+                        
+                        <h:outputText value="Actual Placement 2" />
+                        <h:outputText value="#{affiliateOrderView.order.actualPlacementId2}" />
+                        <h:outputText value="IBV Amt Placed" />
+                        <h:outputText value="#{affiliateOrderView.order.ibvPlacedAmt2}" />                        
                     </p:panelGrid>
                     &nbsp;
                     <h:panelGrid columns="3" cellspacing="5">
-                        <p:commandButton value="Apply" action="#{affiliateOrderView.prepareUpdate}"/>
-                        <p:commandButton value="Defer" action="#{affiliateOrderView.prepareDefer}">
-                            
+                        <p:commandButton value="#{affiliateOrderView.order.hasErrors? 'Apply' : 'OK'}"
+                                         action="#{affiliateOrderView.prepareUpdate}" />
+                        <p:commandButton value="Defer" action="#{affiliateOrderView.prepareDefer}" 
+                                         disabled="#{!affiliateOrderView.order.isDeferrable}">
                         </p:commandButton>
                         <p:commandButton value="Cancel" action="#{affiliateOrderView.cancel}"/>
                     </h:panelGrid>

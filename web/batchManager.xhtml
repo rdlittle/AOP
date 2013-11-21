@@ -73,9 +73,7 @@
                             #{row.commission}
                         </p:column>
                         <p:column sortBy="appliedAmount" headerText="Applied Amt" style="text-align: right; width: 8%;">
-                            <h:outputText value="#{row.appliedAmount}">
-
-                            </h:outputText>
+                            <h:outputText value="#{row.appliedAmount}" />
                         </p:column>                        
                         <p:column id="psApproveColumn" headerText="PS">
                             <p:selectBooleanCheckbox id="psApproval" value="#{row.psApproval}" rendered="#{row.isBatch}">
@@ -103,7 +101,7 @@
                         </p:column> 
 
                     </p:treeTable>
-
+                    
                     <p:dialog id="orderDetail" widgetVar="orderDetail" 
                               width="500" height="500" 
                               header="#{row.id}"
@@ -123,6 +121,7 @@
                     </p:dialog>
 
                 </h:form> 
+               
             </ui:define>
         </ui:composition>
 

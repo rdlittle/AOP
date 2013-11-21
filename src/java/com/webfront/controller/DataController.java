@@ -307,7 +307,12 @@ public final class DataController {
             ao.setVendorOrderDate(r.getProperty("vendorOrderDate"));
             ao.setVendorDiv(r.getProperty("vendorDiv"));
             ao.setVendorId(r.getProperty("vendorId"));
-            ao.setHasErrors(Integer.parseInt(ao.getErrorCount()) > 0);
+            int errCount=Integer.parseInt(ao.getErrorCount());
+            ao.setHasErrors(errCount > 0);
+            ao.setActualPlacementId1(r.getProperty("actualPlacmentId1"));
+            ao.setActualPlacementId2(r.getProperty("actualPlacmentId2"));
+            ao.setIbvPlacedAmt1(Float.valueOf(r.getProperty("ibvPlacedAmt1")));
+            ao.setIbvPlacedAmt2(Float.valueOf(r.getProperty("ibvPlacedAmt2")));
         } catch (RbException ex) {
             Logger.getLogger(DataController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -338,10 +343,10 @@ public final class DataController {
     public void setApproval(String batchID, String role, boolean tf) {
         String approvalFlag = tf ? "1" : "0";
         setRbo(new RedObject("MUSTANG_WEBDE", "AOP:Batch"));
-        getRbo().setProperty("batchId", batchID);
+        getRbo().setProperty("batchID", batchID);
+        getRbo().setProperty("userID",mgmtBean.getUserId());
         getRbo().setProperty("processStatus", approvalFlag);
         getRbo().setProperty("approvalRole", role);
-        getRbo().setProperty("userID",mgmtBean.getUserId());
         try {
             getRbo().callMethod("setAOBatchApproval");
         } catch (RbException ex) {
