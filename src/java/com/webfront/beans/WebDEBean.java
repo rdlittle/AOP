@@ -8,6 +8,7 @@ import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.model.SelectItem;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,7 +21,7 @@ import javax.faces.bean.SessionScoped;
  */
 @ManagedBean
 @SessionScoped
-public final class WebDEBean {
+public final class WebDEBean implements Serializable {
 
     private RedObject rbo;
     private LinkedList<SelectItem> vendorList;
@@ -33,7 +34,7 @@ public final class WebDEBean {
     public WebDEBean() {
         todayInternal=1;
         setTodayInternal(1);
-        setRbo(new RedObject("MUSTANG_WEBDE", "AOP:Forms"));
+        setRbo(new RedObject("WDE", "AOP:Forms"));
         setVendorList(new LinkedList<SelectItem>());
         
     }
@@ -92,7 +93,7 @@ public final class WebDEBean {
 
     public void setTodayInternal(int idate) {
         try {
-            setRbo(new RedObject("MUSTANG_WEBDE", "AOP:Utils"));
+            setRbo(new RedObject("WDE", "AOP:Utils"));
             getRbo().setProperty("oDate", "");
             getRbo().callMethod("getIDate");
             String iDate = getRbo().getProperty("iDate");
@@ -107,7 +108,7 @@ public final class WebDEBean {
      */
     public String getTodayExternal() {
         try {
-            setRbo(new RedObject("MUSTANG_WEBDE", "AOP:Utils"));
+            setRbo(new RedObject("WDE", "AOP:Utils"));
             getRbo().setProperty("iDate", Integer.toString(todayInternal));
             getRbo().callMethod("getODate");
             String oDate = getRbo().getProperty("oDate");

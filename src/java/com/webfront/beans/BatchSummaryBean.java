@@ -62,7 +62,7 @@ public final class BatchSummaryBean implements Serializable {
         if (!newVendorId.equals(this.vendorID)) {
             try {
                 setVendorID(mgmtBean.getVendorId());
-                setRbo(new RedObject("MUSTANG_WEBDE", "AOP:Batch"));
+                setRbo(new RedObject("WDE", "AOP:Batch"));
                 ArrayList<BatchItem> tempList = new ArrayList<>();
                 getRbo().setProperty("vendorID", getVendorID());
                 getRbo().callMethod("getAOHeaders");

@@ -62,7 +62,7 @@ public final class DataController {
             this.orderList=null;
         }
         if (!newVendorId.equals(this.vendorId) ||this.batchList == null || this.batchList.isEmpty()) {
-            setRbo(new RedObject("MUSTANG_WEBDE", "AOP:Batch"));
+            setRbo(new RedObject("WDE", "AOP:Batch"));
             try {
                 vendorId = newVendorId;
                 ArrayList<BatchItem> tempList = new ArrayList<>();
@@ -147,7 +147,7 @@ public final class DataController {
     public List<BatchItem> getSelectBatchList(String vendorId, String batchId) {
         List<BatchItem> list = new ArrayList<>();
         try {
-            setRbo(new RedObject("MUSTANG_WEBDE", "AOP:Batch"));
+            setRbo(new RedObject("WDE", "AOP:Batch"));
             getRbo().setProperty("vendorID", vendorId);
             getRbo().setProperty("batchID", batchId);
             getRbo().callMethod("getAOHeaders");
@@ -213,7 +213,7 @@ public final class DataController {
     public List<String> getOrderIdList(String batchId) {
         ArrayList<String> list = new ArrayList<>();
         if (getSelectedItem() != null) {
-            setRbo(new RedObject("MUSTANG_WEBDE", "AOP:AffiliateOrders"));
+            setRbo(new RedObject("WDE", "AOP:AffiliateOrders"));
             getRbo().setProperty("batchId", batchId);
             try {
                 getRbo().callMethod("getOrderList");
@@ -232,7 +232,7 @@ public final class DataController {
 
     public List<AffiliateOrder> getOrderList(String batchID) {
         ArrayList<AffiliateOrder> list = new ArrayList<>();
-        setRbo(new RedObject("MUSTANG_WEBDE", "AOP:AffiliateOrders"));
+        setRbo(new RedObject("WDE", "AOP:AffiliateOrders"));
         getRbo().setProperty("batchId", batchID);
         try {
             getRbo().callMethod("getOrders");
@@ -280,7 +280,7 @@ public final class DataController {
     public AffiliateOrder getAffiliateOrder(String id) {
         AffiliateOrder ao = new AffiliateOrder();
         try {
-            setRbo(new RedObject("MUSTANG_WEBDE", "AOP:AffiliateOrders"));
+            setRbo(new RedObject("WDE", "AOP:AffiliateOrders"));
             RedObject r = getRbo();
             r.setProperty("orderId", id);
             r.callMethod("getOrderDetail");
@@ -319,9 +319,28 @@ public final class DataController {
         return ao;
     }
     
+    public String setAffiliateOrder(String orderId) {
+       try {
+            setRbo(new RedObject("WDE", "AOP:AffiliateOrders"));
+            RedObject r=getRbo();
+            r.setProperty("orderId", orderId);
+            r.callMethod("setAffiliateOrder");
+            String errStat = r.getProperty("errStat");
+            String errCode = r.getProperty("errCode");
+            String errMsg = r.getProperty("errMsg");
+            if(!errStat.isEmpty() || errStat.equals("-1")) {
+                FacesMessage msg = new FacesMessage(errCode+" "+errMsg);
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return "";
+            }
+        } catch (RbException ex) {
+            Logger.getLogger(DataController.class.getName()).log(Level.SEVERE, null, ex);
+        }        
+        return "";
+    }
     public String deferOrder(String orderId, String batchId) {
         try {
-            setRbo(new RedObject("MUSTANG_WEBDE", "AOP:AffiliateOrders"));
+            setRbo(new RedObject("WDE", "AOP:AffiliateOrders"));
             RedObject r=getRbo();
             r.setProperty("orderId", orderId);
             r.setProperty("batchId", batchId);
@@ -342,7 +361,7 @@ public final class DataController {
 
     public void setApproval(String batchID, String role, boolean tf) {
         String approvalFlag = tf ? "1" : "0";
-        setRbo(new RedObject("MUSTANG_WEBDE", "AOP:Batch"));
+        setRbo(new RedObject("WDE", "AOP:Batch"));
         getRbo().setProperty("batchID", batchID);
         getRbo().setProperty("userID",mgmtBean.getUserId());
         getRbo().setProperty("processStatus", approvalFlag);
@@ -352,6 +371,27 @@ public final class DataController {
         } catch (RbException ex) {
             Logger.getLogger(DataController.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public String validatePayId(String id) {
+        setRbo(new RedObject("WDE","Orders:Validation"));
+        getRbo().setProperty("id", id);
+        try {
+            getRbo().callMethod("getValidatePayId");
+            String isCust = getRbo().getProperty("isCust");
+            String isEzCust = getRbo().getProperty("isEzCust");
+            String isRep = getRbo().getProperty("isRep");
+            String isDist = getRbo().getProperty("isDist");
+            String errStat = getRbo().getProperty("errStat");
+            String errCode = getRbo().getProperty("errCode");
+            String errMsg = getRbo().getProperty("errMsg");
+            if(errStat.equals("-1")) {
+                return "Error: "+errCode+" "+errMsg;
+            }
+        } catch (RbException ex) {
+            Logger.getLogger(DataController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "OK";
     }
     /**
      * @return the rbo

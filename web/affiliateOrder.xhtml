@@ -12,48 +12,79 @@
 
             <ui:define name="content">
                 <h:outputText value="Affiliate Order Detail" style="font-size: x-large;"/>
+                <p:messages id="msgs" autoUpdate="true" />
                 <h:form id="orderForm">
-                    <p:panelGrid columns="2" style="margin-top: 2em;">
+                    <p:panelGrid columns="3" style="margin-top: 2em;">
                         <h:outputText value="Batch ID"/>
                         <h:outputText value="#{affiliateOrderView.order.batchId}"/>
+                        <h:outputText  style="width: 35%;">&nbsp;</h:outputText>
+                        
                         <h:outputText value="Store ID"/>
                         <h:outputText value="#{affiliateOrderView.order.storeId}"/>
+                        <h:outputText />
+                        
                         <h:outputText value="Store Name"/>
                         <h:outputText value="#{affiliateOrderView.order.storeName}"/>                        
+                        <h:outputText />
+                        
                         <h:outputText value="Division" />
                         <h:outputText value="#{affiliateOrderView.order.vendorDiv}" />
+                        <h:outputText />
+                        
                         <h:outputText value="Vendor's Order #" />
                         <h:outputText value="#{affiliateOrderView.order.vendorOrderNum}" />
+                        <h:outputText />
+                        
                         <h:outputText value="Vendor's Order Date" />
-                        <h:outputText value="#{affiliateOrderView.order.vendorOrderDate}" />                        
+                        <h:outputText value="#{affiliateOrderView.order.vendorOrderDate}" />
+                        <h:outputText />
+                        
                         <h:outputText value="Entry Date" />
                         <h:outputText value="#{affiliateOrderView.order.entryDate}" />  
+                        <h:outputText />
                         
                         <h:outputText value="Paying ID"/>
                         <h:outputText value="#{affiliateOrderView.order.payingId}" 
-                                      rendered="#{!affiliateOrderView.order.hasErrors}" />
-                        <h:inputText value="#{affiliateOrderView.order.payingId}" 
-                                     rendered="#{affiliateOrderView.order.hasErrors}">
+                                      rendered="#{!affiliateOrderView.order.hasErrors}"/>
+                        <h:inputText id="payId" value="#{affiliateOrderView.order.payingId}" 
+                                     rendered="#{affiliateOrderView.order.hasErrors}" 
+                                     binding="#{affiliateOrderView.component}">
+                            <p:ajax event="blur" update="payId" listener="#{affiliateOrderView.getValidatePayId}"/>
                         </h:inputText>
+                        <h:outputText>
+                        <p:message id="msgPayId" for="orderForm:payId" redisplay="true"/>
+                        </h:outputText>
                         
                         <h:outputText value="Paying ID Name"/>
                         <h:outputText value="#{affiliateOrderView.order.payingIdName}"/>
+                        <h:outputText />
+                        
                         <h:outputText value="Total IBV" />
                         <h:outputText value="#{affiliateOrderView.order.ibvTotal}" style="text-align: right;">
                             <f:convertNumber currencyCode="USD" type="currency" />
                         </h:outputText>
+                        <h:outputText />
+                        
                         <h:outputText value="Default Placement"/>
                         <h:outputText value="#{affiliateOrderView.order.placementId}" />
+                        <h:outputText />
                         
                         <h:outputText value="MA Order #" />
                         <h:outputText value="#{affiliateOrderView.order.orderRef}" />
+                        <h:outputText />
+                        
                         <h:outputText value="Actual Placement 1" />
                         <h:outputText value="#{affiliateOrderView.order.actualPlacementId1}" />
+                        <h:outputText />
+                        
                         <h:outputText value="IBV Amt Placed" />
                         <h:outputText value="#{affiliateOrderView.order.ibvPlacedAmt1}" />
+                        <h:outputText />
                         
                         <h:outputText value="Actual Placement 2" />
                         <h:outputText value="#{affiliateOrderView.order.actualPlacementId2}" />
+                        <h:outputText />
+                        
                         <h:outputText value="IBV Amt Placed" />
                         <h:outputText value="#{affiliateOrderView.order.ibvPlacedAmt2}" />                        
                     </p:panelGrid>
@@ -66,8 +97,9 @@
                         </p:commandButton>
                         <p:commandButton value="Cancel" action="#{affiliateOrderView.cancel}"/>
                     </h:panelGrid>
-                   
+                    
                 </h:form>
+                
             </ui:define>
 
         </ui:composition>

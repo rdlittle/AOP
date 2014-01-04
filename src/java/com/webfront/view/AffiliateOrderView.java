@@ -8,11 +8,14 @@ package com.webfront.view;
 import com.webfront.controller.DataController;
 import com.webfront.model.AffiliateOrder;
 import com.webfront.model.BatchItem;
-import java.util.Calendar;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
@@ -23,7 +26,7 @@ import org.primefaces.event.UnselectEvent;
  */
 @ManagedBean
 @SessionScoped
-public final class AffiliateOrderView {
+public final class AffiliateOrderView implements Serializable {
 
     private AffiliateOrder order;
     private DataController controller;
@@ -31,6 +34,18 @@ public final class AffiliateOrderView {
     private String newBatchId;
     private BatchItem newBatch;
     private boolean isSelected;
+    private String validatePayId;
+    
+    private UIComponent component;
+
+    public UIComponent getComponent() {
+        return component;
+    }
+
+    public void setComponent(UIComponent component) {
+        this.component = component;
+    }
+
 
     public AffiliateOrderView() {
         setIsSelected(false);
@@ -57,6 +72,7 @@ public final class AffiliateOrderView {
 
     public String prepareUpdate() {
         setBatchList(new LinkedList<BatchItem>());
+        getController().setAffiliateOrder(order.getId());
         return "batchManager?faces-redirect=true";
     }
 
@@ -65,6 +81,10 @@ public final class AffiliateOrderView {
         return "batchManager?faces-redirect=true";
     }
 
+    public String cancelDefer() {
+        String orderId = order.getId();
+        return "affiliateOrder.xhtml?orderId=" + orderId + "&faces-redirect=true";
+    }
     public String prepareDefer() {
         setBatchList(getController().getSelectBatchList(order.getVendorId(), order.getBatchId()));
         return "affiliateOrderDefer?faces-redirect=true";
@@ -82,6 +102,38 @@ public final class AffiliateOrderView {
             return rtn;
         }
         return "";
+    }
+    
+    public String getValidatePayId(javax.faces.event.AjaxBehaviorEvent evt) {
+        String id=order.getPayingId();
+        String rmsg = getController().validatePayId(id);
+        if("OK".equalsIgnoreCase(rmsg)) {
+            order.setHasErrors(false);
+            order.setPayingId(id);
+        }
+        String payCid=new String();
+        FacesMessage msg=new FacesMessage(rmsg);
+        FacesContext ctx=FacesContext.getCurrentInstance();
+        String cid=component.getClientId();
+        UIComponent cmp=ctx.getViewRoot().findComponent("orderForm:payId");
+        if(cmp !=null) {
+            payCid=cmp.getClientId();
+        }
+        ctx.addMessage(cid, msg);
+        return "";
+    }
+    
+    public void setValidatePayId(javax.faces.event.AjaxBehaviorEvent evt) {
+        String id=order.getPayingId();
+        String rmsg = getController().validatePayId(id);
+        FacesMessage msg=new FacesMessage(rmsg);
+        FacesContext ctx=FacesContext.getCurrentInstance();
+        String cid=component.getClientId();
+        UIComponent cmp=ctx.getViewRoot().findComponent("orderForm:payId");
+        if(cmp !=null) {
+            String payCid=cmp.getClientId();
+        }
+        ctx.addMessage(cid, msg);
     }
 
     /**
