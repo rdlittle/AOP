@@ -1,3 +1,7 @@
 .svn/
 /JavaFXApplication1/nbproject/private/
 /JavaFXApplication2/nbproject/private/
+build/
+dist/
+nbproject/private/
+.git
