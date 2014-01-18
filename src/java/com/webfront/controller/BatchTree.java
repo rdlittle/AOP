@@ -15,9 +15,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
 import javax.faces.bean.SessionScoped;
+import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.ValueChangeEvent;
+import javax.faces.event.ValueChangeListener;
 import org.primefaces.component.selectbooleancheckbox.SelectBooleanCheckbox;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
@@ -29,15 +34,16 @@ import org.primefaces.model.TreeNode;
  * @author rlittle
  */
 @ManagedBean
-@SessionScoped
-public final class BatchTree implements Serializable {
+@RequestScoped
+public final class BatchTree implements Serializable, ValueChangeListener {
 
     private DataController controller;
     private TreeNode root;
     private TreeNode selectedNode;
     private List<AffiliateOrder> orderList;
     private ArrayList<BatchItem> batchList;
-    protected Float totalAppliedAmount;
+    private Float totalAppliedAmount;
+    private Float balance;
     private BatchItem selectedBatch;
     private Map map;
     public String vendorId;
@@ -49,6 +55,7 @@ public final class BatchTree implements Serializable {
         vendorId = "";
         setRoot(new DefaultTreeNode("root", null));
         setTotalAppliedAmount(Float.valueOf(0));
+        setBalance(getController().mgmtBean.getCheckAmt());
     }
 
     public void onApprovalToggle(AjaxBehaviorEvent evt) {
@@ -129,7 +136,6 @@ public final class BatchTree implements Serializable {
     
     public void setData(ArrayList<BatchItem> list) {
         TreeRow row;
-        totalAppliedAmount = Float.valueOf("0.00");
         for (BatchItem item : list) {
             row = new TreeRow();
             row.setIsBatch(true);
@@ -151,9 +157,20 @@ public final class BatchTree implements Serializable {
             row.setDivisionPlacement(item.getVendorDiv());
             row.setNumber(item.getStoreID());
             TreeNode node = new DefaultTreeNode(row, root);
-            totalAppliedAmount += item.getAppliedAmt();
             root.getChildren().add(node);
+            
+            Float amt=item.getAppliedAmt();
+            if(amt != null && amt!= 0) {
+                updateTotalAppliedAmount(amt);
+                Float bal=getBalance();
+                bal-=amt;
+                setBalance(bal);
+                getController().mgmtBean.setBalance(bal);
+            }
         }
+        RequestContext rc=RequestContext.getCurrentInstance();
+        rc.update("mainGrid:header:appliedAmt");
+        rc.update("balance");
     }
 
     public void getDetail(NodeSelectEvent evt) {
@@ -193,11 +210,14 @@ public final class BatchTree implements Serializable {
     }
 
     public Float getTotalAppliedAmount() {
-        return totalAppliedAmount;
+        return this.totalAppliedAmount;
     }
 
     public void setTotalAppliedAmount(Float amt) {
-        totalAppliedAmount = amt;
+        this.totalAppliedAmount = amt;
+    }
+    private void updateTotalAppliedAmount(Float amt) {
+        this.totalAppliedAmount += amt;
     }
 
     public AffiliateOrder getAffiliateOrder(String id) {
@@ -287,5 +307,19 @@ public final class BatchTree implements Serializable {
      */
     public void setController(DataController controller) {
         this.controller = controller;
+    }
+
+    @Override
+    public void processValueChange(ValueChangeEvent event) throws AbortProcessingException {
+        RequestContext requestContext = RequestContext.getCurrentInstance();
+        requestContext.update("appliedAmt");
+    }
+
+    /**
+     * @param balance the balance to set
+     */
+    public void setBalance(Float balance) {
+        this.balance = balance;
+        getController().mgmtBean.setBalance(balance);
     }
 }

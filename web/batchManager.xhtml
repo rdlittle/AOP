@@ -11,33 +11,35 @@
         <ui:composition template="./layout.xhtml">
 
             <ui:define name="content">
-                <h:panelGrid columns="2" style="width:100%;">
+                <h:panelGrid id="mainGrid" columns="2" style="width:100%;">
                     <h2>AOP Batch Manager</h2>
-                    <h:form id="headerForm">
-                        <h:panelGrid columns="2" style="width:100%;">
-                            <h:outputText value="Role"/>
-                            <h:outputText value="#{batchManagementBean.mgmtRole}" style="text-align: right;"/>
+                    <p:fragment autoUpdate="true">
+                        <h:form id="headerForm">
+                            <h:panelGrid id="header" columns="2" style="width:100%;">
+                                <h:outputText value="Role"/>
+                                <h:outputText value="#{batchManagementBean.mgmtRole}" style="text-align: right;"/>
 
-                            <h:outputText value="Vendor ID"/>
-                            <h:outputText value="#{batchManagementBean.vendorId}"/>
+                                <h:outputText value="Vendor ID"/>
+                                <h:outputText value="#{batchManagementBean.vendorId}"/>
 
-                            <h:outputText value="Check Amount" style="text-align: left;"/>
-                            <h:inputText value="#{batchManagementBean.checkAmt}" style="text-align: right;" readonly="true">
-                                <f:convertNumber currencyCode="USD" type="currency" />
-                            </h:inputText>
+                                <h:outputText value="Check Amount" style="text-align: left;"/>
+                                <h:inputText value="#{batchManagementBean.checkAmt}" style="text-align: right;" readonly="true">
+                                    <f:convertNumber currencyCode="USD" type="currency" />
+                                </h:inputText>
 
-                            <h:outputText value="Applied Amount" style="text-align: left;"/>
-                            <h:inputText id ="appliedAmt" value="#{batchTree.totalAppliedAmount}"
-                                         style="text-align: right;" readonly="true" immediate="true">
-                                <f:convertNumber currencyCode="USD" type="currency" />
-                            </h:inputText>
+                                <h:outputText value="Applied Amount" style="text-align: left;"/>
+                                <h:inputText id ="appliedAmt" value="#{batchTree.totalAppliedAmount}"
+                                             style="text-align: right;" readonly="true" >
+                                    <f:convertNumber currencyCode="USD" type="currency" />
+                                </h:inputText>
 
-                            <h:outputText value="Balance" style="text-align: left;"/>
-                            <h:inputText id="balance" value="#{batchTree.balance}" style="text-align: right;" readonly="true">
-                                <f:convertNumber currencyCode="USD" type="currency" />
-                            </h:inputText>
-                        </h:panelGrid>
-                    </h:form>
+                                <h:outputText value="Balance" style="text-align: left;"/>
+                                <h:inputText id="balance" value="#{batchTree.balance}" style="text-align: right;" readonly="true">
+                                    <f:convertNumber currencyCode="USD" type="currency" />
+                                </h:inputText>
+                            </h:panelGrid>
+                        </h:form>
+                    </p:fragment>
                 </h:panelGrid>
 
 
@@ -73,7 +75,8 @@
                             #{row.commission}
                         </p:column>
                         <p:column sortBy="appliedAmount" headerText="Applied Amt" style="text-align: right; width: 8%;">
-                            <h:outputText value="#{row.appliedAmount}" />
+                            <h:outputText value="#{row.appliedAmount}">
+                            </h:outputText>
                         </p:column>                        
                         <p:column id="psApproveColumn" headerText="PS">
                             <p:selectBooleanCheckbox id="psApproval" value="#{row.psApproval}" rendered="#{row.isBatch}">
@@ -99,9 +102,11 @@
                         <p:column headerText="Date">
                             <h:outputText id="psDate" value="#{row.psApprovalDate}"/>
                         </p:column> 
-
+                        <h:inputText value="#{batchTree.balance}" style="display: none;">
+                            <p:ajax process = "@(form)" update=":headerForm:appliedAmt" partialSubmit="#{batchTree.balance}"/>
+                        </h:inputText>
                     </p:treeTable>
-                    
+
                     <p:dialog id="orderDetail" widgetVar="orderDetail" 
                               width="500" height="500" 
                               header="#{row.id}"
@@ -121,7 +126,7 @@
                     </p:dialog>
 
                 </h:form> 
-               
+
             </ui:define>
         </ui:composition>
 

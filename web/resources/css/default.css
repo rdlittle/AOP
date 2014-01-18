@@ -11,9 +11,9 @@ h1 {
     /*border-bottom: 1px solid #AFAFAF; */
     font-size:  16px;
     font-weight: bold;
-    margin: 0px;
+    margin: 1em;
     padding: 0px;
-    color: #D20005;
+    color: #000000;
 }
 
 a:link, a:visited {

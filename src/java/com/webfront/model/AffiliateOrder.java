@@ -4,13 +4,16 @@
  */
 package com.webfront.model;
 
+import asjava.uniclientlibs.UniDynArray;
+import com.webfront.u2.DynArray;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 
 /**
  *
  * @author rlittle
  */
-public final class AffiliateOrder {
+public class AffiliateOrder {
 
     private String id;
     private String orderRef;
@@ -42,12 +45,14 @@ public final class AffiliateOrder {
     private String actualPlacementId2;
     private Float ibvPlacedAmt1;
     private Float ibvPlacedAmt2;
+    private ArrayList<AffiliateError> errorList;
 
     public AffiliateOrder() {
-        setOrderTotal("0.00");
-        setIbvTotal("0.00");
-        setCommissionTotal(Float.valueOf("0.00"));
-        setIsDeferrable(true);
+        this.orderTotal="0.00";
+        this.ibvTotal="0.00";
+        this.commissionTotal=Float.valueOf("0.00");
+        this.isDeferrable=true;
+        this.errorList=new ArrayList<>();
     }
     /**
      * @return the id
@@ -474,10 +479,33 @@ public final class AffiliateOrder {
         return isDeferrable;
     }
 
+    public String lower() {
+        String str=this.toString();
+        UniDynArray da=DynArray.lower(new UniDynArray(str));
+        return da.toString();
+    }
+    public String raise() {
+        UniDynArray da=DynArray.raise(new UniDynArray(this.toString()));
+        return da.toString();
+    }
     /**
      * @param isDeferrable the isDeferrable to set
      */
     public void setIsDeferrable(boolean isDeferrable) {
         this.isDeferrable = isDeferrable;
+    }
+
+    /**
+     * @return the errorList
+     */
+    public ArrayList<AffiliateError> getErrorList() {
+        return errorList;
+    }
+
+    /**
+     * @param errorList the errorList to set
+     */
+    public void setErrorList(ArrayList<AffiliateError> errorList) {
+        this.errorList = errorList;
     }
 }

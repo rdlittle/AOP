@@ -69,6 +69,8 @@ public final class WebDEBean implements Serializable {
             UniDynArray vendorNames=getRbo().getPropertyToDynArray("vendorNameList");
             UniDynArray vendorIds=getRbo().getPropertyToDynArray("vendorId");
             int vals=vendorNames.dcount(1);
+            SelectItem defaultItem=new SelectItem("-1","Select Vendor");
+            vendors.add(defaultItem);
             for(int i=1; i<=vals; i++) {
                 String str=vendorNames.extract(1,i).toString();
                 String vid=vendorIds.extract(1, i).toString();

@@ -130,7 +130,7 @@ public class BatchManagementBean implements Serializable {
      * @return the balance
      */
     public Float getBalance() {
-        return balance;
+        return this.balance;
     }
 
     /**

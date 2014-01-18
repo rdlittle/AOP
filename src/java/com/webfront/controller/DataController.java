@@ -11,8 +11,10 @@ import com.webfront.beans.BatchManagementBean;
 import com.webfront.beans.BatchSummaryBean;
 import com.webfront.beans.Config;
 import com.webfront.beans.WebDEBean;
+import com.webfront.model.AffiliateError;
 import com.webfront.model.AffiliateOrder;
 import com.webfront.model.BatchItem;
+import com.webfront.u2.DynArray;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -313,17 +315,57 @@ public final class DataController {
             ao.setActualPlacementId2(r.getProperty("actualPlacmentId2"));
             ao.setIbvPlacedAmt1(Float.valueOf(r.getProperty("ibvPlacedAmt1")));
             ao.setIbvPlacedAmt2(Float.valueOf(r.getProperty("ibvPlacedAmt2")));
+            if(errCount>0) {
+                UniDynArray uda=r.getPropertyToDynArray("affiliateErrorsId");
+                for(int e=1; e<=errCount; e++) {
+                    String aeId = uda.extract(1, e).toString();
+                    AffiliateError aeRec = getAffiliateError(aeId);
+                    if(aeRec != null) {
+                        ao.getErrorList().add(aeRec);
+                    }
+                }
+            }
         } catch (RbException ex) {
             Logger.getLogger(DataController.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ao;
     }
     
-    public String setAffiliateOrder(String orderId) {
+    public AffiliateError getAffiliateError(String id) throws RbException {
+        setRbo(new RedObject("WDE", "UTILS:Files"));
+        RedObject r = getRbo();
+        r.setProperty("fileName", "AFFILIATE.ERRORS");
+        r.setProperty("id", id);
+        r.setProperty("mustExist", "1");
+        r.callMethod("getFileRec");
+        String errStat=r.getProperty("errStat");
+        String errCode=r.getProperty("errCode");
+        String errMsg=r.getProperty("errMsg");
+        if(errStat.equals("-1")) {
+            throw new RbException(Integer.parseInt(errCode),errMsg);
+        } else {
+            AffiliateError errObj = new AffiliateError();
+            UniDynArray uda;
+            UniDynArray udaRaised;
+            uda = r.getPropertyToDynArray("fileRec");
+            udaRaised=new UniDynArray(DynArray.raise(uda));
+            int vals=udaRaised.dcount(58);
+            vals = uda.dcount(1,58);
+            for(int val=1; val<=vals; val++) {
+                errCode=uda.extract(1, 59, val).toString();
+                errMsg =uda.extract(1, 58, val).toString();
+                errObj.getErrorMap().put(errCode, errMsg);
+            }
+            errObj.setId(id);
+            return errObj;
+        }
+    }
+    public String setAffiliateOrder(String orderId, AffiliateOrder order) {
        try {
             setRbo(new RedObject("WDE", "AOP:AffiliateOrders"));
             RedObject r=getRbo();
             r.setProperty("orderId", orderId);
+            r.setProperty("payingId",order.getPayingId());
             r.callMethod("setAffiliateOrder");
             String errStat = r.getProperty("errStat");
             String errCode = r.getProperty("errCode");

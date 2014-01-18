@@ -72,7 +72,7 @@ public final class AffiliateOrderView implements Serializable {
 
     public String prepareUpdate() {
         setBatchList(new LinkedList<BatchItem>());
-        getController().setAffiliateOrder(order.getId());
+        getController().setAffiliateOrder(order.getId(),order);
         return "batchManager?faces-redirect=true";
     }
 
