@@ -5,47 +5,43 @@
  */
 package com.webfront.controller;
 
+import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.beans.WebDEBean;
 import com.webfront.model.IBVMaster;
+import com.webfront.model.IbvMapping;
+import com.webfront.model.SelectItem;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-import javax.faces.event.AbortProcessingException;
-import javax.faces.event.ValueChangeEvent;
-import javax.faces.event.ValueChangeListener;
-import org.primefaces.context.RequestContext;
 
 /**
  *
  * @author rlittle
  */
-@ManagedBean
-@RequestScoped
-public class IBVMasterController implements ValueChangeListener {
+public class IBVMasterController {
 
-    private IBVMaster ibvMaster;
-    
     public IBVMasterController() {
-        this.ibvMaster=new IBVMaster();
+        
     }
 
-    public IBVMaster getIbvMaster() {
-        ibvMaster=new IBVMaster();
-        RequestContext requestContext = RequestContext.getCurrentInstance();
-        String id=requestContext.getAttributes().get("vendorID").toString();
+    public IBVMaster getIbvMaster(String ID) {
+        IBVMaster ibvMaster=new IBVMaster();
         try {
             RedObject rbo = new RedObject("WDE", "Vendor:Master");
-            rbo.setProperty("id", id);
+            rbo.setProperty("id", ID);
             rbo.callMethod("getMaster");
-            ibvMaster.setName(rbo.getProperty("name"));
+            String errStat=rbo.getProperty("errStat");
+            String errCode=rbo.getProperty("errCode");
+            String errMsg=rbo.getProperty("errMsg");
+            ibvMaster.setName(rbo.getProperty("vendorName"));
             ibvMaster.setCategory(rbo.getProperty("category"));
             ibvMaster.setType(rbo.getProperty("type"));
             ibvMaster.setPrefix(rbo.getProperty("prefix"));
             ibvMaster.setCountry(rbo.getProperty("country"));
-            ibvMaster.setCurrency(rbo.getProperty("currency"));
+            ibvMaster.setCurrency(rbo.getProperty("currencyType"));
             ibvMaster.setMappingId(rbo.getProperty("mappingId"));
             ibvMaster.setDataFeedAccessType(rbo.getProperty("dataFeedAccessMethod"));
             ibvMaster.setDataFeedFormat(rbo.getProperty("dataFeedFormat"));
@@ -53,16 +49,41 @@ public class IBVMasterController implements ValueChangeListener {
             ibvMaster.setUserName(rbo.getProperty("userName"));
             ibvMaster.setPassword(rbo.getProperty("password"));
             ibvMaster.setCreateDate(rbo.getProperty("createDate"));
-            ibvMaster.setActive(rbo.getProperty("isActive").equals("1") ? true : false);
+            ibvMaster.setActive(rbo.getProperty("isActive").equals("1"));
             ibvMaster.setNextDetailId(rbo.getProperty("nextDetailId"));
         } catch (RbException ex) {
             Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ibvMaster;
     }
-
-    @Override
-    public void processValueChange(ValueChangeEvent event) throws AbortProcessingException {
-        getIbvMaster();
+    
+    public HashMap<Integer,IbvMapping> getFieldMap(String id) {
+        HashMap<Integer,IbvMapping> list=new HashMap<Integer,IbvMapping>();
+        try {
+            RedObject rbo = new RedObject("WDE","UTILS:Files");
+            rbo.setProperty("fileName", "IBV.MAPPING");
+            rbo.setProperty("id", id);
+            rbo.callMethod("getFileRec");
+            String errStat=rbo.getProperty("errStat");
+            String errCode=rbo.getProperty("errCode");
+            String errMsg=rbo.getProperty("errMsg");
+            UniDynArray uda=rbo.getPropertyToDynArray("fileRec");
+            int vals = uda.dcount(1,1);
+            for(int val=1; val<=vals; val++) {
+                IbvMapping im=new IbvMapping();
+                String fieldName = uda.extract(1,1,val).toString();
+                String excludeFlag = uda.extract(1, 4, val).toString();
+                im.setColumnName(fieldName);
+                im.setExclude(excludeFlag);
+                list.put(Integer.valueOf(val),im);
+            }
+            
+        } catch(RbException rbe) {
+            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, rbe);
+        }
+        return list;
     }
+    
+
+
 }

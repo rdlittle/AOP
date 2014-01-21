@@ -34,7 +34,7 @@ import org.primefaces.model.TreeNode;
  * @author rlittle
  */
 @ManagedBean
-@RequestScoped
+@SessionScoped
 public final class BatchTree implements Serializable, ValueChangeListener {
 
     private DataController controller;

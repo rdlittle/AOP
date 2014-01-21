@@ -3,19 +3,23 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.webfront.model;
 
+import com.webfront.controller.IBVMasterController;
+import java.util.HashMap;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
+import javax.faces.bean.SessionScoped;
+import javax.faces.event.AjaxBehaviorEvent;
 
 /**
  *
  * @author rlittle
  */
 @ManagedBean
-@RequestScoped
+@SessionScoped
 public class IBVMaster {
+
+    IBVMasterController controller;
     private String ID;
     private String name;
     private String category;
@@ -32,6 +36,60 @@ public class IBVMaster {
     private String createDate;
     private boolean active;
     private String nextDetailId;
+    private String field1;
+    private HashMap<Integer, IbvMapping> fieldMap;
+
+    public IBVMaster() {
+        controller = new IBVMasterController();
+        field1 = "";
+    }
+
+    public void changeVendor(AjaxBehaviorEvent event) {
+        IBVMaster master = controller.getIbvMaster(ID);
+        this.setID(ID);
+        this.setName(master.getName());
+        this.setCategory(master.getCategory());
+        this.setType(master.getType());
+        this.setPrefix(master.getPrefix());
+        this.setCountry(master.getCountry());
+        this.setCurrency(master.getCurrency());
+        this.setMappingId(master.getMappingId());
+        this.setDataFeedAccessType(master.getDataFeedAccessType());
+        this.setDataFeedFormat(master.getDataFeedFormat());
+        this.setDataFeedURL(master.getDataFeedURL());
+        this.setUserName(master.getUserName());
+        this.setPassword(master.getPassword());
+        this.setCreateDate(master.getCreateDate());
+        this.setActive(master.isActive());
+        this.setNextDetailId(master.getNextDetailId());
+        this.setFieldMap(controller.getFieldMap(ID));
+    }
+
+    public void changeCategory(AjaxBehaviorEvent event) {
+        this.setCategory(category);
+    }
+
+    public void changeCurrency(AjaxBehaviorEvent event) {
+        this.setCurrency(currency);
+    }
+
+    public void changeType(AjaxBehaviorEvent event) {
+        this.setType(type);
+    }
+
+    public void changeField(AjaxBehaviorEvent event) {
+        System.out.println(event.toString());
+        this.setType(type);
+    }
+
+    public String getField(Integer i) {
+        if (null != getFieldMap()) {
+            if (i <= getFieldMap().size()) {
+                return getFieldMap().get(i).getColumnName();
+            }
+        }
+        return "";
+    }
 
     /**
      * @return the ID
@@ -256,5 +314,30 @@ public class IBVMaster {
     public void setNextDetailId(String nextDetailId) {
         this.nextDetailId = nextDetailId;
     }
-    
+
+    /**
+     * @return the field1
+     */
+    public String getField1() {
+        return field1;
+    }
+
+    /**
+     * @param field1 the field1 to set
+     */
+    public void setField1(String field1) {
+        this.field1 = field1;
+    }
+
+    public void setFieldMap(HashMap<Integer, IbvMapping> fm) {
+        this.fieldMap = fm;
+    }
+
+    /**
+     * @return the fieldMap
+     */
+    public HashMap<Integer, IbvMapping> getFieldMap() {
+        return fieldMap;
+    }
+
 }
