@@ -1,14 +1,166 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <body>
 
         <ui:composition template="./layout.xhtml">
 
             <ui:define name="content">
-                Store Setup And Maintenance
+                <span style="width: 99%; text-align: center; margin: 2em auto;">
+                    <h2>Vendor And Store Selection</h2>
+                </span>
+                <h:form>
+                    <h:panelGrid columns="2" styleClass="custom">
+                        <h:outputText value="Vendor ID" style="text-align: right;"/>
+                        <p:selectOneMenu id="vendorID" value="#{ibvDetailBean.ibvMasterId}" style="width: 400px;">
+                            <f:selectItems value="#{webDEBean.vendorList}" var="vendor" 
+                                           itemLabel="#{vendor.value}"
+                                           itemValue="#{vendor.key}">
+                            </f:selectItems>
+                            <p:ajax listener="#{ibvDetailBean.changeMasterId}" update="@form"/>
+                        </p:selectOneMenu>
+
+                        <h:outputText value="Edit / Add new store" />
+                        <p:selectOneMenu id="storeList" value="#{iBVDetail.id}">
+                            <f:selectItems value="#{ibvDetailBean.storeList}" var="stores"
+                                           itemLabel="#{stores.value}" itemValue="#{stores.key}">
+                            </f:selectItems>
+                            <p:ajax listener="${iBVDetail.changeStore}" update="@form"/>
+                        </p:selectOneMenu>
+                    </h:panelGrid>
+
+                    <p:panelGrid columns="2" style="margin-top: 2em; width: 100%;" styleClass="custom">
+                        <p:panelGrid columns="3" styleClass="custom">
+                            <h:outputText value="Date Entered"/>
+                            <h:inputText id="createDate" value="#{iBVDetail.createDate}" readonly="true"/>
+                            <h:outputText value=" "/>
+                            <h:outputText value="Store ID"/>
+                            <h:inputText id="storeId" value="#{iBVDetail.storeId}"/>
+                            <p:selectBooleanCheckbox id="isTiered" value="#{iBVDetail.tiered}" itemLabel="Tiered"/>
+                        </p:panelGrid>
+                        <h:outputText value=""/>
+
+                        <p:panelGrid style="width: 100%; vertical-align: top;">
+                            <p:row>
+                                <p:column colspan="7">
+                                    <h:outputText value="Commission / IBV / Cashback"/>
+                                </p:column>
+                            </p:row>
+
+                            <p:row>
+                                <p:column>
+                                    <h:outputText value="IBV"/>
+                                </p:column>
+                                <p:column>
+                                    <h:outputText value="Comm"/>
+                                </p:column>
+                                <p:column>
+                                    <h:outputText value="Commission Type"/>
+                                </p:column>
+                                <p:column>
+                                    <h:outputText value="CB"/>
+                                </p:column>
+                                <p:column>
+                                    <h:outputText value="Currency Type"/>
+                                </p:column>
+                                <p:column>
+                                    <h:outputText value="Tiered Commission Key"/>                            
+                                </p:column>
+                                <p:column>
+                                    <h:outputText value=""/>
+                                </p:column>
+                            </p:row>
+
+                            <p:row>
+                                <p:column>
+                                    <h:inputText id="ibv" value="#{iBVDetail.defaultIBV}" size="5" />
+                                </p:column>
+                                <p:column>
+                                    <h:inputText id="comm" value="#{iBVDetail.defaultCommission}" size="5" />
+                                </p:column>
+                                <p:column>
+                                    <h:selectOneMenu id="commType" value="#{iBVDetail.defaultCommissionType}">
+                                        <f:selectItem itemValue="" itemLabel="Select"/>
+                                        <f:selectItem itemValue="F" itemLabel="Fixed"/>
+                                        <f:selectItem itemValue="P" itemLabel="Percentage"/>
+                                    </h:selectOneMenu>
+                                </p:column>
+                                <p:column>
+                                    <h:inputText id="cb" value="#{iBVDetail.cbTermsId}" size="5"/>
+                                </p:column>
+                                <p:column>
+                                    <h:inputText id="currencyType" value="#{iBVDetail.currencyType}" size="5" />
+                                </p:column>
+                                <p:column>
+                                    <h:inputText id="commKey" value="#{iBVDetail.tieredCommissionKeys}" size="5" />
+                                </p:column>
+                                <p:column>
+                                    <h:outputText value="Add"/>
+                                </p:column>
+                            </p:row>
+                        </p:panelGrid>
+
+                        <p:panelGrid>
+                            <p:row>
+                                <p:column colspan="2" style="text-align: center; background: darkkhaki;">
+                                    <h:outputText value="Terms And Conditions"/>
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column style="text-align: center;">
+                                    <h:outputText value="Minimum Pay Period"/>
+                                </p:column>
+                                <p:column style="text-align: center;">
+                                    <h:outputText value="Maximum Pay Period"/>
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column>
+                                    <p:selectOneRadio id="minPayPeriod" value="#{iBVDetail.minPay}" layout="grid" columns="1">
+                                        <f:selectItem itemLabel="35 to 45 days" itemValue="3545"/>
+                                        <f:selectItem itemLabel="45 to 60 days" itemValue="4560"/>
+                                        <f:selectItem itemLabel="60 to 90 days" itemValue="6090"/>
+                                        <f:selectItem itemLabel="Over 90 days" itemValue="OVER90"/>
+                                    </p:selectOneRadio>
+                                </p:column>
+                                <p:column>
+                                    <p:selectOneRadio id="maxPayPeriod" value="#{iBVDetail.maxPay}" layout="grid" columns="1">
+                                        <f:selectItem itemLabel="3 Months" itemValue="3"/>
+                                        <f:selectItem itemLabel="4 Months" itemValue="4"/>
+                                        <f:selectItem itemLabel="6 Months" itemValue="6"/>
+                                        <f:selectItem itemLabel="Threshold must be met" itemValue="T"/>
+                                    </p:selectOneRadio>                            
+                                </p:column>
+                            </p:row>
+                        </p:panelGrid>
+
+                        <p:panelGrid style="width: 100%;">
+                            <p:row>
+                                <p:column>
+                                    <h:outputText value="IBV Terms"/>
+                                </p:column>
+                                <p:column>
+                                    <h:outputText value="CB Terms"/>
+                                </p:column>                                
+                            </p:row>
+                            <p:row>
+                                <p:column>
+                                    <h:inputTextarea id="ibvTerms" value="#{iBVDetail.ibvTerms}" style="width: 50%;"/>
+                                </p:column>
+                                <p:column >
+                                    <h:inputTextarea id="cbTerms" value="#{iBVDetail.cbTerms}" style="width: 50%;"/>
+                                </p:column>                                
+                            </p:row>
+                        </p:panelGrid>
+
+                    </p:panelGrid>
+
+                </h:form>
             </ui:define>
 
         </ui:composition>
