@@ -41,9 +41,33 @@ public class IBVDetail {
     private String maxPay;
     private String ibvTerms;
     private String cbTerms;
+    private boolean displayIBV;
+    private boolean displayCB;
+    private String threshhold;
 
     public IBVDetail() {
         this.controller = new IBVDetailController();
+        this.id=new String();
+        this.ibvMasterId=new String();
+        this.storeName=new String();
+        this.subVendorId=new String();
+        this.createDate=new String();
+        this.storeId=new String();
+        this.tieredCommissionKeys=new String();
+        this.siteCountry=new String();
+        this.defaultCommission=new String();
+        this.defaultCommissionType=new String();
+        this.defaultIBV=new String();
+        this.isActive=true;
+        this.ibvTermsId=new String();
+        this.cbTermsId=new String();
+        this.cbExclude=false;
+        this.minPay=new String();
+        this.maxPay=new String();
+        this.ibvTerms=new String();
+        this.cbTerms=new String();
+        this.displayIBV=true;
+        this.displayCB=true;
     }
     
     public void changeIbvMaster(AjaxBehaviorEvent event) {
@@ -51,9 +75,16 @@ public class IBVDetail {
     }
     
     public void changeDetail(AjaxBehaviorEvent event) {
-        System.out.println(getId());
+    
     }
     
+    public void ajaxHandler(AjaxBehaviorEvent event) {
+        
+    }
+    
+    public void save() {
+        controller.setIbvDetail(this);
+    }
     public void changeStore(AjaxBehaviorEvent event) {
         IBVDetail newStore = getController().getIbvDetail(getId());
         if(newStore != null) {
@@ -77,6 +108,9 @@ public class IBVDetail {
             setMaxPay(newStore.maxPay);
             setIbvTerms(newStore.getIbvTerms());
             setCbTerms(newStore.getCbTerms());
+            setDisplayIBV(newStore.displayIBV);
+            setDisplayCB(newStore.displayCB);
+            setThreshhold(newStore.getThreshhold());
         }
     }    
     /**
@@ -274,6 +308,9 @@ public class IBVDetail {
     public void setIsTiered(boolean tiered) {
         this.tiered = tiered;
     }
+    public void setTiered(boolean tiered) {
+        this.tiered=tiered;
+    }
 
     /**
      * @return the tieredCommissionKeys
@@ -385,6 +422,48 @@ public class IBVDetail {
      */
     public void setCbTerms(String cbTerms) {
         this.cbTerms = cbTerms;
+    }
+
+    /**
+     * @return the displayIBV
+     */
+    public boolean isDisplayIBV() {
+        return displayIBV;
+    }
+
+    /**
+     * @param displayIBV the displayIBV to set
+     */
+    public void setDisplayIBV(boolean displayIBV) {
+        this.displayIBV = displayIBV;
+    }
+
+    /**
+     * @return the displayCB
+     */
+    public boolean isDisplayCB() {
+        return displayCB;
+    }
+
+    /**
+     * @param displayCB the displayCB to set
+     */
+    public void setDisplayCB(boolean displayCB) {
+        this.displayCB = displayCB;
+    }
+
+    /**
+     * @return the threshhold
+     */
+    public String getThreshhold() {
+        return threshhold;
+    }
+
+    /**
+     * @param threshhold the threshhold to set
+     */
+    public void setThreshhold(String threshhold) {
+        this.threshhold = threshhold;
     }
     
 }

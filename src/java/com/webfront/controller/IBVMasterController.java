@@ -11,8 +11,6 @@ import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.beans.WebDEBean;
 import com.webfront.model.IBVMaster;
 import com.webfront.model.IbvMapping;
-import com.webfront.model.SelectItem;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;

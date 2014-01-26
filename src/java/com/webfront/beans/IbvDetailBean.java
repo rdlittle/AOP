@@ -49,6 +49,11 @@ public class IbvDetailBean {
      */
     public void setStoreList(ArrayList<SelectItem> storeList) {
         RedObject rb = new RedObject("WDE", "Vendor:Detail");
+        if(this.storeList != null) {
+            if(!this.storeList.isEmpty()) {
+                this.storeList.clear();
+            }
+        }
         rb.setProperty("ibvMasterId", ibvMasterId);
         try {
             rb.callMethod("getIbvDetailList");

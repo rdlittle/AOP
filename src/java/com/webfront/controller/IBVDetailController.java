@@ -13,6 +13,8 @@ import com.webfront.model.SelectItem;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 
 /**
  *
@@ -52,7 +54,6 @@ public class IBVDetailController {
      * @param storeList the storeList to set
      */
     public void setStoreList(ArrayList<SelectItem> storeList) {
-        getRb().setProperty("ibvMasterId", "LS010000");
         this.storeList = storeList;
     }
 
@@ -84,10 +85,55 @@ public class IBVDetailController {
             newStore.setMaxPay(getRb().getProperty("maxPay"));
             newStore.setIbvTerms(getRb().getProperty("ibvTerms"));
             newStore.setCbTerms(getRb().getProperty("cbTerms"));
+            newStore.setDisplayIBV("1".equals(getRb().getProperty("displayIBV")));
+            newStore.setDisplayCB("1".equals(getRb().getProperty("displayCB")));
+            newStore.setThreshhold(getRb().getProperty("threshhold"));
+            System.out.println(newStore.toString());
         } catch (RbException rbe) {
             Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, rbe);
         }
         return newStore;
     }
-    
+
+    public void setIbvDetail(IBVDetail rec) {
+        try {
+            getRb().setProperty("id", rec.getId());
+            getRb().setProperty("ibvMasterId", rec.getIbvMasterId());
+            getRb().setProperty("storeName", rec.getStoreName());
+            getRb().setProperty("subVendorId", rec.getSubVendorId());
+            getRb().setProperty("createDate", rec.getCreateDate());
+            getRb().setProperty("storeId", rec.getStoreId());
+            getRb().setProperty("isActive", rec.isIsActive() ? "1" : "0");
+            getRb().setProperty("siteCountry", rec.getSiteCountry());
+            getRb().setProperty("currencyType", rec.getCurrencyType());
+            getRb().setProperty("defaultIBV", rec.getDefaultIBV());
+            getRb().setProperty("defaultCommission", rec.getDefaultCommission());
+            getRb().setProperty("defaultCommissionType", rec.getDefaultCommissionType());
+            getRb().setProperty("ibvTermsId", rec.getIbvTermsId());
+            getRb().setProperty("cbTermsId", rec.getCbTermsId());
+            getRb().setProperty("cbExclude", rec.isCbExclude() ? "1" : "0");
+            getRb().setProperty("tieredCommissionKeys", rec.getTieredCommissionKeys());
+            getRb().setProperty("minPay", rec.getMinPay());
+            getRb().setProperty("maxPay", rec.getMaxPay());
+            getRb().setProperty("displayIBV", rec.isDisplayIBV() ? "1" : "0");
+            getRb().setProperty("displayCB", rec.isDisplayCB() ? "1" : "0");
+            getRb().setProperty("threshhold", rec.getThreshhold());
+            getRb().setProperty("ibvTerms", rec.getIbvTerms());
+            getRb().setProperty("cbTerms", rec.getCbTerms());
+
+            getRb().callMethod("setIbvDetailRec");
+            String errStat = getRb().getProperty("errStat");
+            String errCode = getRb().getProperty("errCode");
+            String errMsg = getRb().getProperty("errMsg");
+            if (errStat.equals("-1")) {
+                String msg = "Error: " + errCode + " " + errMsg;
+                FacesMessage fmsg = new FacesMessage(msg);
+                FacesContext ctx = FacesContext.getCurrentInstance();
+                ctx.addMessage("msg", fmsg);
+            }
+        } catch (RbException rbe) {
+            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, rbe);
+        }
+    }
+
 }
