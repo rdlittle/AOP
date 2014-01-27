@@ -43,6 +43,7 @@ public class IBVDetail {
     private String cbTerms;
     private boolean displayIBV;
     private boolean displayCB;
+    private boolean ibvOnGiftCard;
     private String threshhold;
 
     public IBVDetail() {
@@ -68,6 +69,7 @@ public class IBVDetail {
         this.cbTerms=new String();
         this.displayIBV=true;
         this.displayCB=true;
+        this.ibvOnGiftCard=false;
     }
     
     public void changeIbvMaster(AjaxBehaviorEvent event) {
@@ -464,6 +466,20 @@ public class IBVDetail {
      */
     public void setThreshhold(String threshhold) {
         this.threshhold = threshhold;
+    }
+
+    /**
+     * @return the ibvOnGiftCard
+     */
+    public boolean isIbvOnGiftCard() {
+        return ibvOnGiftCard;
+    }
+
+    /**
+     * @param ibvOnGiftCard the ibvOnGiftCard to set
+     */
+    public void setIbvOnGiftCard(boolean ibvOnGiftCard) {
+        this.ibvOnGiftCard = ibvOnGiftCard;
     }
     
 }

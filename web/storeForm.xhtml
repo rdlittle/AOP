@@ -26,7 +26,7 @@
                             <p:ajax listener="#{ibvDetailBean.changeMasterId}" update="@form"/>
                         </p:selectOneMenu>
                         <h:outputText value=""/>
-                        
+
                         <h:outputText value="Edit / Add new store" />
                         <p:selectOneMenu id="storeList" value="#{iBVDetail.id}">
                             <f:selectItem itemValue="" itemLabel="Select"/>
@@ -34,6 +34,7 @@
                                            itemLabel="#{stores.value}" itemValue="#{stores.key}">
                             </f:selectItems>
                             <p:ajax listener="#{iBVDetail.changeStore}" update="@form"/>
+                            <p:ajax listener="#{campaignBean.changeCampaign}"/>
                         </p:selectOneMenu>
                         <h:outputText value=""/>
 
@@ -44,7 +45,7 @@
                         <h:outputText value="Store ID"/>
                         <h:inputText id="storeId" value="#{iBVDetail.storeId}"/>
                         <p:selectBooleanCheckbox id="isTiered" value="#{iBVDetail.tiered}" itemLabel="Tiered" />
-                       
+
                     </p:panelGrid>
 
                     <p:panelGrid columns="2" style="width: 100%;" styleClass="custom">
@@ -135,12 +136,29 @@
                             <p:selectBooleanCheckbox id="displayCB" value="#{iBVDetail.displayCB}" itemLabel="Display">
                                 <p:ajax listener="#{iBVDetail.ajaxHandler}"/>
                             </p:selectBooleanCheckbox>
-                            <p:selectBooleanCheckbox id="ibvGift" itemLabel="IBV On Gift Cards" value="#{iBVDetail.displayIBV}"/>
+                            <p:selectBooleanCheckbox id="ibvGift" itemLabel="IBV On Gift Card" value="#{iBVDetail.ibvOnGiftCard}"/>
                             <p:selectBooleanCheckbox id="bypassCb" itemLabel="Bypass Cashback" value="#{iBVDetail.cbExclude}" />
                         </p:panelGrid>
                         <h:outputText value=""/>
                     </p:panelGrid>
                     <p:panel styleClass="custom" style="margin-top: 2em;">
+                        <p:commandLink id="newCampaignLink" actionListener="#{campaignBean.createCampaign}" 
+                                       rendered="#{!campaignBean.newCampaign}" ajax="true" update="campaignGrid @this @form">
+                            <h:outputText value="Create new campaign"/>
+                        </p:commandLink>
+                        <p:commandLink id="saveCampaignLink" actionListener="#{campaignBean.saveCampaign}" 
+                                       rendered="#{campaignBean.newCampaign}" ajax="true" update="campaignGrid @this @form">
+                            <h:outputText value="Save new campaign"/>
+                        </p:commandLink>                        
+                        <p:panelGrid id="campaignGrid" styleClass="custom" columns="6" style="width: 75%; margin: auto;">    
+                            <h:outputLabel for="campaignStart" value="Start Date" rendered="#{campaignBean.newCampaign}"/>
+                            <p:calendar id="campaignStart" value="#{campaignBean.campaignStart}" rendered="#{campaignBean.newCampaign}"/>
+                            <h:outputLabel for="campaignStart" value="End Date" rendered="#{campaignBean.newCampaign}"/>
+                            <p:calendar id="campaignEnd" value="#{campaignBean.campaignEnd}" rendered="#{campaignBean.newCampaign}"/>
+                            <h:outputLabel for="increase" value="Cashback" rendered="#{campaignBean.newCampaign}"/>
+                            <p:inputText id="increase" value="#{campaignBean.newCashback}" style="width: 100px;" rendered="#{campaignBean.newCampaign}"/>
+                        </p:panelGrid>
+
                         <p:dataTable var="campaign" value="#{campaignBean.list}">
                             <f:facet name="header">Cashback Campaigns</f:facet>
                             <p:column headerText="Status" >
@@ -171,7 +189,7 @@
                     </p:panel>
                     <p:commandButton id="btnSubmit" ajax="false" actionListener="#{iBVDetail.save}" value="Submit"/>
                 </h:form>
-                
+
             </ui:define>
 
         </ui:composition>

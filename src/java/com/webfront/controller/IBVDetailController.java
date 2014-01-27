@@ -88,6 +88,7 @@ public class IBVDetailController {
             newStore.setDisplayIBV("1".equals(getRb().getProperty("displayIBV")));
             newStore.setDisplayCB("1".equals(getRb().getProperty("displayCB")));
             newStore.setThreshhold(getRb().getProperty("threshhold"));
+            newStore.setIbvOnGiftCard("1".equals(getRb().getProperty("ibvOnGiftCard").toString()));
             System.out.println(newStore.toString());
         } catch (RbException rbe) {
             Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, rbe);
@@ -120,6 +121,7 @@ public class IBVDetailController {
             getRb().setProperty("threshhold", rec.getThreshhold());
             getRb().setProperty("ibvTerms", rec.getIbvTerms());
             getRb().setProperty("cbTerms", rec.getCbTerms());
+            getRb().setProperty("ibvOnGiftCard", rec.isIbvOnGiftCard() ? "1" : "0");
 
             getRb().callMethod("setIbvDetailRec");
             String errStat = getRb().getProperty("errStat");

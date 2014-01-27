@@ -25,6 +25,7 @@ public class Campaign {
     private String editDate;
     private String editTime;
     private HashMap<String,String> statusLabels;
+    
 
     public Campaign() {
         statusLabels=new HashMap<>();
@@ -204,5 +205,5 @@ public class Campaign {
     public void setStatusLabels(HashMap<String,String> statusLabels) {
         this.statusLabels = statusLabels;
     }
-    
+
 }
