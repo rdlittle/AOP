@@ -18,38 +18,38 @@
                 <h:form id="form">
                     <p:panelGrid columns="3" styleClass="custom">
                         <h:outputText value="Vendor ID" style="text-align: right;"/>
-                        <p:selectOneMenu id="vendorID" value="#{ibvDetailBean.ibvMasterId}">
+                        <p:selectOneMenu id="vendorID" value="#{vendorDetailBean.vendorMasterId}">
                             <f:selectItems value="#{webDEBean.vendorList}" var="vendor" 
                                            itemLabel="#{vendor.value}"
                                            itemValue="#{vendor.key}">
                             </f:selectItems>
-                            <p:ajax listener="#{ibvDetailBean.changeMasterId}" update="@form"/>
+                            <p:ajax listener="#{vendorDetailBean.changeMasterId}" update="@form"/>
                         </p:selectOneMenu>
                         <h:outputText value=""/>
 
                         <h:outputText value="Edit / Add new store" />
-                        <p:selectOneMenu id="storeList" value="#{iBVDetail.id}">
+                        <p:selectOneMenu id="storeList" value="#{vendorDetail.id}">
                             <f:selectItem itemValue="" itemLabel="Select"/>
-                            <f:selectItems value="#{ibvDetailBean.storeList}" var="stores"
+                            <f:selectItems value="#{vendorDetailBean.storeList}" var="stores"
                                            itemLabel="#{stores.value}" itemValue="#{stores.key}">
                             </f:selectItems>
-                            <p:ajax listener="#{iBVDetail.changeStore}" update="@form"/>
+                            <p:ajax listener="#{vendorDetail.changeStore}" update="@form"/>
                             <p:ajax listener="#{campaignBean.changeCampaign}"/>
                         </p:selectOneMenu>
                         <h:outputText value=""/>
 
                         <h:outputText value="Date Entered"/>
-                        <h:inputText id="createDate" value="#{iBVDetail.createDate}" readonly="true"/>
-                        <p:selectBooleanCheckbox id="isActive" value="#{iBVDetail.isActive}" itemLabel="Active" />
+                        <h:inputText id="createDate" value="#{vendorDetail.createDate}" readonly="true"/>
+                        <p:selectBooleanCheckbox id="isActive" value="#{vendorDetail.isActive}" itemLabel="Active" />
 
                         <h:outputText value="Store ID"/>
-                        <h:inputText id="storeId" value="#{iBVDetail.storeId}"/>
-                        <p:selectBooleanCheckbox id="isTiered" value="#{iBVDetail.tiered}" itemLabel="Tiered" />
+                        <h:inputText id="storeId" value="#{vendorDetail.storeId}"/>
+                        <p:selectBooleanCheckbox id="isTiered" value="#{vendorDetail.tiered}" itemLabel="Tiered" />
 
                     </p:panelGrid>
 
                     <p:panelGrid columns="2" style="width: 100%;" styleClass="custom">
-                        <p:panelGrid columns="7" style="width: 100%;" styleClass="custom">
+                        <p:panelGrid columns="7" style="width: 100%;" >
                             <f:facet name="header">
                                 <h:outputText value="Commission / IBV / Cashback"/>    
                             </f:facet>
@@ -70,16 +70,16 @@
                             <h:outputText value=""/>
 
 
-                            <h:inputText id="ibv" value="#{iBVDetail.defaultIBV}" size="5" />
-                            <h:inputText id="comm" value="#{iBVDetail.defaultCommission}" size="5" />
-                            <h:selectOneMenu id="commType" value="#{iBVDetail.defaultCommissionType}">
+                            <h:inputText id="ibv" value="#{vendorDetail.defaultIBV}" size="5" />
+                            <h:inputText id="comm" value="#{vendorDetail.defaultCommission}" size="5" />
+                            <h:selectOneMenu id="commType" value="#{vendorDetail.defaultCommissionType}">
                                 <f:selectItem itemValue="" itemLabel="Select"/>
                                 <f:selectItem itemValue="F" itemLabel="Fixed"/>
                                 <f:selectItem itemValue="P" itemLabel="Percentage"/>
                             </h:selectOneMenu>
-                            <h:inputText id="cb" value="#{iBVDetail.cbTermsId}" size="5"/>
-                            <h:inputText id="currencyType" value="#{iBVDetail.currencyType}" size="5" />
-                            <h:inputText id="commKey" value="#{iBVDetail.tieredCommissionKeys}" size="5" />
+                            <h:inputText id="cb" value="#{vendorDetail.cbTermsId}" size="5"/>
+                            <h:inputText id="currencyType" value="#{vendorDetail.currencyType}" size="5" />
+                            <h:inputText id="commKey" value="#{vendorDetail.tieredCommissionKeys}" size="5" />
                             <h:outputText value="Add"/>
 
                         </p:panelGrid>
@@ -90,14 +90,14 @@
                             </f:facet>
                             <h:outputText value="Minimum Pay Period"/>
                             <h:outputText value="Maximum Pay Period"/>
-                            <p:selectOneRadio id="minPayPeriod" value="#{iBVDetail.minPay}" layout="grid" columns="1">
+                            <p:selectOneRadio id="minPayPeriod" value="#{vendorDetail.minPay}" layout="grid" columns="1">
                                 <f:selectItem itemLabel="35 to 45 days" itemValue="3545"/>
                                 <f:selectItem itemLabel="45 to 60 days" itemValue="4560"/>
                                 <f:selectItem itemLabel="60 to 90 days" itemValue="6090"/>
                                 <f:selectItem itemLabel="Over 90 days" itemValue="OVER90"/>
-                                <p:ajax listener="#{iBVDetail.ajaxHandler}"/>
+                                <p:ajax listener="#{vendorDetail.ajaxHandler}"/>
                             </p:selectOneRadio>
-                            <p:selectOneRadio id="maxPayPeriod" value="#{iBVDetail.maxPay}" layout="grid" columns="1">
+                            <p:selectOneRadio id="maxPayPeriod" value="#{vendorDetail.maxPay}" layout="grid" columns="1">
                                 <f:selectItem itemLabel="3 Months" itemValue="3"/>
                                 <f:selectItem itemLabel="4 Months" itemValue="4"/>
                                 <f:selectItem itemLabel="6 Months" itemValue="6"/>
@@ -105,7 +105,7 @@
                             </p:selectOneRadio> 
                             <h:outputText value=""/>
                             <p:panelGrid columns="1" styleClass="custom">
-                                <p:selectOneMenu id="threshhold" value="#{iBVDetail.threshhold}">
+                                <p:selectOneMenu id="threshhold" value="#{vendorDetail.threshhold}">
                                     <f:selectItem itemValue="" itemLabel="Select"/>
                                     <f:selectItem itemValue="100000" itemLabel="1000.00"/>
                                     <f:selectItem itemValue="200000" itemLabel="2000.00"/>
@@ -121,26 +121,27 @@
                             <h:outputText value="IBV Terms"/>
                             <h:outputText value="CB Terms"/>
 
-                            <h:inputTextarea id="ibvTerms" value="#{iBVDetail.ibvTerms}" 
+                            <h:inputTextarea id="ibvTerms" value="#{vendorDetail.ibvTerms}" 
                                              style="width: 100%;" rows="4">
-                                <p:ajax listener="#{iBVDetail.ajaxHandler}"/>
+                                <p:ajax listener="#{vendorDetail.ajaxHandler}"/>
                             </h:inputTextarea>
-                            <h:inputTextarea id="cbTerms" value="#{iBVDetail.cbTerms}" 
+                            <h:inputTextarea id="cbTerms" value="#{vendorDetail.cbTerms}" 
                                              style="width: 100%;" rows="4">
-                                <p:ajax listener="#{iBVDetail.ajaxHandler}"/>
+                                <p:ajax listener="#{vendorDetail.ajaxHandler}"/>
                             </h:inputTextarea>
 
-                            <p:selectBooleanCheckbox id="displayIBV" value="#{iBVDetail.displayIBV}" itemLabel="Display">
-                                <p:ajax listener="#{iBVDetail.ajaxHandler}" />
+                            <p:selectBooleanCheckbox id="displayIBV" value="#{vendorDetail.displayIBV}" itemLabel="Display">
+                                <p:ajax listener="#{vendorDetail.ajaxHandler}" />
                             </p:selectBooleanCheckbox>
-                            <p:selectBooleanCheckbox id="displayCB" value="#{iBVDetail.displayCB}" itemLabel="Display">
-                                <p:ajax listener="#{iBVDetail.ajaxHandler}"/>
+                            <p:selectBooleanCheckbox id="displayCB" value="#{vendorDetail.displayCB}" itemLabel="Display">
+                                <p:ajax listener="#{vendorDetail.ajaxHandler}"/>
                             </p:selectBooleanCheckbox>
-                            <p:selectBooleanCheckbox id="ibvGift" itemLabel="IBV On Gift Card" value="#{iBVDetail.ibvOnGiftCard}"/>
-                            <p:selectBooleanCheckbox id="bypassCb" itemLabel="Bypass Cashback" value="#{iBVDetail.cbExclude}" />
+                            <p:selectBooleanCheckbox id="ibvGift" itemLabel="IBV On Gift Card" value="#{vendorDetail.ibvOnGiftCard}"/>
+                            <p:selectBooleanCheckbox id="bypassCb" itemLabel="Bypass Cashback" value="#{vendorDetail.cbExclude}" />
                         </p:panelGrid>
                         <h:outputText value=""/>
                     </p:panelGrid>
+                    
                     <p:panel styleClass="custom" style="margin-top: 2em;">
                         <p:commandLink id="newCampaignLink" actionListener="#{campaignBean.createCampaign}" 
                                        rendered="#{!campaignBean.newCampaign}" ajax="true" update="campaignGrid @this @form">
@@ -187,7 +188,7 @@
                             </p:column>                            
                         </p:dataTable>
                     </p:panel>
-                    <p:commandButton id="btnSubmit" ajax="false" actionListener="#{iBVDetail.save}" value="Submit"/>
+                    <p:commandButton id="btnSubmit" ajax="false" actionListener="#{vendorDetail.save}" value="Submit"/>
                 </h:form>
 
             </ui:define>

@@ -6,7 +6,7 @@
 
 package com.webfront.model;
 
-import com.webfront.controller.IBVDetailController;
+import com.webfront.controller.VendorDetailController;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.event.AjaxBehaviorEvent;
@@ -17,11 +17,11 @@ import javax.faces.event.AjaxBehaviorEvent;
  */
 @ManagedBean
 @SessionScoped
-public class IBVDetail {
+public class VendorDetail {
 
-    private IBVDetailController controller;
+    private VendorDetailController controller;
     private String id;
-    private String ibvMasterId;
+    private String vendorMasterId;
     private String storeName;
     private String subVendorId;
     private String createDate;
@@ -46,10 +46,10 @@ public class IBVDetail {
     private boolean ibvOnGiftCard;
     private String threshhold;
 
-    public IBVDetail() {
-        this.controller = new IBVDetailController();
+    public VendorDetail() {
+        this.controller = new VendorDetailController();
         this.id=new String();
-        this.ibvMasterId=new String();
+        this.vendorMasterId=new String();
         this.storeName=new String();
         this.subVendorId=new String();
         this.createDate=new String();
@@ -72,7 +72,7 @@ public class IBVDetail {
         this.ibvOnGiftCard=false;
     }
     
-    public void changeIbvMaster(AjaxBehaviorEvent event) {
+    public void changeVendorMaster(AjaxBehaviorEvent event) {
         
     }
     
@@ -88,9 +88,9 @@ public class IBVDetail {
         controller.setIbvDetail(this);
     }
     public void changeStore(AjaxBehaviorEvent event) {
-        IBVDetail newStore = getController().getIbvDetail(getId());
+        VendorDetail newStore = getController().getVendorDetail(getId());
         if(newStore != null) {
-            setIbvMasterId(newStore.getIbvMasterId());
+            setVendorMasterId(newStore.getVendorMasterId());
             setStoreName(newStore.getStoreName());
             setSubVendorId(newStore.getSubVendorId());
             setCreateDate(newStore.getCreateDate());
@@ -118,29 +118,29 @@ public class IBVDetail {
     /**
      * @return the controller
      */
-    public IBVDetailController getController() {
+    public VendorDetailController getController() {
         return controller;
     }
 
     /**
      * @param controller the controller to set
      */
-    public void setController(IBVDetailController controller) {
+    public void setController(VendorDetailController controller) {
         this.controller = controller;
     }
 
     /**
-     * @return the ibvMasterId
+     * @return the vendorMasterId
      */
-    public String getIbvMasterId() {
-        return ibvMasterId;
+    public String getVendorMasterId() {
+        return vendorMasterId;
     }
 
     /**
-     * @param ibvMasterId the ibvMasterId to set
+     * @param vendorMasterId the vendorMasterId to set
      */
-    public void setIbvMasterId(String ibvMasterId) {
-        this.ibvMasterId = ibvMasterId;
+    public void setVendorMasterId(String vendorMasterId) {
+        this.vendorMasterId = vendorMasterId;
     }
 
     /**

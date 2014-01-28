@@ -9,7 +9,7 @@ import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.model.Campaign;
-import com.webfront.model.IBVDetail;
+import com.webfront.model.VendorDetail;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,12 +31,12 @@ import javax.faces.event.AjaxBehaviorEvent;
 @SessionScoped
 public class CampaignBean {
 
-    @ManagedProperty(value = "#{iBVDetail}")
-    private IBVDetail detail;
+    @ManagedProperty(value = "#{vendorDetail}")
+    private VendorDetail detail;
     private ArrayList<Campaign> list;
     private Campaign activeCampaign;
-    private String ibvMasterId;
-    private String ibvDetailId;
+    private String vendorMasterId;
+    private String vendorDetailId;
     private Calendar calendar;
     private Date campaignStart;
     private Date campaignEnd;
@@ -46,8 +46,8 @@ public class CampaignBean {
     public CampaignBean() {
         this.list = new ArrayList<>();
         this.activeCampaign = new Campaign();
-        this.ibvMasterId = new String();
-        this.ibvDetailId = new String();
+        this.vendorMasterId = new String();
+        this.vendorDetailId = new String();
         this.calendar = Calendar.getInstance();
         this.newCampaign = false;
         this.list = new ArrayList<>();
@@ -76,8 +76,8 @@ public class CampaignBean {
             if (this.activeCampaign != null) {
                 campaignList.add(this.activeCampaign);
             }
-            rb.setProperty("ibvMasterId", detail.getIbvMasterId());
-            rb.setProperty("ibvDetailId", ssid);
+            rb.setProperty("vendorMasterId", detail.getVendorMasterId());
+            rb.setProperty("vendorDetailId", ssid);
             try {
                 rb.callMethod("getCampaignHist");
                 String errStat = rb.getProperty("errStat").toString();
@@ -120,13 +120,16 @@ public class CampaignBean {
     }
 
     public void changeCampaign(AjaxBehaviorEvent event) {
-        if(this.ibvDetailId == null) {
-            this.ibvDetailId=this.detail.getId();
-        }
-        if(!this.ibvDetailId.equals(this.detail.getId())) {
-            setList(new ArrayList<Campaign>());
-            this.ibvDetailId=this.detail.getId();
-            this.newCampaign=false;
+        if (this.detail != null) {
+            if (this.vendorDetailId == null) {
+                this.vendorDetailId = this.detail.getId();
+            }
+
+            if (!this.vendorDetailId.equals(this.detail.getId())) {
+                setList(new ArrayList<Campaign>());
+                this.vendorDetailId = this.detail.getId();
+                this.newCampaign = false;
+            }
         }
     }
 
@@ -139,8 +142,8 @@ public class CampaignBean {
             String sid = detail.getId();
             int idx = sid.indexOf("*");
             String ssid = sid.substring(idx + 1);
-            rb.setProperty("ibvMasterId", detail.getIbvMasterId());
-            rb.setProperty("ibvDetailId", ssid);
+            rb.setProperty("vendorMasterId", detail.getVendorMasterId());
+            rb.setProperty("vendorDetailId", ssid);
             this.activeCampaign = new Campaign();
             try {
                 rb.callMethod("getCampaign");
@@ -175,44 +178,44 @@ public class CampaignBean {
     }
 
     /**
-     * @return the ibvMasterId
+     * @return the vendorMasterId
      */
-    public String getIbvMasterId() {
-        return ibvMasterId;
+    public String getVendorMasterId() {
+        return vendorMasterId;
     }
 
     /**
-     * @param ibvMasterId the ibvMasterId to set
+     * @param vendorMasterId the vendorMasterId to set
      */
-    public void setIbvMasterId(String ibvMasterId) {
-        this.ibvMasterId = ibvMasterId;
+    public void setVendorMasterId(String vendorMasterId) {
+        this.vendorMasterId = vendorMasterId;
     }
 
     /**
-     * @return the ibvDetailId
+     * @return the vendorDetailId
      */
-    public String getIbvDetailId() {
-        return ibvDetailId;
+    public String getVendorDetailId() {
+        return vendorDetailId;
     }
 
     /**
-     * @param ibvDetailId the ibvDetailId to set
+     * @param vendorDetailId the vendorDetailId to set
      */
-    public void setIbvDetailId(String ibvDetailId) {
-        this.ibvDetailId = ibvDetailId;
+    public void setVendorDetailId(String vendorDetailId) {
+        this.vendorDetailId = vendorDetailId;
     }
 
     /**
      * @return the detailBean
      */
-    public IBVDetail getDetail() {
+    public VendorDetail getDetail() {
         return detail;
     }
 
     /**
      * @param detail the IBVDetail to set
      */
-    public void setDetail(IBVDetail detail) {
+    public void setDetail(VendorDetail detail) {
         this.detail = detail;
     }
 
@@ -294,7 +297,7 @@ public class CampaignBean {
             int idx = sid.indexOf("*");
             String ssid = sid.substring(idx + 1);
             RedObject rb = new RedObject("WDE", "AOP:Cashback");
-            rb.setProperty("ibvMasterId", this.detail.getIbvMasterId());
+            rb.setProperty("ibvMasterId", this.detail.getVendorMasterId());
             rb.setProperty("ibvDetailId", ssid);
             rb.setProperty("startDate", sDate);
             rb.setProperty("endDate", eDate);

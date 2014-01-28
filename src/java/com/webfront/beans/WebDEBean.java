@@ -33,6 +33,7 @@ public final class WebDEBean implements Serializable {
     private LinkedList<SelectItem> mappedFields;
     private ArrayList<SelectItem> accessMethods;
     private ArrayList<SelectItem> fileFormats;
+    private String userId;
 
     /**
      * Creates a new instance of WebDEBean
@@ -306,5 +307,28 @@ public final class WebDEBean implements Serializable {
             Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, rbe);
         }
         this.fileFormats = fileFormats;
+    }
+
+    /**
+     * @return the userId
+     */
+    public String getUserId() {
+        if(userId == null || userId.isEmpty()) {
+            try {
+                getRbo().callMethod("getLogName");
+                userId = getRbo().getProperty("logName");
+                setUserId(userId);
+            } catch (RbException ex) {
+                Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return userId;
+    }
+
+    /**
+     * @param userId the userId to set
+     */
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

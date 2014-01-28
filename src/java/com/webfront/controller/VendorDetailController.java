@@ -8,7 +8,7 @@ package com.webfront.controller;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.beans.WebDEBean;
-import com.webfront.model.IBVDetail;
+import com.webfront.model.VendorDetail;
 import com.webfront.model.SelectItem;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -20,12 +20,12 @@ import javax.faces.context.FacesContext;
  *
  * @author rlittle
  */
-public class IBVDetailController {
+public class VendorDetailController {
 
     private RedObject rb;
     private ArrayList<SelectItem> storeList;
 
-    public IBVDetailController() {
+    public VendorDetailController() {
         this.rb = new RedObject("WDE", "Vendor:Detail");
     }
 
@@ -57,15 +57,15 @@ public class IBVDetailController {
         this.storeList = storeList;
     }
 
-    public IBVDetail getIbvDetail(String id) {
-        IBVDetail newStore = new IBVDetail();
+    public VendorDetail getVendorDetail(String id) {
+        VendorDetail newStore = new VendorDetail();
         try {
             getRb().setProperty("id", id);
             getRb().callMethod("getIbvDetailRec");
             String errStat = getRb().getProperty("errStat");
             String errCode = getRb().getProperty("errCode");
             String errMsg = getRb().getProperty("errMsg");
-            newStore.setIbvMasterId(getRb().getProperty("ibvMasterId"));
+            newStore.setVendorMasterId(getRb().getProperty("vendorMasterId"));
             newStore.setStoreName(getRb().getProperty("storeName"));
             newStore.setSubVendorId(getRb().getProperty("subVendorId"));
             newStore.setCreateDate(getRb().getProperty("createDate"));
@@ -96,10 +96,10 @@ public class IBVDetailController {
         return newStore;
     }
 
-    public void setIbvDetail(IBVDetail rec) {
+    public void setIbvDetail(VendorDetail rec) {
         try {
             getRb().setProperty("id", rec.getId());
-            getRb().setProperty("ibvMasterId", rec.getIbvMasterId());
+            getRb().setProperty("vendorMasterId", rec.getVendorMasterId());
             getRb().setProperty("storeName", rec.getStoreName());
             getRb().setProperty("subVendorId", rec.getSubVendorId());
             getRb().setProperty("createDate", rec.getCreateDate());

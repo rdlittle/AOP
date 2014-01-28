@@ -5,7 +5,7 @@
  */
 package com.webfront.model;
 
-import com.webfront.controller.IBVMasterController;
+import com.webfront.controller.VendorMasterController;
 import java.util.HashMap;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -17,9 +17,9 @@ import javax.faces.event.AjaxBehaviorEvent;
  */
 @ManagedBean
 @SessionScoped
-public class IBVMaster {
+public class VendorMaster {
 
-    IBVMasterController controller;
+    VendorMasterController controller;
     private String ID;
     private String name;
     private String category;
@@ -39,13 +39,13 @@ public class IBVMaster {
     private String field1;
     private HashMap<Integer, IbvMapping> fieldMap;
 
-    public IBVMaster() {
-        controller = new IBVMasterController();
+    public VendorMaster() {
+        controller = new VendorMasterController();
         field1 = "";
     }
 
     public void changeVendor(AjaxBehaviorEvent event) {
-        IBVMaster master = controller.getIbvMaster(ID);
+        VendorMaster master = controller.getVendorMaster(ID);
         this.setID(ID);
         this.setName(master.getName());
         this.setCategory(master.getCategory());

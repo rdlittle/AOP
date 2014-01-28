@@ -22,10 +22,10 @@ import javax.faces.event.AjaxBehaviorEvent;
  */
 @ManagedBean
 @SessionScoped
-public class IbvDetailBean {
+public class VendorDetailBean {
 
-    private String ibvMasterId;
-    private String ibvDetailId;
+    private String vendorMasterId;
+    private String vendorDetailId;
 
     private ArrayList<SelectItem> storeList;
     private ArrayList<SelectItem> minPayList;
@@ -54,7 +54,7 @@ public class IbvDetailBean {
                 this.storeList.clear();
             }
         }
-        rb.setProperty("ibvMasterId", ibvMasterId);
+        rb.setProperty("vendorMasterId", vendorMasterId);
         try {
             rb.callMethod("getIbvDetailList");
             String errStat = rb.getProperty("errStat");
@@ -69,37 +69,37 @@ public class IbvDetailBean {
                 storeList.add(new SelectItem(key, value));
             }
         } catch (RbException ex) {
-            Logger.getLogger(IbvDetailBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VendorDetailBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.storeList = storeList;
     }
 
     /**
-     * @return the ibvMasterId
+     * @return the vendorMasterId
      */
-    public String getIbvMasterId() {
-        return ibvMasterId;
+    public String getVendorMasterId() {
+        return vendorMasterId;
     }
 
     /**
-     * @param ibvMasterId the ibvMasterId to set
+     * @param vendorMasterId the vendorMasterId to set
      */
-    public void setIbvMasterId(String ibvMasterId) {
-        this.ibvMasterId = ibvMasterId;
+    public void setVendorMasterId(String vendorMasterId) {
+        this.vendorMasterId = vendorMasterId;
     }
 
     /**
-     * @return the ibvDetailId
+     * @return the vendorDetailId
      */
-    public String getIbvDetailId() {
-        return ibvDetailId;
+    public String getVendorDetailId() {
+        return vendorDetailId;
     }
 
     /**
-     * @param ibvDetailId the ibvDetailId to set
+     * @param vendorDetailId the vendorDetailId to set
      */
-    public void setIbvDetailId(String ibvDetailId) {
-        this.ibvDetailId = ibvDetailId;
+    public void setVendorDetailId(String vendorDetailId) {
+        this.vendorDetailId = vendorDetailId;
     }
 
     /**
@@ -132,7 +132,7 @@ public class IbvDetailBean {
                 minPayList.add(new SelectItem(key,value));
             }
         } catch (RbException ex) {
-            Logger.getLogger(IbvDetailBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VendorDetailBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.minPayList = minPayList;
     }
@@ -167,7 +167,7 @@ public class IbvDetailBean {
                 maxPayList.add(new SelectItem(key,value));
             }            
         } catch (RbException ex) {
-            Logger.getLogger(IbvDetailBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VendorDetailBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.maxPayList = maxPayList;
     }
