@@ -315,6 +315,7 @@ public final class WebDEBean implements Serializable {
     public String getUserId() {
         if(userId == null || userId.isEmpty()) {
             try {
+                setRbo(new RedObject("WDE", "AOP:Utils"));
                 getRbo().callMethod("getLogName");
                 userId = getRbo().getProperty("logName");
                 setUserId(userId);

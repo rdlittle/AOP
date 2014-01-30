@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./layout.xhtml">
+
+            <ui:define name="content">
+                <span style="width: 99%; text-align: center; margin: 2em auto;">
+                    <h2>Affiliate Error Listing</h2>
+                </span>
+
+
+
+                <p:messages id="msgs" autoUpdate="true"/>
+                <h:form id="form">
+                    <h:inputHidden id="userId" value="#{webDEBean.userId}"/>
+                    <h:inputHidden id="errorsOnly" value="#{affiliateOrderBean.errorsOnly}"/>
+
+                    <p:panelGrid styleClass="custom">
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Vendor ID " styleClass="leftColumn"/>
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="vendorID" value="#{vendorDetailBean.vendorMasterId}">
+                                    <f:selectItems value="#{webDEBean.vendorList}" var="vendor" 
+                                                   itemLabel="#{vendor.value}"
+                                                   itemValue="#{vendor.key}">
+                                    </f:selectItems>
+                                    <f:ajax execute="form" render="form"/>
+                                    <p:ajax listener="#{vendorDetailBean.changeMasterId}" update="@form"/>
+                                    <p:ajax listener="#{affiliateOrderBean.changeHandler}"/>
+                                </p:selectOneMenu>
+                                <h:outputText value=""/>
+                            </p:column>
+                            <p:column rowspan="2">
+                                <p:ajaxStatus>  
+                                    <f:facet name="start">  
+                                        <p:graphicImage value="ajax-loader.gif"/>  
+                                    </f:facet>  
+                                    <f:facet name="complete">  
+                                        <h:outputText value="" />  
+                                    </f:facet>  
+                                </p:ajaxStatus>                                                                 
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Store" />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="storeList" value="#{vendorDetailBean.vendorDetailId}">
+                                    <f:selectItem itemValue="" itemLabel="Select"/>
+                                    <f:selectItems value="#{vendorDetailBean.storeList}" var="stores"
+                                                   itemLabel="#{stores.value}" itemValue="#{stores.key}">
+                                    </f:selectItems>
+                                    <f:ajax execute="form" render="form"/>
+                                    <p:ajax listener="#{affiliateOrderBean.changeHandler}" update="@form"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+
+
+                    <p:dataTable id="aeListing" var="ae" value="#{affiliateOrderBean.orderList}">
+                        <p:column headerText="Store">
+                            <h:outputText value="#{ae.storeName}"/>
+                        </p:column>
+                        <p:column headerText="Date">
+                            <h:outputText value="#{ae.orderDate}"/>
+                        </p:column>
+                        <p:column headerText="Order Number">
+                            <h:outputText value="#{ae.vendorOrderNum}"/>
+                        </p:column> 
+                        <p:column headerText="Commission">
+                            <h:outputText value="#{ae.commissionTotal}"/>
+                        </p:column>
+                        <p:column headerText="IBV">
+                            <h:outputText value="#{ae.commissionTotal}"/>
+                        </p:column>                    
+                    </p:dataTable>
+
+
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

@@ -4,11 +4,15 @@
  */
 package com.webfront.beans;
 
+import com.rs.u2.wde.redbeans.RbException;
+import com.rs.u2.wde.redbeans.RedObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -27,12 +31,12 @@ public class UploadBean {
     private UploadedFile file;
     private String uploadDir;
     private String vendorCode;
-    
+
     /**
      * Creates a new instance of UploadBean
      */
     public UploadBean() {
-        uploadDir="/home/uvuser/EXPORT/";
+        uploadDir = "/home/uvuser/EXPORT/";
     }
 
     public UploadedFile getFile() {
@@ -45,13 +49,46 @@ public class UploadBean {
 
     public String upload() {
         try {
-            FacesMessage msg = new FacesMessage("Processing", "Vendor: "+getVendorCode()+" Report: "+file.getFileName() + " ");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            copyFile(file.getFileName(), file.getInputstream());
-            return "/processReport?faces-redirect=true";
-        } catch (IOException e) {
+            if ("-1".equals(vendorCode)) {
+                FacesMessage msg = new FacesMessage("Vendor code is missing");
+                msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return "";
+            } else {
+                RedObject rb = new RedObject("WDE", "AOP:Queue");
+                rb.setProperty("vendorMasterId", this.vendorCode);
+                rb.setProperty("fileName", file.getFileName());
+                try {
+                    rb.callMethod("setQueue");
+                    String errStat = rb.getProperty("errStat");
+                    String errCode = rb.getProperty("errCode");
+                    String errMsg = rb.getProperty("errMsg");
+                    if (errStat.equals("-1")) {
+                        errMsg = "Error: " + errCode + " " + errMsg;
+                        FacesMessage fmsg = new FacesMessage(errMsg);
+                        fmsg.setSeverity(FacesMessage.SEVERITY_ERROR);
+                        FacesContext ctx = FacesContext.getCurrentInstance();
+                        ctx.addMessage("msg", fmsg);
+                        return "";
+                    }
+                    copyFile(file.getFileName(), file.getInputstream());
+                } catch (RbException ex) {
+                    Logger.getLogger(UploadBean.class.getName()).log(Level.SEVERE, null, ex);
+                    FacesMessage fmsg = new FacesMessage(ex.getMessage());
+                    fmsg.setSeverity(FacesMessage.SEVERITY_FATAL);
+                    FacesContext ctx = FacesContext.getCurrentInstance();
+                    ctx.addMessage("msg", fmsg);
+                    return "";
+                }
+            }
+        } catch (IOException ex) {
+            FacesMessage fmsg = new FacesMessage(ex.getMessage());
+            fmsg.setSeverity(FacesMessage.SEVERITY_FATAL);
+            FacesContext ctx = FacesContext.getCurrentInstance();
+            ctx.addMessage("msg", fmsg);
+            return "";
         }
-        return "";
+        return "/aopQueue?faces-redirect=true";
     }
 
     public void copyFile(String fileName, InputStream in) {

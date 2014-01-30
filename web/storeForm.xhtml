@@ -11,7 +11,7 @@
         <ui:composition template="./layout.xhtml">
 
             <ui:define name="content">
-                <span style="width: 99%; text-align: center; margin: 2em auto">
+                <span style="width: 99%; text-align: center; margin: 2em auto;">
                     <h2>Vendor And Store Selection</h2>
                 </span>
                 <p:messages id="msgs" autoUpdate="true" />
@@ -185,7 +185,11 @@
                             </p:column>
                             <p:column headerText="Date">
                                 <h:outputText value="#{campaign.editDate}"/>
-                            </p:column>                            
+                            </p:column> 
+                            <p:column headerText="Force Stop">
+                                <h:commandButton action="#{campaignBean.setCampaignStop}" value="Stop"
+                                                 rendered="#{campaign.canStop}"/>
+                            </p:column>
                         </p:dataTable>
                     </p:panel>
                     <p:commandButton id="btnSubmit" ajax="false" actionListener="#{vendorDetail.save}" value="Submit"/>

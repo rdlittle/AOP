@@ -297,8 +297,8 @@ public class CampaignBean {
             int idx = sid.indexOf("*");
             String ssid = sid.substring(idx + 1);
             RedObject rb = new RedObject("WDE", "AOP:Cashback");
-            rb.setProperty("ibvMasterId", this.detail.getVendorMasterId());
-            rb.setProperty("ibvDetailId", ssid);
+            rb.setProperty("vendorMasterId", this.detail.getVendorMasterId());
+            rb.setProperty("vendorDetailId", ssid);
             rb.setProperty("startDate", sDate);
             rb.setProperty("endDate", eDate);
             rb.setProperty("cbIncrease", this.getNewCashback());
@@ -325,6 +325,13 @@ public class CampaignBean {
                 Logger.getLogger(CampaignBean.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+
+    public void setCampaignStop() {
+        FacesMessage fmsg = new FacesMessage("Campaign stopped");
+        fmsg.setSeverity(FacesMessage.SEVERITY_INFO);
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        ctx.addMessage("msg", fmsg);
     }
 
     /**

@@ -25,7 +25,7 @@ public class Campaign {
     private String editDate;
     private String editTime;
     private HashMap<String,String> statusLabels;
-    
+    private boolean canStop;
 
     public Campaign() {
         statusLabels=new HashMap<>();
@@ -204,6 +204,22 @@ public class Campaign {
      */
     public void setStatusLabels(HashMap<String,String> statusLabels) {
         this.statusLabels = statusLabels;
+    }
+
+    /**
+     * @return the canStop
+     */
+    public boolean isCanStop() {
+        int nbr=Integer.parseInt(this.status);
+        if(nbr<3) return true;
+        return false;
+    }
+
+    /**
+     * @param canStop the canStop to set
+     */
+    public void setCanStop(boolean canStop) {
+        this.canStop = canStop;
     }
 
 }
