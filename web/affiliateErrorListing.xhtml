@@ -15,8 +15,6 @@
                     <h2>Affiliate Error Listing</h2>
                 </span>
 
-
-
                 <p:messages id="msgs" autoUpdate="true"/>
                 <h:form id="form">
                     <h:inputHidden id="userId" value="#{webDEBean.userId}"/>
@@ -67,25 +65,27 @@
                         </p:row>
                     </p:panelGrid>
 
-
                     <p:dataTable id="aeListing" var="ae" value="#{affiliateOrderBean.orderList}">
                         <p:column headerText="Store">
                             <h:outputText value="#{ae.storeName}"/>
                         </p:column>
-                        <p:column headerText="Date">
+                        <p:column headerText="Date" style="width: 50px;">
                             <h:outputText value="#{ae.orderDate}"/>
                         </p:column>
                         <p:column headerText="Order Number">
-                            <h:outputText value="#{ae.vendorOrderNum}"/>
+                            <h:commandLink action="#{affiliateOrderView.viewOrder(ae.id)}">
+                                <h:outputText value="#{ae.vendorOrderNum}"/>
+                            </h:commandLink>
                         </p:column> 
-                        <p:column headerText="Commission">
-                            <h:outputText value="#{ae.commissionTotal}"/>
+                        <p:column headerText="Commission" style="text-align: right; width: 200px;">
+                            <h:outputText value="#{ae.commissionTotal}">
+                                <f:convertNumber currencyCode="USD" type="currency" />
+                            </h:outputText>
                         </p:column>
-                        <p:column headerText="IBV">
-                            <h:outputText value="#{ae.commissionTotal}"/>
-                        </p:column>                    
+                        <p:column headerText="IBV" style="text-align: right;">
+                            <h:outputText value="#{ae.ibvTotal}"/>
+                        </p:column> 
                     </p:dataTable>
-
 
                 </h:form>
             </ui:define>

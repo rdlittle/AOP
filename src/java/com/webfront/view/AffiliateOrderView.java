@@ -35,7 +35,9 @@ public final class AffiliateOrderView implements Serializable {
     private BatchItem newBatch;
     private boolean isSelected;
     private String validatePayId;
-    
+    private boolean fromErrorListing;
+    private String referringPage;
+
     private UIComponent component;
 
     public UIComponent getComponent() {
@@ -46,7 +48,6 @@ public final class AffiliateOrderView implements Serializable {
         this.component = component;
     }
 
-
     public AffiliateOrderView() {
         setIsSelected(false);
         setController(new DataController());
@@ -54,6 +55,10 @@ public final class AffiliateOrderView implements Serializable {
     }
 
     public String viewOrder(String orderId) {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        String str = (String) facesContext.getExternalContext().getRequestHeaderMap().get("referer");
+        setReferringPage(str);
+        this.fromErrorListing = str.contains("affiliateErrorListing.xhtml");
         setOrder(getController().getAffiliateOrder(orderId));
         return "affiliateOrder.xhtml?orderId=" + orderId + "&faces-redirect=true";
     }
@@ -72,11 +77,14 @@ public final class AffiliateOrderView implements Serializable {
 
     public String prepareUpdate() {
         setBatchList(new LinkedList<BatchItem>());
-        getController().setAffiliateOrder(order.getId(),order);
+        getController().setAffiliateOrder(order.getId(), order);
         return "batchManager?faces-redirect=true";
     }
 
     public String cancel() {
+        if (isFromErrorListing()) {
+            return "affiliateErrorListing.xhtml?faces-redirect=true";
+        }
         setBatchList(new LinkedList<BatchItem>());
         return "batchManager?faces-redirect=true";
     }
@@ -85,6 +93,7 @@ public final class AffiliateOrderView implements Serializable {
         String orderId = order.getId();
         return "affiliateOrder.xhtml?orderId=" + orderId + "&faces-redirect=true";
     }
+
     public String prepareDefer() {
         setBatchList(getController().getSelectBatchList(order.getVendorId(), order.getBatchId()));
         return "affiliateOrderDefer?faces-redirect=true";
@@ -96,42 +105,42 @@ public final class AffiliateOrderView implements Serializable {
         String rmsg = getController().deferOrder(orderId, batchId);
         if (rmsg.equals("ok")) {
             getController().clearBatchTree();
-            this.batchList=null;
-            String rtn="batchManager";
-            rtn+="?faces-redirect=true";
+            this.batchList = null;
+            String rtn = "batchManager";
+            rtn += "?faces-redirect=true";
             return rtn;
         }
         return "";
     }
-    
+
     public String getValidatePayId(javax.faces.event.AjaxBehaviorEvent evt) {
-        String id=order.getPayingId();
+        String id = order.getPayingId();
         String rmsg = getController().validatePayId(id);
-        if("OK".equalsIgnoreCase(rmsg)) {
+        if ("OK".equalsIgnoreCase(rmsg)) {
             order.setHasErrors(false);
             order.setPayingId(id);
         }
-        String payCid=new String();
-        FacesMessage msg=new FacesMessage(rmsg);
-        FacesContext ctx=FacesContext.getCurrentInstance();
-        String cid=component.getClientId();
-        UIComponent cmp=ctx.getViewRoot().findComponent("orderForm:payId");
-        if(cmp !=null) {
-            payCid=cmp.getClientId();
+        String payCid = new String();
+        FacesMessage msg = new FacesMessage(rmsg);
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        String cid = component.getClientId();
+        UIComponent cmp = ctx.getViewRoot().findComponent("orderForm:payId");
+        if (cmp != null) {
+            payCid = cmp.getClientId();
         }
         ctx.addMessage(cid, msg);
         return "";
     }
-    
+
     public void setValidatePayId(javax.faces.event.AjaxBehaviorEvent evt) {
-        String id=order.getPayingId();
+        String id = order.getPayingId();
         String rmsg = getController().validatePayId(id);
-        FacesMessage msg=new FacesMessage(rmsg);
-        FacesContext ctx=FacesContext.getCurrentInstance();
-        String cid=component.getClientId();
-        UIComponent cmp=ctx.getViewRoot().findComponent("orderForm:payId");
-        if(cmp !=null) {
-            String payCid=cmp.getClientId();
+        FacesMessage msg = new FacesMessage(rmsg);
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        String cid = component.getClientId();
+        UIComponent cmp = ctx.getViewRoot().findComponent("orderForm:payId");
+        if (cmp != null) {
+            String payCid = cmp.getClientId();
         }
         ctx.addMessage(cid, msg);
     }
@@ -218,6 +227,34 @@ public final class AffiliateOrderView implements Serializable {
      */
     public void setIsSelected(boolean isSelected) {
         this.isSelected = isSelected;
+    }
+
+    /**
+     * @return the fromErrorListing
+     */
+    public boolean isFromErrorListing() {
+        return fromErrorListing;
+    }
+
+    /**
+     * @param fromErrorListing the fromErrorListing to set
+     */
+    public void setFromErrorListing(boolean fromErrorListing) {
+        this.fromErrorListing = fromErrorListing;
+    }
+
+    /**
+     * @return the referringPage
+     */
+    public String getReferringPage() {
+        return referringPage;
+    }
+
+    /**
+     * @param referringPage the referringPage to set
+     */
+    public void setReferringPage(String referringPage) {
+        this.referringPage = referringPage;
     }
 
 }

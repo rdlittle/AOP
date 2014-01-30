@@ -9,7 +9,6 @@ import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.model.AffiliateOrder;
-import com.webfront.model.VendorDetail;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -38,21 +37,27 @@ public class AffiliateOrderBean implements Serializable {
     private ArrayList<AffiliateOrder> orderList;
 
     public AffiliateOrderBean() {
-        this.errorsOnly=true;
+        this.errorsOnly = true;
     }
+
     /**
      * @return the orderList
      */
     public ArrayList<AffiliateOrder> getOrderList() {
+        return this.orderList;
+    }
+
+    public void setOrderList() {
         this.orderList = new ArrayList<>();
+        this.orderList.clear();
         if (vendorMasterId != null && !vendorMasterId.isEmpty()) {
             RedObject rb = new RedObject("WDE", "AOP:AffiliateOrders");
             rb.setProperty("vendorId", vendorMasterId);
             String vendorDiv = this.vendorDetailId;
-            if(vendorDiv != null && ! "".equals(vendorDiv)) {
+            if (vendorDiv != null && !"".equals(vendorDiv)) {
                 int idx = vendorDiv.indexOf("*");
-                if(idx>0) {
-                    vendorDiv=vendorDiv.substring(idx+1);
+                if (idx > 0) {
+                    vendorDiv = vendorDiv.substring(idx + 1);
                     rb.setProperty("vendorDiv", vendorDiv);
                 }
             }
@@ -81,7 +86,7 @@ public class AffiliateOrderBean implements Serializable {
                     UniDynArray vendorOrderNumList = rb.getPropertyToDynArray("vendorOrderNum");
                     UniDynArray commissionTotalList = rb.getPropertyToDynArray("commissionTotal");
                     UniDynArray storeNameList = rb.getPropertyToDynArray("storeName");
-                    
+
                     int vals = orderIdList.dcount(1);
                     for (int val = 1; val <= vals; val++) {
                         AffiliateOrder ao = new AffiliateOrder();
@@ -108,7 +113,6 @@ public class AffiliateOrderBean implements Serializable {
                 ctx.addMessage("msg", fmsg);
             }
         }
-        return this.orderList;
     }
 
     /**
@@ -173,15 +177,16 @@ public class AffiliateOrderBean implements Serializable {
     public void setDetail(VendorDetailBean detail) {
         this.detail = detail;
     }
-    
+
     public void changeHandler(AjaxBehaviorEvent event) {
-        if(this.detail != null) {
-            if(this.detail.getVendorMasterId() != null && ! "".equals(this.detail.getVendorMasterId())) {
+        if (this.detail != null) {
+            if (this.detail.getVendorMasterId() != null && !"".equals(this.detail.getVendorMasterId())) {
                 this.setVendorMasterId(this.detail.getVendorMasterId());
             }
-            if(this.detail.getVendorDetailId() != null && ! "".equals(this.detail.getVendorDetailId())) {
+            if (this.detail.getVendorDetailId() != null && !"".equals(this.detail.getVendorDetailId())) {
                 this.setVendorDetailId(this.detail.getVendorDetailId());
             }
+            setOrderList();
         }
     }
 }
