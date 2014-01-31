@@ -46,6 +46,7 @@ public class AffiliateOrder {
     private Float ibvPlacedAmt1;
     private Float ibvPlacedAmt2;
     private ArrayList<AffiliateError> errorList;
+    private boolean isHistory;
 
     public AffiliateOrder() {
         this.orderTotal="0.00";
@@ -472,9 +473,13 @@ public class AffiliateOrder {
      */
     public boolean isIsDeferrable() {
         String[] temp = this.getBatchId().split("\\*");
-        int batchSeq=Integer.parseInt(temp[3]);
-        if(batchSeq == 3) {
+        if(temp.length<4) {
             isDeferrable=false;
+        } else {
+            int batchSeq = Integer.parseInt(temp[3]);
+            if (batchSeq == 3) {
+                isDeferrable = false;
+            }
         }
         return isDeferrable;
     }
@@ -507,5 +512,19 @@ public class AffiliateOrder {
      */
     public void setErrorList(ArrayList<AffiliateError> errorList) {
         this.errorList = errorList;
+    }
+
+    /**
+     * @return the isHistory
+     */
+    public boolean isIsHistory() {
+        return isHistory;
+    }
+
+    /**
+     * @param isHistory the isHistory to set
+     */
+    public void setIsHistory(boolean isHistory) {
+        this.isHistory = isHistory;
     }
 }

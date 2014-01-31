@@ -6,6 +6,7 @@
 package com.webfront.model;
 
 import com.webfront.controller.VendorMasterController;
+import java.io.Serializable;
 import java.util.HashMap;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -17,7 +18,7 @@ import javax.faces.event.AjaxBehaviorEvent;
  */
 @ManagedBean
 @SessionScoped
-public class VendorMaster {
+public class VendorMaster implements Serializable {
 
     VendorMasterController controller;
     private String ID;
