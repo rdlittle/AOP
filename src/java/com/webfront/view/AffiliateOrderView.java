@@ -36,6 +36,7 @@ public final class AffiliateOrderView implements Serializable {
     private boolean isSelected;
     private String validatePayId;
     private boolean fromErrorListing;
+    private boolean fromSearchScreen;
     private String referringPage;
 
     private UIComponent component;
@@ -59,6 +60,7 @@ public final class AffiliateOrderView implements Serializable {
         String str = (String) facesContext.getExternalContext().getRequestHeaderMap().get("referer");
         setReferringPage(str);
         this.fromErrorListing = str.contains("affiliateErrorListing.xhtml");
+        this.fromSearchScreen = str.contains("batchManagementInputForm.xhtml");
         setOrder(getController().getAffiliateOrder(orderId));
         return "affiliateOrder.xhtml?orderId=" + orderId + "&faces-redirect=true";
     }
@@ -84,6 +86,9 @@ public final class AffiliateOrderView implements Serializable {
     public String cancel() {
         if (isFromErrorListing()) {
             return "affiliateErrorListing.xhtml?faces-redirect=true";
+        }
+        if(fromSearchScreen) {
+           return "batchManagementInputForm.xhtml?faces-redirect=true";
         }
         setBatchList(new LinkedList<BatchItem>());
         return "batchManager?faces-redirect=true";
@@ -255,6 +260,34 @@ public final class AffiliateOrderView implements Serializable {
      */
     public void setReferringPage(String referringPage) {
         this.referringPage = referringPage;
+    }
+
+    /**
+     * @return the validatePayId
+     */
+    public String getValidatePayId() {
+        return validatePayId;
+    }
+
+    /**
+     * @param validatePayId the validatePayId to set
+     */
+    public void setValidatePayId(String validatePayId) {
+        this.validatePayId = validatePayId;
+    }
+
+    /**
+     * @return the fromSearchScreen
+     */
+    public boolean isFromSearchScreen() {
+        return fromSearchScreen;
+    }
+
+    /**
+     * @param fromSearchScreen the fromSearchScreen to set
+     */
+    public void setFromSearchScreen(boolean fromSearchScreen) {
+        this.fromSearchScreen = fromSearchScreen;
     }
 
 }

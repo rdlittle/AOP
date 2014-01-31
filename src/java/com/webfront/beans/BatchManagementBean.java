@@ -9,6 +9,7 @@ import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.model.AffiliateOrder;
 import com.webfront.model.SelectItem;
+import com.webfront.model.VendorDetail;
 import com.webfront.model.VendorMaster;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -51,6 +52,8 @@ public class BatchManagementBean implements Serializable {
     private VendorDetailBean detail;
     @ManagedProperty(value = "#{vendorMaster}")
     private VendorMaster vendorMaster;
+    @ManagedProperty(value = "#{vendorDetail}")
+    private VendorDetail vendorDetail;
     private ArrayList<AffiliateOrder> searchResults;
 
     private static final Map<String, String> roleItems;
@@ -86,9 +89,15 @@ public class BatchManagementBean implements Serializable {
     }
 
     public void doSearch() {
-        this.searchResults=new ArrayList<>();
+        this.searchResults = new ArrayList<>();
         RedObject rb = new RedObject("WDE", "AOP:AffiliateOrders");
         rb.setProperty("vendorOrderNum", orderNumber);
+        if (this.getVendorId() != null) {
+            rb.setProperty("vendorId", this.getVendorId());
+        }
+        if (this.vendorDetail != null) {
+            rb.setProperty("vendorDiv", this.vendorDetail.getId());
+        }
         try {
             rb.callMethod("getAoSearch");
             String errStat = rb.getProperty("errStat");
@@ -116,9 +125,9 @@ public class BatchManagementBean implements Serializable {
                 UniDynArray commissionTotalList = rb.getPropertyToDynArray("commissionTotal");
                 UniDynArray isHistoryList = rb.getPropertyToDynArray("isHistory");
                 UniDynArray storeNameList = rb.getPropertyToDynArray("storeName");
-                int vals=orderIdList.dcount(1);
-                for (int val=1 ; val<=vals; val++) {
-                    AffiliateOrder ao=new AffiliateOrder();
+                int vals = orderIdList.dcount(1);
+                for (int val = 1; val <= vals; val++) {
+                    AffiliateOrder ao = new AffiliateOrder();
                     ao.setId(orderIdList.extract(1, val).toString());
                     ao.setVendorId(vendorIdList.extract(1, val).toString());
                     ao.setVendorDiv(vendorDivList.extract(1, val).toString());
@@ -132,7 +141,7 @@ public class BatchManagementBean implements Serializable {
                     ao.setPlacementId(placementIdList.extract(1, val).toString());
                     ao.setErrorCount(errorCountList.extract(1, val).toString());
                     ao.setCommissionTotal(Float.valueOf(commissionTotalList.extract(1, val).toString()));
-                    ao.setIsHistory("1".equals(isHistoryList.extract(1,val).toString()));
+                    ao.setIsHistory("1".equals(isHistoryList.extract(1, val).toString()));
                     ao.setStoreName(storeNameList.extract(1, val).toString());
                     this.searchResults.add(ao);
                 }
@@ -391,6 +400,20 @@ public class BatchManagementBean implements Serializable {
      */
     public void setSearchResults(ArrayList<AffiliateOrder> searchResults) {
         this.searchResults = searchResults;
+    }
+
+    /**
+     * @return the vendorDetail
+     */
+    public VendorDetail getVendorDetail() {
+        return vendorDetail;
+    }
+
+    /**
+     * @param vendorDetail the vendorDetail to set
+     */
+    public void setVendorDetail(VendorDetail vendorDetail) {
+        this.vendorDetail = vendorDetail;
     }
 
 }

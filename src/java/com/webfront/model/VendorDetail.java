@@ -7,6 +7,7 @@
 package com.webfront.model;
 
 import com.webfront.controller.VendorDetailController;
+import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.event.AjaxBehaviorEvent;
@@ -17,7 +18,7 @@ import javax.faces.event.AjaxBehaviorEvent;
  */
 @ManagedBean
 @SessionScoped
-public class VendorDetail {
+public class VendorDetail implements Serializable {
 
     private VendorDetailController controller;
     private String id;
