@@ -34,7 +34,7 @@ public final class AffiliateOrderView implements Serializable {
     private String newBatchId;
     private BatchItem newBatch;
     private boolean isSelected;
-    private String validatePayId;
+    
     private boolean fromErrorListing;
     private boolean fromSearchScreen;
     private String referringPage;
@@ -57,10 +57,10 @@ public final class AffiliateOrderView implements Serializable {
 
     public String viewOrder(String orderId) {
         FacesContext facesContext = FacesContext.getCurrentInstance();
-        String str = (String) facesContext.getExternalContext().getRequestHeaderMap().get("referer");
-        setReferringPage(str);
-        this.fromErrorListing = str.contains("affiliateErrorListing.xhtml");
-        this.fromSearchScreen = str.contains("batchManagementInputForm.xhtml");
+        String refPage=facesContext.getViewRoot().getViewId();
+        setReferringPage(refPage);
+        this.fromErrorListing = refPage.contains("affiliateErrorListing.xhtml");
+        this.fromSearchScreen = refPage.contains("batchManagementInputForm.xhtml");
         setOrder(getController().getAffiliateOrder(orderId));
         return "affiliateOrder.xhtml?orderId=" + orderId + "&faces-redirect=true";
     }
@@ -78,17 +78,17 @@ public final class AffiliateOrderView implements Serializable {
     }
 
     public String prepareUpdate() {
+        if(fromErrorListing || fromSearchScreen) {
+            return getReferringPage()+"?faces-redirect=true";
+        }
         setBatchList(new LinkedList<BatchItem>());
         getController().setAffiliateOrder(order.getId(), order);
         return "batchManager?faces-redirect=true";
     }
 
     public String cancel() {
-        if (isFromErrorListing()) {
-            return "affiliateErrorListing.xhtml?faces-redirect=true";
-        }
-        if(fromSearchScreen) {
-           return "batchManagementInputForm.xhtml?faces-redirect=true";
+        if (fromErrorListing || fromSearchScreen) {
+            return getReferringPage()+"?faces-redirect=true";
         }
         setBatchList(new LinkedList<BatchItem>());
         return "batchManager?faces-redirect=true";
@@ -118,23 +118,17 @@ public final class AffiliateOrderView implements Serializable {
         return "";
     }
 
-    public String getValidatePayId(javax.faces.event.AjaxBehaviorEvent evt) {
+    public void getValidatePayId() {
         String id = order.getPayingId();
         String rmsg = getController().validatePayId(id);
         if ("OK".equalsIgnoreCase(rmsg)) {
             order.setHasErrors(false);
             order.setPayingId(id);
         }
-        String payCid = new String();
-        FacesMessage msg = new FacesMessage(rmsg);
-        FacesContext ctx = FacesContext.getCurrentInstance();
         String cid = component.getClientId();
-        UIComponent cmp = ctx.getViewRoot().findComponent("orderForm:payId");
-        if (cmp != null) {
-            payCid = cmp.getClientId();
-        }
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        FacesMessage msg = new FacesMessage(rmsg);
         ctx.addMessage(cid, msg);
-        return "";
     }
 
     public void setValidatePayId(javax.faces.event.AjaxBehaviorEvent evt) {
@@ -143,10 +137,6 @@ public final class AffiliateOrderView implements Serializable {
         FacesMessage msg = new FacesMessage(rmsg);
         FacesContext ctx = FacesContext.getCurrentInstance();
         String cid = component.getClientId();
-        UIComponent cmp = ctx.getViewRoot().findComponent("orderForm:payId");
-        if (cmp != null) {
-            String payCid = cmp.getClientId();
-        }
         ctx.addMessage(cid, msg);
     }
 
@@ -260,20 +250,6 @@ public final class AffiliateOrderView implements Serializable {
      */
     public void setReferringPage(String referringPage) {
         this.referringPage = referringPage;
-    }
-
-    /**
-     * @return the validatePayId
-     */
-    public String getValidatePayId() {
-        return validatePayId;
-    }
-
-    /**
-     * @param validatePayId the validatePayId to set
-     */
-    public void setValidatePayId(String validatePayId) {
-        this.validatePayId = validatePayId;
     }
 
     /**

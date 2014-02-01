@@ -73,7 +73,7 @@
                                 </p:row>                                 
                             </p:panelGrid>
 
-                            <p:panelGrid styleClass="custom" style="background: tan;">
+                            <p:panelGrid styleClass="custom">
                                 <p:row>
                                     <p:column>
                                         <p:selectOneRadio value="#{batchManagementBean.batchType}" layout="grid" columns="1">
@@ -141,7 +141,9 @@
                                             <h:inputText id="orderNumber" value="#{batchManagementBean.orderNumber}"/>
                                         </p:column>
                                         <p:column>
-                                            <h:commandButton value="Search" action="#{batchManagementBean.doSearch}"/>
+                                            <h:commandButton value="Search" action="#{batchManagementBean.doSearch}">
+                                                <f:ajax execute="mgmtForm" render="mgmtForm"/>
+                                            </h:commandButton>
                                         </p:column>                                        
                                     </p:row>
 
@@ -167,18 +169,27 @@
                                 </p:selectOneRadio>
                             </p:panelGrid>
                         </p:panel>
-                        <p:panel>
+                        
+                        <p:panel style="border: none;">
+                            <p:ajaxStatus>  
+                                <f:facet name="start">  
+                                    <p:graphicImage value="ajax-loader.gif"/>  
+                                </f:facet>  
+                                <f:facet name="complete">  
+                                    <h:outputText value="" />  
+                                </f:facet>  
+                            </p:ajaxStatus>
                             <p:dataTable id="searchResults" var="order" value="#{batchManagementBean.searchResults}">
                                 <p:column headerText="ID">
                                     <h:commandLink action="#{affiliateOrderView.viewOrder(order.id)}">
                                         <h:outputText value="#{order.vendorOrderNum}"/>
                                     </h:commandLink>
                                 </p:column>
-                                <p:column headerText="Order Date">
-                                    <h:outputText value="#{order.orderDate}" />
-                                </p:column>
                                 <p:column headerText="Store Name">
                                     <h:outputText value="#{order.storeName}" />
+                                </p:column>
+                                <p:column headerText="Order Date">
+                                    <h:outputText value="#{order.orderDate}" />
                                 </p:column>
                                 <p:column headerText="Paying ID">
                                     <h:outputText value="#{order.payingId}" />

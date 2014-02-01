@@ -35,3 +35,8 @@ a:link:hover, a:visited:hover  {
     vertical-align: top !important;
     border-style: hidden !important;
 }
+
+.myStyle {
+    color: white;
+    background: blue;
+}
