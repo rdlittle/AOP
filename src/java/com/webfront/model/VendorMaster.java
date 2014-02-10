@@ -71,39 +71,58 @@ public final class VendorMaster implements Serializable {
 
     public void changeVendor(AjaxBehaviorEvent event) {
         setID(ID);
-        RedObject rbo = new RedObject("WDE", "Vendor:Master");
-        rbo.setProperty("id", ID);
-        try {
-            rbo.callMethod("getMaster");
-        } catch (RbException ex) {
-            Logger.getLogger(VendorMaster.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        String errStat = rbo.getProperty("errStat");
-        String errCode = rbo.getProperty("errCode");
-        String errMsg = rbo.getProperty("errMsg");
-        setName(rbo.getProperty("vendorName"));
-        setCategory(rbo.getProperty("category"));
-        setType(rbo.getProperty("type"));
-        setPrefix(rbo.getProperty("prefix"));
-        setCountry(rbo.getProperty("country"));
-        setCurrency(rbo.getProperty("currencyType"));
-        setMappingId(rbo.getProperty("mappingId"));
-        setDataFeedAccessType(rbo.getProperty("dataFeedAccessMethod"));
-        setDataFeedFormat(rbo.getProperty("dataFeedFormat"));
-        setDataFeedURL(rbo.getProperty("url"));
-        setUserName(rbo.getProperty("userName"));
-        setPassword(rbo.getProperty("password"));
-        setCreateDate(rbo.getProperty("createDate"));
-        setActive(rbo.getProperty("isActive").equals("1"));
-        setNextDetailId(rbo.getProperty("nextDetailId"));
-        setFieldMap(this.populateFieldMap(ID));
-        setFieldMapList(new ArrayList<SelectItem>());
-        ArrayList<SelectItem> list = new ArrayList<>();
-        for (Integer i : getFieldMap().keySet()) {
-            String colName = getFieldMap().get(i).getColumnName();
-            list.add(new SelectItem(i.toString(), colName));
-        }
-        setFieldMapList(list);
+//        RedObject rbo = new RedObject("WDE", "Vendor:Master");
+//        rbo.setProperty("id", ID);
+//        try {
+//            rbo.callMethod("getMaster");
+//        } catch (RbException ex) {
+//            Logger.getLogger(VendorMaster.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        String errStat = rbo.getProperty("errStat");
+//        String errCode = rbo.getProperty("errCode");
+//        String errMsg = rbo.getProperty("errMsg");
+//        setName(rbo.getProperty("vendorName"));
+//        setCategory(rbo.getProperty("category"));
+//        setType(rbo.getProperty("type"));
+//        setPrefix(rbo.getProperty("prefix"));
+//        setCountry(rbo.getProperty("country"));
+//        setCurrency(rbo.getProperty("currencyType"));
+//        setMappingId(rbo.getProperty("mappingId"));
+//        setDataFeedAccessType(rbo.getProperty("dataFeedAccessMethod"));
+//        setDataFeedFormat(rbo.getProperty("dataFeedFormat"));
+//        setDataFeedURL(rbo.getProperty("url"));
+//        setUserName(rbo.getProperty("userName"));
+//        setPassword(rbo.getProperty("password"));
+//        setCreateDate(rbo.getProperty("createDate"));
+//        setActive(rbo.getProperty("isActive").equals("1"));
+//        setNextDetailId(rbo.getProperty("nextDetailId"));
+//        setFieldMap(this.populateFieldMap(ID));
+//        setFieldMapList(new ArrayList<SelectItem>());
+//        ArrayList<SelectItem> list = new ArrayList<>();
+//        for (Integer i : getFieldMap().keySet()) {
+//            String colName = getFieldMap().get(i).getColumnName();
+//            list.add(new SelectItem(i.toString(), colName));
+//        }
+//        setFieldMapList(list);
+//        setNewColumn(false);
+        VendorMaster rec=getController().getVendorMaster(ID);
+        setName(rec.getName());
+        setCategory(rec.getCategory());
+        setType(rec.getType());
+        setPrefix(rec.getPrefix());
+        setCountry(rec.getCountry());
+        setCurrency(rec.getCurrency());
+        setMappingId(rec.getMappingId());
+        setDataFeedAccessType(rec.getDataFeedAccessType());
+        setDataFeedFormat(rec.getDataFeedFormat());
+        setDataFeedURL(rec.getDataFeedURL());
+        setUserName(rec.getUserName());
+        setPassword(rec.getPassword());
+        setCreateDate(rec.getCreateDate());
+        setActive(rec.isActive());
+        setNextDetailId(rec.getNextDetailId());
+        setFieldMap(rec.getFieldMap());
+        setFieldMapList(rec.getFieldMapList());
         setNewColumn(false);
     }
 
