@@ -95,9 +95,10 @@
                                     </p:selectOneMenu>
                                 </p:column>
                                 <p:column headerText="Delete" style="text-align: center;">
-                                    <h:outputLink onclick="">
+                                    <p:commandLink id="removeField" process="@this" update="@this @form"
+                                                   actionListener="#{vendorMaster.removeField(mfidx+1)}">
                                         <p:graphicImage value="delete.png" height="16"/>
-                                    </h:outputLink>
+                                    </p:commandLink>
                                 </p:column>
                             </p:dataTable>
                         </p:panel>

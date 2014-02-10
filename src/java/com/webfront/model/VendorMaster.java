@@ -126,32 +126,32 @@ public final class VendorMaster implements Serializable {
         setNewColumn(false);
     }
 
-    public HashMap<Integer, IbvMapping> populateFieldMap(String id) {
-        HashMap<Integer, IbvMapping> list = new HashMap<>();
-        try {
-            RedObject rbo = new RedObject("WDE", "UTILS:Files");
-            rbo.setProperty("fileName", "IBV.MAPPING");
-            rbo.setProperty("id", id);
-            rbo.callMethod("getFileRec");
-            String errStat = rbo.getProperty("errStat");
-            String errCode = rbo.getProperty("errCode");
-            String errMsg = rbo.getProperty("errMsg");
-            UniDynArray uda = rbo.getPropertyToDynArray("fileRec");
-            int vals = uda.dcount(1, 1);
-            for (int val = 1; val <= vals; val++) {
-                IbvMapping im = new IbvMapping();
-                String fieldName = uda.extract(1, 1, val).toString();
-                String excludeFlag = uda.extract(1, 4, val).toString();
-                im.setColumnName(fieldName);
-                im.setExclude(excludeFlag);
-                list.put(Integer.valueOf(val), im);
-            }
-
-        } catch (RbException rbe) {
-            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, rbe);
-        }
-        return list;
-    }
+//    public HashMap<Integer, IbvMapping> populateFieldMap(String id) {
+//        HashMap<Integer, IbvMapping> list = new HashMap<>();
+//        try {
+//            RedObject rbo = new RedObject("WDE", "UTILS:Files");
+//            rbo.setProperty("fileName", "IBV.MAPPING");
+//            rbo.setProperty("id", id);
+//            rbo.callMethod("getFileRec");
+//            String errStat = rbo.getProperty("errStat");
+//            String errCode = rbo.getProperty("errCode");
+//            String errMsg = rbo.getProperty("errMsg");
+//            UniDynArray uda = rbo.getPropertyToDynArray("fileRec");
+//            int vals = uda.dcount(1, 1);
+//            for (int val = 1; val <= vals; val++) {
+//                IbvMapping im = new IbvMapping();
+//                String fieldName = uda.extract(1, 1, val).toString();
+//                String excludeFlag = uda.extract(1, 4, val).toString();
+//                im.setColumnName(fieldName);
+//                im.setExclude(excludeFlag);
+//                list.put(Integer.valueOf(val), im);
+//            }
+//
+//        } catch (RbException rbe) {
+//            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, rbe);
+//        }
+//        return list;
+//    }
 
     public void ajaxHandler(AjaxBehaviorEvent event) {
         System.out.println("VendorMaster.ajaxHandler()");
@@ -188,7 +188,15 @@ public final class VendorMaster implements Serializable {
     }
 
     public void removeField(Integer i) {
-
+        if(i<= getFieldMap().size() && i>0) {
+            HashMap<Integer,IbvMapping> map=getFieldMap();
+            ArrayList<SelectItem> list=getFieldMapList();
+            map.remove(i);
+            SelectItem sel=list.get(i-1);
+            list.remove(sel);
+            setFieldMap(map);
+            setFieldMapList(list);
+        }
     }
 
     /**
