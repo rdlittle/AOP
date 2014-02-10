@@ -14,8 +14,9 @@
                 <span style="width: 99%; text-align: center; margin: 2em auto;">
                     <h2>Vendor Maintenance</h2>
                 </span>
-                <h:form>
-                    <h:panelGrid columns="2" style="width: 75%; margin: auto auto;" >
+                <p:messages id="msgs" autoUpdate="true" />
+                <h:form id="form">
+                    <p:panelGrid columns="2" style="width: 75%; margin: auto auto;" >
                         <h:outputText value="Vendor ID" style="text-align: right;"/>
                         <h:outputText value="#{vendorMaster.ID}"/>
                         <h:outputLabel for="vendorID" value="Edit/Add new vendor number"/>
@@ -24,12 +25,12 @@
                                            itemLabel="#{vendor.value}"
                                            itemValue="#{vendor.key}">
                             </f:selectItems>
-                            <p:ajax listener="#{vendorMaster.changeVendor}" update="@form"/>
+                            <p:ajax listener="#{vendorMaster.changeVendor}" process="@form" update="@form"/>
                         </p:selectOneMenu>
 
                         <h:outputLabel value="Name" style="text-align: right;"/>
                         <h:inputText id="vendorName" value="#{vendorMaster.name}" style="width: 400px;"/>
-                        <h:panelGrid columns="2" style="margin: 2em;">
+                        <p:panelGrid columns="2" style="margin: 2em;">
                             <h:outputText value="Category" style="text-align: right;"/>
                             <h:selectOneMenu id="category" value="#{vendorMaster.category}">
                                 <f:selectItem itemValue="" itemLabel=""/>
@@ -47,9 +48,9 @@
                             </h:selectOneMenu> 
                             <h:outputText value="Prefix" style="text-align: right;"/>
                             <h:inputText id="prefix" value="#{vendorMaster.prefix}"/>                            
-                        </h:panelGrid>
+                        </p:panelGrid>
 
-                        <h:panelGrid columns="2" style="margin: 2em;">
+                        <p:panelGrid columns="2" style="margin: 2em;">
                             <h:outputText value="Country" style="text-align: right;"/>
                             <p:selectOneMenu id="countryCode" value="#{vendorMaster.country}">
                                 <f:selectItems value="#{webDEBean.countryCodes}" var="ctry" 
@@ -66,63 +67,42 @@
                                 </f:selectItems>
                                 <f:ajax listener="#{vendorMaster.changeCurrency}" render="currencyType"/>
                             </p:selectOneMenu>
-                        </h:panelGrid> 
+                        </p:panelGrid> 
+                        
+                        <p:panel style="margin-right: 100px; border: none;">
+                            
+                            <p:commandLink id="newColumn" actionListener="#{vendorMaster.addNewColumn}" 
+                                           process="@this" update="@this @form" rendered="#{!vendorMaster.newColumn}"
+                                           value="Add" />
+                            <p:commandLink id="saveColumn" actionListener="#{vendorMaster.saveColumn}" 
+                                           process="@this" update="@this @form" rendered="#{vendorMaster.newColumn}"
+                                           value="Save" />
+                            <p:dataTable id="fieldTable" var="mf" value="#{vendorMaster.fieldMapList}" rowKey="#{mf.key}" 
+                                         rowIndexVar="mfidx">
+                                <f:facet name="header">
+                                    <h:outputText value="Report Mapping"/>
+                                </f:facet>
+                                <p:column headerText="Column">
+                                    <h:outputText value="#{mfidx+1}"/>
+                                </p:column>
+                                <p:column headerText="Field Name">
+                                    <p:selectOneMenu id="mappedField1" value="#{vendorMaster.getField(mfidx+1)}">
+                                        <f:selectItems value="#{webDEBean.mappedFields}" var="mp" 
+                                                       itemValue="#{mp.key}"
+                                                       itemLabel="#{mp.value}">
+                                        </f:selectItems>
+                                        <f:ajax listener="#{vendorMaster.changeField}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                                <p:column headerText="Delete" style="text-align: center;">
+                                    <h:outputLink onclick="">
+                                        <p:graphicImage value="delete.png" height="16"/>
+                                    </h:outputLink>
+                                </p:column>
+                            </p:dataTable>
+                        </p:panel>
 
-                        <h:panelGrid columns="3">
-                            <h:outputText value="Report Mapping" style="font-size: 1.5em;"/>
-                            <h:outputText value=""/>
-                            <h:outputText value=""/>
-                            <h:outputText value="Column"/>
-                            <h:outputText value="Field Name"/>
-                            <h:outputText value=""/>
-                            <h:outputLabel for="mappedField1" value="1"/>
-                            <p:selectOneMenu id="mappedField1" value="#{vendorMaster.getField(1)}">
-                                <f:selectItems value="#{webDEBean.mappedFields}" var="mp" 
-                                               itemValue="#{mp.key}"
-                                               itemLabel="#{mp.value}">
-                                </f:selectItems>
-                                <f:ajax listener="#{vendorMaster.changeField}"/>
-                            </p:selectOneMenu>
-                            <h:outputText value=""/>
-                            <h:outputLabel for="mappedField2" value="2"/>
-                            <p:selectOneMenu id="mappedField2" value="#{vendorMaster.getField(2)}">
-                                <f:selectItems value="#{webDEBean.mappedFields}" var="mp" 
-                                               itemLabel="#{mp.value}"
-                                               itemValue="#{mp.key}">
-                                </f:selectItems>
-                                <f:ajax listener="#{vendorMaster.changeField}"/>
-                            </p:selectOneMenu>
-                            <h:outputText value=""/>
-                            <h:outputLabel for="mappedField3" value="3"/>
-                            <p:selectOneMenu id="mappedField3" value="#{vendorMaster.getField(3)}">
-                                <f:selectItems value="#{webDEBean.mappedFields}" var="mp" 
-                                               itemLabel="#{mp.value}"
-                                               itemValue="#{mp.key}">
-                                </f:selectItems>
-                                <f:ajax listener="#{vendorMaster.changeField}"/>
-                            </p:selectOneMenu>
-                            <h:outputText value=""/>
-                            <h:outputLabel for="mappedField4" value="4"/>
-                            <p:selectOneMenu id="mappedField4" value="#{vendorMaster.getField(4)}">
-                                <f:selectItems value="#{webDEBean.mappedFields}" var="mp" 
-                                               itemLabel="#{mp.value}"
-                                               itemValue="#{mp.key}">
-                                </f:selectItems>
-                                <f:ajax listener="#{vendorMaster.changeField}"/>
-                            </p:selectOneMenu>
-                            <h:outputText value=""/>
-                            <h:outputLabel for="mappedField5" value="5"/>
-                            <p:selectOneMenu id="mappedField5" value="#{vendorMaster.getField(5)}">
-                                <f:selectItems value="#{webDEBean.mappedFields}" var="mp" 
-                                               itemLabel="#{mp.value}"
-                                               itemValue="#{mp.key}">
-                                </f:selectItems>
-                                <f:ajax listener="#{vendorMaster.changeField}"/>
-                            </p:selectOneMenu>
-                            <h:outputText value=""/>                            
-                        </h:panelGrid>
-
-                        <h:panelGrid columns="2">
+                        <p:panelGrid columns="2">
                             <h:outputText value="Data Feed Access" style="font-size: 1.5em;"/>
                             <h:outputText value=""/>
                             <p:selectOneRadio id="feedAccessMethod" value="#{vendorMaster.dataFeedAccessType}" 
@@ -130,15 +110,14 @@
                                 <f:selectItems value="#{webDEBean.accessMethods}" var="am" itemValue="#{am.key}" itemLabel="#{am.value}">
                                 </f:selectItems>
                             </p:selectOneRadio>
-                            <h:panelGrid columns="1">
+                            <p:panelGrid columns="1">
                                 <h:outputText value="Report Format"/>
                                 <p:selectOneMenu id = "fileFormat" value="#{vendorMaster.dataFeedFormat}">
                                     <f:selectItems value="#{webDEBean.fileFormats}" var="ff" 
                                                    itemValue="#{ff.key}" itemLabel="#{ff.value}">
-
                                     </f:selectItems>
                                 </p:selectOneMenu>
-                            </h:panelGrid>
+                            </p:panelGrid>
 
                             <h:outputText value="URL"/>
                             <h:inputText id="url" value="#{vendorMaster.dataFeedURL}"/>
@@ -148,10 +127,9 @@
 
                             <h:outputText value="Password"/>
                             <h:inputText id="password" value="#{vendorMaster.password}"/>                            
+                        </p:panelGrid>
 
-                        </h:panelGrid>
-
-                    </h:panelGrid>
+                    </p:panelGrid>
                 </h:form>
             </ui:define>
 

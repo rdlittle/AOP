@@ -19,7 +19,6 @@ import javax.faces.event.AjaxBehaviorEvent;
 @ManagedBean
 @SessionScoped
 public class VendorDetail implements Serializable {
-
     private VendorDetailController controller;
     private String id;
     private String vendorMasterId;

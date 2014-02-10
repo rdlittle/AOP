@@ -14,8 +14,11 @@
                 <span style="width: 99%; text-align: center; margin: 2em auto;">
                     <h2>Vendor And Store Selection</h2>
                 </span>
+                
                 <p:messages id="msgs" autoUpdate="true" />
+                
                 <h:form id="form">
+                    
                     <p:panelGrid columns="3" styleClass="custom">
                         <h:outputText value="Vendor ID" style="text-align: right;"/>
                         <p:selectOneMenu id="vendorID" value="#{vendorDetailBean.vendorMasterId}">
@@ -69,7 +72,6 @@
                             <h:outputText value="Tiered Commission Key"/>                            
                             <h:outputText value=""/>
 
-
                             <h:inputText id="ibv" value="#{vendorDetail.defaultIBV}" size="5" />
                             <h:inputText id="comm" value="#{vendorDetail.defaultCommission}" size="5" />
                             <h:selectOneMenu id="commType" value="#{vendorDetail.defaultCommissionType}">
@@ -81,7 +83,6 @@
                             <h:inputText id="currencyType" value="#{vendorDetail.currencyType}" size="5" />
                             <h:inputText id="commKey" value="#{vendorDetail.tieredCommissionKeys}" size="5" />
                             <h:outputText value="Add"/>
-
                         </p:panelGrid>
 
                         <p:panelGrid columns="2" styleClass="custom">
@@ -139,6 +140,7 @@
                             <p:selectBooleanCheckbox id="ibvGift" itemLabel="IBV On Gift Card" value="#{vendorDetail.ibvOnGiftCard}"/>
                             <p:selectBooleanCheckbox id="bypassCb" itemLabel="Bypass Cashback" value="#{vendorDetail.cbExclude}" />
                         </p:panelGrid>
+                        
                         <h:outputText value=""/>
                     </p:panelGrid>
                     

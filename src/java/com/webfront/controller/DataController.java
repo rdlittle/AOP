@@ -420,10 +420,10 @@ public final class DataController {
         getRbo().setProperty("id", id);
         try {
             getRbo().callMethod("getValidatePayId");
-            String isCust = getRbo().getProperty("isCust");
-            String isEzCust = getRbo().getProperty("isEzCust");
-            String isRep = getRbo().getProperty("isRep");
-            String isDist = getRbo().getProperty("isDist");
+            boolean isCust = "1".equals(getRbo().getProperty("isCust").toString());
+            boolean isEzCust = "1".equals(getRbo().getProperty("isEzCust").toString());
+            boolean isRep = "1".equals(getRbo().getProperty("isRep").toString());
+            boolean isDist = "1".equals(getRbo().getProperty("isDist").toString());
             String errStat = getRbo().getProperty("errStat");
             String errCode = getRbo().getProperty("errCode");
             String errMsg = getRbo().getProperty("errMsg");

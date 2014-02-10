@@ -5,10 +5,18 @@
  */
 package com.webfront.model;
 
+import asjava.uniclientlibs.UniDynArray;
+import com.rs.u2.wde.redbeans.RbException;
+import com.rs.u2.wde.redbeans.RedObject;
+import com.webfront.beans.WebDEBean;
 import com.webfront.controller.VendorMasterController;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.event.AjaxBehaviorEvent;
 
@@ -18,52 +26,116 @@ import javax.faces.event.AjaxBehaviorEvent;
  */
 @ManagedBean
 @SessionScoped
-public class VendorMaster implements Serializable {
+public final class VendorMaster implements Serializable {
 
-    VendorMasterController controller;
-    private String ID;
-    private String name;
-    private String category;
-    private String type;
-    private String prefix;
-    private String country;
-    private String currency;
-    private String mappingId;
-    private String dataFeedAccessType;
-    private String dataFeedFormat;
-    private String dataFeedURL;
-    private String userName;
-    private String password;
-    private String createDate;
-    private boolean active;
-    private String nextDetailId;
-    private String field1;
-    private HashMap<Integer, IbvMapping> fieldMap;
+    @ManagedProperty(value = "#{vendorMasterController}")
+    private VendorMasterController controller;
+    protected String ID;
+    protected String name;
+    protected String category;
+    protected String type;
+    protected String prefix;
+    protected String country;
+    protected String currency;
+    protected String mappingId;
+    protected String dataFeedAccessType;
+    protected String dataFeedFormat;
+    protected String dataFeedURL;
+    protected String userName;
+    protected String password;
+    protected String createDate;
+    protected boolean active;
+    protected String nextDetailId;
+    protected String field1;
+    protected HashMap<Integer, IbvMapping> fieldMap;
+    private ArrayList<SelectItem> fieldMapList;
+    protected boolean newColumn;
 
     public VendorMaster() {
-        controller = new VendorMasterController();
-        field1 = "";
+
+    }
+
+    public void addNewColumn() {
+        int nextColumn = getFieldMap().size();
+        nextColumn++;
+        IbvMapping ibvMapping = new IbvMapping();
+        ibvMapping.setId(Integer.toString(nextColumn));
+        getFieldMap().put(nextColumn, ibvMapping);
+        getFieldMapList().add(new SelectItem(Integer.toString(nextColumn), ibvMapping.getColumnName()));
+        setNewColumn(true);
+    }
+    
+    public void saveColumn() {
+        setNewColumn(false);
     }
 
     public void changeVendor(AjaxBehaviorEvent event) {
-        VendorMaster master = controller.getVendorMaster(ID);
-        this.setID(ID);
-        this.setName(master.getName());
-        this.setCategory(master.getCategory());
-        this.setType(master.getType());
-        this.setPrefix(master.getPrefix());
-        this.setCountry(master.getCountry());
-        this.setCurrency(master.getCurrency());
-        this.setMappingId(master.getMappingId());
-        this.setDataFeedAccessType(master.getDataFeedAccessType());
-        this.setDataFeedFormat(master.getDataFeedFormat());
-        this.setDataFeedURL(master.getDataFeedURL());
-        this.setUserName(master.getUserName());
-        this.setPassword(master.getPassword());
-        this.setCreateDate(master.getCreateDate());
-        this.setActive(master.isActive());
-        this.setNextDetailId(master.getNextDetailId());
-        this.setFieldMap(controller.getFieldMap(ID));
+        setID(ID);
+        RedObject rbo = new RedObject("WDE", "Vendor:Master");
+        rbo.setProperty("id", ID);
+        try {
+            rbo.callMethod("getMaster");
+        } catch (RbException ex) {
+            Logger.getLogger(VendorMaster.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        String errStat = rbo.getProperty("errStat");
+        String errCode = rbo.getProperty("errCode");
+        String errMsg = rbo.getProperty("errMsg");
+        setName(rbo.getProperty("vendorName"));
+        setCategory(rbo.getProperty("category"));
+        setType(rbo.getProperty("type"));
+        setPrefix(rbo.getProperty("prefix"));
+        setCountry(rbo.getProperty("country"));
+        setCurrency(rbo.getProperty("currencyType"));
+        setMappingId(rbo.getProperty("mappingId"));
+        setDataFeedAccessType(rbo.getProperty("dataFeedAccessMethod"));
+        setDataFeedFormat(rbo.getProperty("dataFeedFormat"));
+        setDataFeedURL(rbo.getProperty("url"));
+        setUserName(rbo.getProperty("userName"));
+        setPassword(rbo.getProperty("password"));
+        setCreateDate(rbo.getProperty("createDate"));
+        setActive(rbo.getProperty("isActive").equals("1"));
+        setNextDetailId(rbo.getProperty("nextDetailId"));
+        setFieldMap(this.populateFieldMap(ID));
+        setFieldMapList(new ArrayList<SelectItem>());
+        ArrayList<SelectItem> list = new ArrayList<>();
+        for (Integer i : getFieldMap().keySet()) {
+            String colName = getFieldMap().get(i).getColumnName();
+            list.add(new SelectItem(i.toString(), colName));
+        }
+        setFieldMapList(list);
+        setNewColumn(false);
+    }
+
+    public HashMap<Integer, IbvMapping> populateFieldMap(String id) {
+        HashMap<Integer, IbvMapping> list = new HashMap<>();
+        try {
+            RedObject rbo = new RedObject("WDE", "UTILS:Files");
+            rbo.setProperty("fileName", "IBV.MAPPING");
+            rbo.setProperty("id", id);
+            rbo.callMethod("getFileRec");
+            String errStat = rbo.getProperty("errStat");
+            String errCode = rbo.getProperty("errCode");
+            String errMsg = rbo.getProperty("errMsg");
+            UniDynArray uda = rbo.getPropertyToDynArray("fileRec");
+            int vals = uda.dcount(1, 1);
+            for (int val = 1; val <= vals; val++) {
+                IbvMapping im = new IbvMapping();
+                String fieldName = uda.extract(1, 1, val).toString();
+                String excludeFlag = uda.extract(1, 4, val).toString();
+                im.setColumnName(fieldName);
+                im.setExclude(excludeFlag);
+                list.put(Integer.valueOf(val), im);
+            }
+
+        } catch (RbException rbe) {
+            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, rbe);
+        }
+        return list;
+    }
+
+    public void ajaxHandler(AjaxBehaviorEvent event) {
+        System.out.println("VendorMaster.ajaxHandler()");
     }
 
     public void changeCategory(AjaxBehaviorEvent event) {
@@ -78,6 +150,10 @@ public class VendorMaster implements Serializable {
         this.setType(type);
     }
 
+    public void changeCountry(AjaxBehaviorEvent event) {
+        System.out.println(event.toString());
+    }
+
     public void changeField(AjaxBehaviorEvent event) {
         System.out.println(event.toString());
         this.setType(type);
@@ -90,6 +166,10 @@ public class VendorMaster implements Serializable {
             }
         }
         return "";
+    }
+
+    public void removeField(Integer i) {
+
     }
 
     /**
@@ -330,7 +410,7 @@ public class VendorMaster implements Serializable {
         this.field1 = field1;
     }
 
-    public void setFieldMap(HashMap<Integer, IbvMapping> fm) {
+    public final void setFieldMap(HashMap<Integer, IbvMapping> fm) {
         this.fieldMap = fm;
     }
 
@@ -339,6 +419,48 @@ public class VendorMaster implements Serializable {
      */
     public HashMap<Integer, IbvMapping> getFieldMap() {
         return fieldMap;
+    }
+
+    /**
+     * @return the fieldMapList
+     */
+    public ArrayList<SelectItem> getFieldMapList() {
+        return fieldMapList;
+    }
+
+    /**
+     * @return the newColumn
+     */
+    public boolean isNewColumn() {
+        return newColumn;
+    }
+
+    /**
+     * @param newColumn the newColumn to set
+     */
+    public void setNewColumn(boolean newColumn) {
+        this.newColumn = newColumn;
+    }
+
+    /**
+     * @param fml
+     */
+    public final void setFieldMapList(ArrayList<SelectItem> fml) {
+        this.fieldMapList = fml;
+    }
+
+    /**
+     * @return the controller
+     */
+    public VendorMasterController getController() {
+        return controller;
+    }
+
+    /**
+     * @param controller the controller to set
+     */
+    public void setController(VendorMasterController controller) {
+        this.controller = controller;
     }
 
 }

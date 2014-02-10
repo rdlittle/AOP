@@ -50,7 +50,7 @@
                         <h:inputText id="payId" value="#{affiliateOrderView.order.payingId}" 
                                      binding="#{affiliateOrderView.component}"
                                      readonly="#{!affiliateOrderView.order.hasErrors}" required="true">
-                            <p:ajax event="blur" listener="#{affiliateOrderView.getValidatePayId}" update="payIdMsg"/>
+                            <p:ajax event="blur" listener="#{affiliateOrderView.getValidatePayId}" update="@form"/>
                         </h:inputText>
                         <p:message id="payIdMsg" for="payId"/>
 
@@ -96,7 +96,7 @@
                                          disabled="#{!affiliateOrderView.order.isDeferrable}">
                         </p:commandButton>
                         <p:commandButton value="Cancel" action="#{affiliateOrderView.cancel}"/>
-                    </h:panelGrid>
+                    </h:panelGrid
 
                 </h:form>
 

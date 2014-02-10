@@ -4,11 +4,13 @@
  */
 package com.webfront.model;
 
+import java.io.Serializable;
+
 /**
  *
  * @author rlittle
  */
-public class SelectItem {
+public class SelectItem implements Serializable {
     private String key;
     private String value;
     public SelectItem() {

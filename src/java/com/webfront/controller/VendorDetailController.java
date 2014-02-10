@@ -10,6 +10,7 @@ import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.beans.WebDEBean;
 import com.webfront.model.VendorDetail;
 import com.webfront.model.SelectItem;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,7 +21,7 @@ import javax.faces.context.FacesContext;
  *
  * @author rlittle
  */
-public class VendorDetailController {
+public class VendorDetailController implements Serializable {
 
     private RedObject rb;
     private ArrayList<SelectItem> storeList;
