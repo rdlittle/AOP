@@ -14,8 +14,10 @@
                 <span style="width: 99%; text-align: center; margin: 2em auto;">
                     <h2>Vendor Maintenance</h2>
                 </span>
-                <p:messages id="msgs" autoUpdate="true" />
+                <p:messages id="msgs"/>
+                
                 <h:form id="form">
+                    <p:growl id="notifications"/>
                     <p:panelGrid columns="2" styleClass="custom" style="width: 75%; margin: auto auto;" >
                         <h:outputText value="Vendor ID" style="margin-left: auto;"/>
                         <h:outputText value="#{vendorMaster.ID}"/>
@@ -25,7 +27,7 @@
                                            itemLabel="#{vendor.value}"
                                            itemValue="#{vendor.key}">
                             </f:selectItems>
-                            <p:ajax listener="#{vendorMaster.changeVendor}" process="@form" update="@form"/>
+                            <p:ajax listener="#{vendorMaster.changeVendor}" update="@form"/>
                         </p:selectOneMenu>
 
                         <h:outputLabel value="Name" style="text-align: right;"/>
@@ -88,7 +90,7 @@
                                 </p:column>
                                 <p:column headerText="Field Name">
                                     <p:selectOneMenu id="mappedField1" value="#{vendorMaster.getField(mfidx)}" 
-                                                     valueChangeListener="#{vendorMaster.valueChangeListener}">
+                                                     valueChangeListener="#{vendorMaster.fieldMapChangeListener}">
                                         <f:selectItems value="#{webDEBean.mappedFields}" var="mp" 
                                                        itemValue="#{mp.key}" 
                                                        itemLabel="#{mp.value}">
@@ -132,16 +134,16 @@
                             <h:inputText id="password" value="#{vendorMaster.password}"/>                            
                         </p:panelGrid>
 
+                        <h:outputText value=""/>
                         <p:panelGrid columns="2">
                             <p:column>
                                 <p:commandButton value="Save" actionListener="#{vendorMaster.saveRecord}" 
-                                                 process="@this" ajax="true"/>
+                                                 process="@this" ajax="true" update="notifications"/>
                             </p:column>
                             <p:column>
                                 <p:commandButton value="Cancel"/>
                             </p:column>
                         </p:panelGrid>
-                        <h:outputText value=""/>
                         
                     </p:panelGrid>
 

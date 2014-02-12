@@ -67,7 +67,7 @@ public final class VendorMaster implements Serializable {
         setNewColumn(false);
     }
 
-    public void valueChangeListener(ValueChangeEvent vce) {
+    public void fieldMapChangeListener(ValueChangeEvent vce) {
         String clientId=vce.getComponent().getClientId();
         String junk[]=clientId.split(":");
         String fieldNumberStr=junk[2];
@@ -76,6 +76,7 @@ public final class VendorMaster implements Serializable {
         this.fieldMap.get(fieldNumber+1).setColumnName(value);
         System.out.println(vce.toString());
     }
+    
     public void changeVendor(AjaxBehaviorEvent event) {
         setID(ID);
         VendorMaster rec=getController().getVendorMaster(ID);
@@ -148,6 +149,7 @@ public final class VendorMaster implements Serializable {
     }
 
     public void removeField(Integer i) {
+        i+=1;
         if(i<= getFieldMap().size() && i>0) {
             HashMap<Integer,IbvMapping> map=getFieldMap();
             ArrayList<SelectItem> list=getFieldMapList();

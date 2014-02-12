@@ -159,19 +159,4 @@ public class VendorMasterController implements Serializable {
         }
         return list;
     }
-
-//    public void createColumn(AjaxBehaviorEvent event) {
-//        if (vendorMaster.isNewColumn()==false && vendorMaster.getFieldMap() != null) {
-//            int nextColumn = vendorMaster.getFieldMap().size();
-//            nextColumn++;
-//            IbvMapping ibvMapping = new IbvMapping();
-//            ibvMapping.setId(Integer.toString(nextColumn));
-//            vendorMaster.getFieldMap().put(nextColumn, ibvMapping);
-//            vendorMaster.getFieldMapList().add(new SelectItem(Integer.toString(nextColumn), ibvMapping.getColumnName()));
-//            vendorMaster.setNewColumn(true);
-//        }
-//    }
-//    public void saveColumn(AjaxBehaviorEvent event) {
-//        vendorMaster.setNewColumn(false);
-//    }
 }
