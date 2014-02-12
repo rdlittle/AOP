@@ -5,20 +5,16 @@
  */
 package com.webfront.model;
 
-import asjava.uniclientlibs.UniDynArray;
-import com.rs.u2.wde.redbeans.RbException;
-import com.rs.u2.wde.redbeans.RedObject;
-import com.webfront.beans.WebDEBean;
 import com.webfront.controller.VendorMasterController;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
+import javax.faces.component.UIComponent;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.ValueChangeEvent;
 
 /**
  *
@@ -50,7 +46,9 @@ public final class VendorMaster implements Serializable {
     protected HashMap<Integer, IbvMapping> fieldMap;
     private ArrayList<SelectItem> fieldMapList;
     protected boolean newColumn;
-
+    private Integer mfidx;
+    private UIComponent selector;
+    
     public VendorMaster() {
 
     }
@@ -69,42 +67,17 @@ public final class VendorMaster implements Serializable {
         setNewColumn(false);
     }
 
+    public void valueChangeListener(ValueChangeEvent vce) {
+        String clientId=vce.getComponent().getClientId();
+        String junk[]=clientId.split(":");
+        String fieldNumberStr=junk[2];
+        Integer fieldNumber=Integer.valueOf(fieldNumberStr);
+        String value=vce.getNewValue().toString();
+        this.fieldMap.get(fieldNumber+1).setColumnName(value);
+        System.out.println(vce.toString());
+    }
     public void changeVendor(AjaxBehaviorEvent event) {
         setID(ID);
-//        RedObject rbo = new RedObject("WDE", "Vendor:Master");
-//        rbo.setProperty("id", ID);
-//        try {
-//            rbo.callMethod("getMaster");
-//        } catch (RbException ex) {
-//            Logger.getLogger(VendorMaster.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        String errStat = rbo.getProperty("errStat");
-//        String errCode = rbo.getProperty("errCode");
-//        String errMsg = rbo.getProperty("errMsg");
-//        setName(rbo.getProperty("vendorName"));
-//        setCategory(rbo.getProperty("category"));
-//        setType(rbo.getProperty("type"));
-//        setPrefix(rbo.getProperty("prefix"));
-//        setCountry(rbo.getProperty("country"));
-//        setCurrency(rbo.getProperty("currencyType"));
-//        setMappingId(rbo.getProperty("mappingId"));
-//        setDataFeedAccessType(rbo.getProperty("dataFeedAccessMethod"));
-//        setDataFeedFormat(rbo.getProperty("dataFeedFormat"));
-//        setDataFeedURL(rbo.getProperty("url"));
-//        setUserName(rbo.getProperty("userName"));
-//        setPassword(rbo.getProperty("password"));
-//        setCreateDate(rbo.getProperty("createDate"));
-//        setActive(rbo.getProperty("isActive").equals("1"));
-//        setNextDetailId(rbo.getProperty("nextDetailId"));
-//        setFieldMap(this.populateFieldMap(ID));
-//        setFieldMapList(new ArrayList<SelectItem>());
-//        ArrayList<SelectItem> list = new ArrayList<>();
-//        for (Integer i : getFieldMap().keySet()) {
-//            String colName = getFieldMap().get(i).getColumnName();
-//            list.add(new SelectItem(i.toString(), colName));
-//        }
-//        setFieldMapList(list);
-//        setNewColumn(false);
         VendorMaster rec=getController().getVendorMaster(ID);
         setName(rec.getName());
         setCategory(rec.getCategory());
@@ -126,33 +99,10 @@ public final class VendorMaster implements Serializable {
         setNewColumn(false);
     }
 
-//    public HashMap<Integer, IbvMapping> populateFieldMap(String id) {
-//        HashMap<Integer, IbvMapping> list = new HashMap<>();
-//        try {
-//            RedObject rbo = new RedObject("WDE", "UTILS:Files");
-//            rbo.setProperty("fileName", "IBV.MAPPING");
-//            rbo.setProperty("id", id);
-//            rbo.callMethod("getFileRec");
-//            String errStat = rbo.getProperty("errStat");
-//            String errCode = rbo.getProperty("errCode");
-//            String errMsg = rbo.getProperty("errMsg");
-//            UniDynArray uda = rbo.getPropertyToDynArray("fileRec");
-//            int vals = uda.dcount(1, 1);
-//            for (int val = 1; val <= vals; val++) {
-//                IbvMapping im = new IbvMapping();
-//                String fieldName = uda.extract(1, 1, val).toString();
-//                String excludeFlag = uda.extract(1, 4, val).toString();
-//                im.setColumnName(fieldName);
-//                im.setExclude(excludeFlag);
-//                list.put(Integer.valueOf(val), im);
-//            }
-//
-//        } catch (RbException rbe) {
-//            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, rbe);
-//        }
-//        return list;
-//    }
-
+    public void saveRecord() {
+        getController().setVendorMaster(this);
+    }
+    
     public void ajaxHandler(AjaxBehaviorEvent event) {
         System.out.println("VendorMaster.ajaxHandler()");
     }
@@ -179,12 +129,22 @@ public final class VendorMaster implements Serializable {
     }
 
     public String getField(Integer i) {
-        if (null != getFieldMap()) {
-            if (i <= getFieldMap().size()) {
+        if (this.fieldMap != null) {
+            i+=1;
+            if (i <= getFieldMap().size() && i>=0) {
                 return getFieldMap().get(i).getColumnName();
             }
         }
         return "";
+    }
+    
+    public void setField(Integer i) {
+        System.out.println(i);
+        if (this.fieldMap != null) {
+            i+=1;
+            if (i <= getFieldMap().size() && i>=0) {
+            }
+        }
     }
 
     public void removeField(Integer i) {
@@ -488,6 +448,34 @@ public final class VendorMaster implements Serializable {
      */
     public void setController(VendorMasterController controller) {
         this.controller = controller;
+    }
+
+    /**
+     * @return the mfidx
+     */
+    public Integer getMfidx() {
+        return mfidx;
+    }
+
+    /**
+     * @param mfidx the mfidx to set
+     */
+    public void setMfidx(Integer mfidx) {
+        this.mfidx = mfidx;
+    }
+
+    /**
+     * @return the selector
+     */
+    public UIComponent getSelector() {
+        return selector;
+    }
+
+    /**
+     * @param selector the selector to set
+     */
+    public void setSelector(UIComponent selector) {
+        this.selector = selector;
     }
 
 }

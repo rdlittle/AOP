@@ -17,7 +17,10 @@ public class IbvMapping {
     private String exclude;
 
     public IbvMapping() {
-        
+        this.id=new String();
+        this.columnName=new String();
+        this.outputField=new String();
+        this.exclude=new String();
     }
     /**
      * @return the id

@@ -16,11 +16,11 @@
                 </span>
                 <p:messages id="msgs" autoUpdate="true" />
                 <h:form id="form">
-                    <p:panelGrid columns="2" style="width: 75%; margin: auto auto;" >
-                        <h:outputText value="Vendor ID" style="text-align: right;"/>
+                    <p:panelGrid columns="2" styleClass="custom" style="width: 75%; margin: auto auto;" >
+                        <h:outputText value="Vendor ID" style="margin-left: auto;"/>
                         <h:outputText value="#{vendorMaster.ID}"/>
-                        <h:outputLabel for="vendorID" value="Edit/Add new vendor number"/>
-                        <p:selectOneMenu id="vendorID" value="#{vendorMaster.ID}" style="width: 400px;">
+                        <h:outputLabel for="vendorID" value="Edit/Add new vendor number"  style="margin-left: auto;"/>
+                        <p:selectOneMenu id="vendorID" value="#{vendorMaster.ID}">
                             <f:selectItems value="#{webDEBean.vendorList}" var="vendor" 
                                            itemLabel="#{vendor.value}"
                                            itemValue="#{vendor.key}">
@@ -68,9 +68,9 @@
                                 <f:ajax listener="#{vendorMaster.changeCurrency}" render="currencyType"/>
                             </p:selectOneMenu>
                         </p:panelGrid> 
-                        
+
                         <p:panel style="margin-right: 100px; border: none;">
-                            
+
                             <p:commandLink id="newColumn" actionListener="#{vendorMaster.addNewColumn}" 
                                            process="@this" update="@this @form" rendered="#{!vendorMaster.newColumn}"
                                            value="Add" />
@@ -78,32 +78,34 @@
                                            process="@this" update="@this @form" rendered="#{vendorMaster.newColumn}"
                                            value="Save" />
                             <p:dataTable id="fieldTable" var="mf" value="#{vendorMaster.fieldMapList}" rowKey="#{mf.key}" 
-                                         rowIndexVar="mfidx">
+                                         rowIndexVar="mfidx" binding="#{vendorMaster.selector}" widgetVar="fieldTable">
                                 <f:facet name="header">
                                     <h:outputText value="Report Mapping"/>
                                 </f:facet>
                                 <p:column headerText="Column">
                                     <h:outputText value="#{mfidx+1}"/>
+                                    <h:inputHidden id="rowCounter" value="#{mfidx+1}" />
                                 </p:column>
                                 <p:column headerText="Field Name">
-                                    <p:selectOneMenu id="mappedField1" value="#{vendorMaster.getField(mfidx+1)}">
+                                    <p:selectOneMenu id="mappedField1" value="#{vendorMaster.getField(mfidx)}" 
+                                                     valueChangeListener="#{vendorMaster.valueChangeListener}">
                                         <f:selectItems value="#{webDEBean.mappedFields}" var="mp" 
-                                                       itemValue="#{mp.key}"
+                                                       itemValue="#{mp.key}" 
                                                        itemLabel="#{mp.value}">
                                         </f:selectItems>
-                                        <f:ajax listener="#{vendorMaster.changeField}"/>
+                                        <f:ajax execute="@this" event="change" listener="#{vendorMaster.changeField}"/>
                                     </p:selectOneMenu>
                                 </p:column>
                                 <p:column headerText="Delete" style="text-align: center;">
                                     <p:commandLink id="removeField" process="@this" update="@this @form"
-                                                   actionListener="#{vendorMaster.removeField(mfidx+1)}">
+                                                   actionListener="#{vendorMaster.removeField(mfidx)}">
                                         <p:graphicImage value="delete.png" height="16"/>
                                     </p:commandLink>
                                 </p:column>
                             </p:dataTable>
                         </p:panel>
 
-                        <p:panelGrid columns="2">
+                        <p:panelGrid columns="2" style="margin: auto;">
                             <h:outputText value="Data Feed Access" style="font-size: 1.5em;"/>
                             <h:outputText value=""/>
                             <p:selectOneRadio id="feedAccessMethod" value="#{vendorMaster.dataFeedAccessType}" 
@@ -130,7 +132,19 @@
                             <h:inputText id="password" value="#{vendorMaster.password}"/>                            
                         </p:panelGrid>
 
+                        <p:panelGrid columns="2">
+                            <p:column>
+                                <p:commandButton value="Save" actionListener="#{vendorMaster.saveRecord}" 
+                                                 process="@this" ajax="true"/>
+                            </p:column>
+                            <p:column>
+                                <p:commandButton value="Cancel"/>
+                            </p:column>
+                        </p:panelGrid>
+                        <h:outputText value=""/>
+                        
                     </p:panelGrid>
+
                 </h:form>
             </ui:define>
 
