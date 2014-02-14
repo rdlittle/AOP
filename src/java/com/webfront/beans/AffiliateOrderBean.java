@@ -185,6 +185,7 @@ public class AffiliateOrderBean implements Serializable {
             }
             if (this.detail.getVendorDetailId() != null && !"".equals(this.detail.getVendorDetailId())) {
                 this.setVendorDetailId(this.detail.getVendorDetailId());
+                detail.changeStore(event);
             }
             setOrderList();
         }

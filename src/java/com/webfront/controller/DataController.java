@@ -59,6 +59,13 @@ public final class DataController {
 
     public List<BatchItem> getBatchList() {
         String newVendorId = mgmtBean.getVendorId();
+        String vendorDiv = mgmtBean.getDetail().getVendorDetailId();
+        if(vendorDiv.equals("0")) {
+            vendorDiv="";
+        } else {
+            String divNum=vendorDiv.substring(vendorDiv.indexOf("*")+1,vendorDiv.length());
+            vendorDiv=divNum;
+        }
         if(this.batchTree==null) {
             this.batchList=null;
             this.orderList=null;
@@ -69,6 +76,7 @@ public final class DataController {
                 vendorId = newVendorId;
                 ArrayList<BatchItem> tempList = new ArrayList<>();
                 getRbo().setProperty("vendorID", vendorId);
+                getRbo().setProperty("vendorDiv", vendorDiv);
                 getRbo().callMethod("getAOHeaders");
                 String batches = new String(getRbo().getProperty("batchID").getBytes(Charset.forName("ISO8859-1")));
                 UniDynArray batchIds = getRbo().getPropertyToDynArray("batchID");
@@ -344,11 +352,11 @@ public final class DataController {
         if(errStat.equals("-1")) {
             throw new RbException(Integer.parseInt(errCode),errMsg);
         } else {
-            AffiliateError errObj = new AffiliateError();
             UniDynArray uda;
             UniDynArray udaRaised;
             uda = r.getPropertyToDynArray("fileRec");
             udaRaised=new UniDynArray(DynArray.raise(uda));
+            AffiliateError errObj = new AffiliateError(uda);
             int vals=udaRaised.dcount(58);
             vals = uda.dcount(1,58);
             for(int val=1; val<=vals; val++) {
@@ -357,6 +365,8 @@ public final class DataController {
                 errObj.getErrorMap().put(errCode, errMsg);
             }
             errObj.setId(id);
+            String ln = id.substring(0, id.indexOf("*"));
+            errObj.setLineNumber(ln);
             return errObj;
         }
     }

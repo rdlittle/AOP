@@ -42,6 +42,24 @@
                                         </p:selectOneMenu>   
                                     </p:column>
                                 </p:row>
+
+                                <p:row>
+                                    <p:column>
+                                        <h:outputText value="Store" />
+                                    </p:column>
+                                    <p:column>
+                                        <p:selectOneMenu id="storeList" value="#{vendorDetailBean.vendorDetailId}">
+                                            <f:selectItem itemValue="0" itemLabel="All Stores"/>
+                                            <f:selectItems value="#{vendorDetailBean.storeList}" var="stores"
+                                                           itemLabel="#{stores.value}" itemValue="#{stores.key}">
+                                            </f:selectItems>
+                                            <f:ajax execute="mgmtForm" render="mgmtForm"/>
+                                            <p:ajax listener="#{affiliateOrderBean.changeHandler}"/>
+                                        </p:selectOneMenu>
+                                        <h:inputHidden id="storeName" value="#{batchManagementBean.storeName}"/>
+                                    </p:column>
+                                </p:row>                
+
                                 <p:row>
                                     <p:column>
                                         <h:outputText value="Check Amount"/>
@@ -118,7 +136,7 @@
                                 </p:row>
                                 <p:row>
                                     <p:column colspan="2" style="text-align: right;">
-                                        <p:commandButton value="Next" ajax="false" action="#{batchManagementBean.nextPage}"/>
+                                        <p:commandButton value="Get Batches" ajax="false" action="#{batchManagementBean.nextPage}"/>
                                     </p:column>
                                 </p:row>
                             </p:panelGrid>
@@ -147,21 +165,6 @@
                                         </p:column>                                        
                                     </p:row>
 
-                                    <p:row>
-                                        <p:column>
-                                            <h:outputText value="Store Name"/>
-                                        </p:column>                                            
-                                        <p:column colspan="2">
-                                            <p:selectOneMenu id="storeList" value="#{vendorDetail.id}">
-                                                <f:selectItem itemValue="" itemLabel="Select"/>
-                                                <f:selectItems value="#{vendorDetailBean.storeList}" var="stores"
-                                                               itemLabel="#{stores.value}" itemValue="#{stores.key}">
-                                                </f:selectItems>
-                                                <p:ajax listener="#{vendorDetail.changeStore}" update="@form"/>
-                                            </p:selectOneMenu>
-                                        </p:column>
-                                    </p:row>                                    
-
                                 </p:panelGrid>                                
                                 <p:selectOneRadio value="#{batchManagementBean.mgmtRole}" layout="grid" columns="1">
                                     <f:selectItem itemValue="T" itemLabel="Trans Amt"/>
@@ -169,7 +172,7 @@
                                 </p:selectOneRadio>
                             </p:panelGrid>
                         </p:panel>
-                        
+
                         <p:panel style="border: none;">
                             <p:ajaxStatus>  
                                 <f:facet name="start">  

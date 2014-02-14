@@ -350,6 +350,7 @@ public class BatchManagementBean implements Serializable {
      * @return the storeName
      */
     public String getStoreName() {
+        setStoreName(detail.getStoreName());
         return storeName;
     }
 

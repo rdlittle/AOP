@@ -108,7 +108,7 @@ public class VendorMasterController implements Serializable {
                 for (Integer i : rec.getFieldMap().keySet()) {
                     IbvMapping ibvMapping = rec.getFieldMap().get(i);
                     ibvMappingRec.replace(1, 1, i, ibvMapping.getColumnName());
-                    ibvMappingRec.replace(1, 4, i, ibvMapping.getExclude());
+                    ibvMappingRec.replace(1, 4, i, ibvMapping.getExclude().equals("1") ? "1" : "0");
                 }
                 rbo = new RedObject("WDE", "UTILS:Files");
                 rbo.setProperty("fileName", "IBV.MAPPING");

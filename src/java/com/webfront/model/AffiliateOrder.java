@@ -23,6 +23,7 @@ public class AffiliateOrder {
     private String orderTotal;
     private String ibvTotal;
     private Float commissionTotal;
+    private Float ibv;
     private String placementId;
     private String orderDate;
     private String vendorOrderNum;
@@ -51,6 +52,7 @@ public class AffiliateOrder {
     public AffiliateOrder() {
         this.orderTotal="0.00";
         this.ibvTotal="0.00";
+        this.ibv=Float.valueOf("0.00");
         this.commissionTotal=Float.valueOf("0.00");
         this.isDeferrable=true;
         this.errorList=new ArrayList<>();
@@ -526,5 +528,19 @@ public class AffiliateOrder {
      */
     public void setIsHistory(boolean isHistory) {
         this.isHistory = isHistory;
+    }
+
+    /**
+     * @return the ibv
+     */
+    public Float getIbv() {
+        return ibv;
+    }
+
+    /**
+     * @param ibv the ibv to set
+     */
+    public void setIbv(Float ibv) {
+        this.ibv = ibv;
     }
 }

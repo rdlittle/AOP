@@ -33,9 +33,18 @@
                                     </f:selectItems>
                                     <f:ajax execute="form" render="form"/>
                                     <p:ajax listener="#{vendorDetailBean.changeMasterId}" update="@form"/>
-                                    <p:ajax listener="#{affiliateOrderBean.changeHandler}"/>
+
                                 </p:selectOneMenu>
                                 <h:outputText value=""/>
+                            </p:column>
+                            <p:column rowspan="2">
+                                <h:outputText value="Order#"/>
+                            </p:column>
+                            <p:column rowspan="2">
+                                <h:inputText id="searchString" value="#{batchManagementBean.orderNumber}"/>
+                            </p:column>
+                            <p:column rowspan="2">
+                                <h:commandButton value="Search"/>
                             </p:column>
                             <p:column rowspan="2">
                                 <p:ajaxStatus>  

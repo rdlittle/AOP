@@ -6,19 +6,31 @@
 
 package com.webfront.model;
 
+import asjava.uniclientlibs.UniDynArray;
 import java.util.LinkedHashMap;
 
 /**
  *
  * @author rlittle
  */
-public class AffiliateError {
+public class AffiliateError extends AffiliateOrder {
     
     private String id;
     private LinkedHashMap<String,String> errorMap;
+    private String errorMessages;
+    private String lineNumber;
     
     public AffiliateError() {
-        setErrorMap(new LinkedHashMap<String,String>());
+        this.errorMap = new LinkedHashMap<>();
+    }
+    
+    public AffiliateError(UniDynArray uda) {
+        super();
+        this.errorMap = new LinkedHashMap<>();
+        String comm=uda.extract(1, 173).toString();
+        this.setPayingId(uda.extract(1,8).toString());
+        this.setCommissionTotal(Float.valueOf(uda.extract(1,173).toString()));
+        this.setIbv(Float.valueOf(uda.extract(1, 149).toString())/100);
     }
 
     /**
@@ -38,6 +50,7 @@ public class AffiliateError {
     /**
      * @return the id
      */
+    @Override
     public String getId() {
         return id;
     }
@@ -45,8 +58,45 @@ public class AffiliateError {
     /**
      * @param id the id to set
      */
+    @Override
     public void setId(String id) {
         this.id = id;
+    }
+
+    /**
+     * @return the errorMessages
+     */
+    public String getErrorMessages() {
+        this.errorMessages=new String();
+        if(getErrorMap().size() > 0) {
+            errorMessages="<ul>";
+            for(String s : getErrorMap().values()) {
+                errorMessages+="<li>"+s+"</li>";
+            }
+            errorMessages+="</ul>";
+        }
+        return errorMessages;
+    }
+
+    /**
+     * @param errorMessages the errorMessages to set
+     */
+    public void setErrorMessages(String errorMessages) {
+        this.errorMessages = errorMessages;
+    }
+
+    /**
+     * @return the lineNumber
+     */
+    public String getLineNumber() {
+        return lineNumber;
+    }
+
+    /**
+     * @param lineNumber the lineNumber to set
+     */
+    public void setLineNumber(String lineNumber) {
+        this.lineNumber = lineNumber;
     }
     
     

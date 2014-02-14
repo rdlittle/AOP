@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
 import javax.faces.bean.SessionScoped;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
@@ -47,6 +46,7 @@ public final class BatchTree implements Serializable, ValueChangeListener {
     private BatchItem selectedBatch;
     private Map map;
     public String vendorId;
+    public String vendorDiv;
     WebDEBean wdeBean;
     BatchManagementBean mgmtBean;
 
@@ -232,8 +232,8 @@ public final class BatchTree implements Serializable, ValueChangeListener {
      */
     public TreeNode getRoot() {
         if (root.getChildCount() == 0) {
-            this.batchList= new ArrayList<BatchItem>();
-            this.batchList = new ArrayList<BatchItem>(getController().getBatchList());
+            this.batchList= new ArrayList<>();
+            this.batchList = new ArrayList<>(getController().getBatchList());
             setData(batchList);
         }
         return root;

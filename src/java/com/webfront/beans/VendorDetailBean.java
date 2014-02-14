@@ -26,6 +26,7 @@ public class VendorDetailBean {
 
     private String vendorMasterId;
     private String vendorDetailId;
+    private String storeName;
 
     private ArrayList<SelectItem> storeList;
     private ArrayList<SelectItem> minPayList;
@@ -73,6 +74,8 @@ public class VendorDetailBean {
         }
         this.storeList = storeList;
     }
+    
+    
 
     /**
      * @return the vendorMasterId
@@ -170,5 +173,30 @@ public class VendorDetailBean {
             Logger.getLogger(VendorDetailBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.maxPayList = maxPayList;
+    }
+
+    public void changeStore(AjaxBehaviorEvent event) {
+        RedObject rbo = new RedObject("WDE", "Vendor:Detail");
+        rbo.setProperty("id", getVendorDetailId());
+        try {
+            rbo.callMethod("getIbvDetailRec");
+            String str=rbo.getProperty("storeName");
+            this.storeName=str;
+        } catch (RbException ex) {
+            Logger.getLogger(VendorDetailBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    /**
+     * @return the storeName
+     */
+    public String getStoreName() {
+        return storeName;
+    }
+
+    /**
+     * @param storeName the storeName to set
+     */
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
     }
 }
