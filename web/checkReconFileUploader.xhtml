@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./layout.xhtml">
+
+            <ui:define name="content">
+                <h:form id="form1" enctype="multipart/form-data">
+                    <span style="width: 99%; text-align: center; margin: 2em auto;">
+                        <h2>Affiliate Order Processing</h2>
+                    </span>
+                    <p:messages showDetail="false"/>
+                    <p:panelGrid columns="2" styleClass="custom" style="width: 50%; margin: auto;">
+                        <h:outputText value=""/>
+                        <h:inputHidden id="userId" value="#{webDEBean.userId}"/>
+
+                        <h:outputText value="Affiliate Network"/>
+                        <p:selectOneMenu value="#{uploadBean.networkId}" style="width: 400px;" required="true">
+                            <f:selectItems id="networkId" value="#{webDEBean.networkList}" var="network" 
+                                           itemLabel="#{network.value}"
+                                           itemValue="#{network.key}">
+                            </f:selectItems>
+                        </p:selectOneMenu>
+
+                        <h:outputText value="Check Amount"/>
+                        <p:inputText id="checkAmount" value="#{uploadBean.checkAmount}" required="true">
+                            <f:convertNumber type="currency" currencySymbol="$"/>
+                        </p:inputText>
+
+                        <h:outputText value="Select File"/>
+                        <p:fileUpload mode="simple" value="#{uploadBean.file}" required="true" />
+
+                        <div style="margin-top: 2em; text-align: right;">
+                            <h:outputText value="" />
+                            <p:commandButton value="Submit" ajax="false" action="#{uploadBean.postCheckReconFile}" />
+                        </div>
+
+                    </p:panelGrid>
+
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

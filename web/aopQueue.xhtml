@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <body>
 
@@ -13,43 +14,45 @@
                 <span style="width: 99%; text-align: center; margin: 2em auto;">
                     <h2>Affiliate Order Processing Queue</h2>
                 </span>
-                <p:dataTable id="aopQueue" var="queue" value="#{aopQueueBean.queueList}">
-                    <p:column headerText="Vendor Master ID">
-                        <h:outputText value="#{queue.vendorMasterId}"/>
-                    </p:column>                    
-                    <p:column headerText="Upload Date">
-                        <h:outputText value="#{queue.uploadDate}"/>
-                    </p:column>
-                    <p:column headerText="Upload Time">
-                        <h:outputText value="#{queue.uploadTime}"/>
-                    </p:column>                    
-                    <p:column headerText="User">
-                        <h:outputText value="#{queue.userName}"/>
-                    </p:column>
-                    <p:column headerText="Status">
-                        <h:outputText value="#{queue.statusName}"/>
-                    </p:column>
-                    <p:column headerText="Lines">
-                        <h:outputText value="#{queue.lineCount}"/>
-                    </p:column> 
-                    <p:column headerText="Orders">
-                        <h:outputText value="#{queue.orderCount}"/>
-                    </p:column> 
-                    <p:column headerText="Errors">
-                        <h:outputText value="#{queue.errors}"/>
-                    </p:column> 
-                    <p:column headerText="Report Name">
-                        <h:outputText value="#{queue.fileName}"/>
-                    </p:column>
-                    <p:column headerText="Pre-Run">
-                        <p:selectBooleanCheckbox value="#{queue.preRunFlag}"/>
-                    </p:column>                    
-                    <p:column headerText="Run">
-                        <p:selectBooleanCheckbox value="#{queue.runFlag}"/>
-                    </p:column>                    
-                </p:dataTable>
+                <h:form id="form">
+                    <p:growl id="msg" />
+                    <p:dataTable id="aopQueue" var="queueItem" value="#{aopQueueBean.queueList}" selection="#{aopQueueBean.selectedItems}" 
+                                 rowKey="#{queueItem.fileName}">
+                        <p:column selectionMode="multiple" />
+                        <p:column headerText="Vendor Master ID">
+                            <h:outputText value="#{queueItem.vendorMasterId}"/>
+                        </p:column>                    
+                        <p:column headerText="Upload Date">
+                            <h:outputText value="#{queueItem.uploadDate}"/>
+                        </p:column>
+                        <p:column headerText="Upload Time">
+                            <h:outputText value="#{queueItem.uploadTime}"/>
+                        </p:column>                    
+                        <p:column headerText="User">
+                            <h:outputText value="#{queueItem.userName}"/>
+                        </p:column>
+                        <p:column headerText="Status">
+                            <h:outputText value="#{queueItem.statusName}"/>
+                        </p:column>
+                        <p:column headerText="Lines">
+                            <h:outputText value="#{queueItem.lineCount}"/>
+                        </p:column> 
+                        <p:column headerText="Orders">
+                            <h:outputText value="#{queueItem.orderCount}"/>
+                        </p:column> 
+                        <p:column headerText="Errors">
+                            <h:outputText value="#{queueItem.errors}"/>
+                        </p:column> 
+                        <p:column headerText="Report Name">
+                            <h:outputText value="#{queueItem.fileName}"/>
+                        </p:column>
+                        <p:column headerText="Run Stage">
+                            <h:outputText value="#{queueItem.runStage}"/>
+                        </p:column>                    
+                    </p:dataTable>
+                    <p:commandButton actionListener="#{aopQueueBean.processSelected}" ajax="false" process=":form:aopQueue" value="Delete"/>
+                </h:form>
             </ui:define>
-
         </ui:composition>
 
     </body>

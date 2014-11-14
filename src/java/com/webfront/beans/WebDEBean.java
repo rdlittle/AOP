@@ -26,6 +26,7 @@ public final class WebDEBean implements Serializable {
 
     private RedObject rbo;
     private LinkedList<SelectItem> vendorList;
+    private ArrayList<SelectItem> networkList;
     private int todayInternal;
     private String todayExternal;
     private LinkedList<SelectItem> currencyTypes;
@@ -33,6 +34,7 @@ public final class WebDEBean implements Serializable {
     private LinkedList<SelectItem> mappedFields;
     private ArrayList<SelectItem> accessMethods;
     private ArrayList<SelectItem> fileFormats;
+    
     private String userId;
 
     /**
@@ -43,6 +45,7 @@ public final class WebDEBean implements Serializable {
         setTodayInternal(1);
         setRbo(new RedObject("WDE", "AOP:Forms"));
         setVendorList(new LinkedList<SelectItem>());
+        setNetworkList(new ArrayList<SelectItem>());
         setCurrencyTypes(new LinkedList<SelectItem>());
         setCountryCodes(new LinkedList<SelectItem>());
         setMappedFields(new LinkedList<SelectItem>());
@@ -331,5 +334,37 @@ public final class WebDEBean implements Serializable {
      */
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    /**
+     * @return the networkList
+     */
+    public ArrayList<SelectItem> getNetworkList() {
+        if(networkList==null) {
+            this.networkList = new ArrayList<SelectItem>();
+        }
+        return networkList;
+    }
+
+    /**
+     * @param networkList the networkList to set
+     */
+    public void setNetworkList(ArrayList<SelectItem> networkList) {
+        try {
+            getRbo().callMethod("getNetworkList");
+            UniDynArray networkIds = getRbo().getPropertyToDynArray("networkId");
+            UniDynArray networkNames = getRbo().getPropertyToDynArray("networkName");
+            int vals = networkNames.dcount(1);
+            SelectItem defaultItem = new SelectItem("-1", "Select Network");
+            networkList.add(defaultItem);
+            for (int i = 1; i <= vals; i++) {
+                String netId = networkIds.extract(1, i).toString();
+                String netName = networkNames.extract(1, i).toString();
+                networkList.add(new SelectItem(netId, netName));
+            }
+            this.networkList = networkList;
+        } catch (RbException ex) {
+            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

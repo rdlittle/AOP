@@ -7,6 +7,7 @@
 package com.webfront.model;
 
 import java.util.HashMap;
+import javax.faces.event.ActionEvent;
 
 /**
  *
@@ -24,16 +25,24 @@ public class AopQueue {
     private String userName;
     private boolean runFlag;
     private boolean preRunFlag;
+    private boolean deleteFlag;
     private String lineCount;
     private String orderCount;
     HashMap<String,String> statusNames;
+    HashMap<String,String> runStage;
+    private String runLevel;
 
     public AopQueue() {
-        this.statusNames=new HashMap<String,String>();
+        this.statusNames=new HashMap<>();
         this.statusNames.put("0","Pending");
         this.statusNames.put("1","Processing");
         this.statusNames.put("2","Completed");
         this.statusNames.put("4","Error");
+        this.runStage=new HashMap<>();
+        this.runStage.put("0", "Pre-Run");
+        this.runStage.put("1", "Run");
+        this.runStage.put("2", "Delete");
+        this.runLevel="0";
     }
     /**
      * @return the vendorMasterId
@@ -220,4 +229,37 @@ public class AopQueue {
     public void setUploadTime(String uploadTime) {
         this.uploadTime = uploadTime;
     }
+
+    /**
+     * @return the deleteFlag
+     */
+    public boolean isDeleteFlag() {
+        return deleteFlag;
+    }
+
+    /**
+     * @param deleteFlag the deleteFlag to set
+     */
+    public void setDeleteFlag(boolean deleteFlag) {
+        this.deleteFlag = deleteFlag;
+    }
+    
+    public String getRunStage() {
+        return runStage.get(this.getRunLevel());
+    }
+
+    /**
+     * @return the runLevel
+     */
+    public String getRunLevel() {
+        return runLevel;
+    }
+
+    /**
+     * @param runLevel the runLevel to set
+     */
+    public void setRunLevel(String runLevel) {
+        this.runLevel = runLevel;
+    }
+    
 }

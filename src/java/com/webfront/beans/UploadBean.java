@@ -31,6 +31,9 @@ public class UploadBean {
     private UploadedFile file;
     private String uploadDir;
     private String vendorCode;
+    private String networkName;
+    private String networkId;
+    private String checkAmount;
 
     /**
      * Creates a new instance of UploadBean
@@ -58,6 +61,8 @@ public class UploadBean {
                 RedObject rb = new RedObject("WDE", "AOP:Queue");
                 rb.setProperty("vendorMasterId", this.vendorCode);
                 rb.setProperty("fileName", file.getFileName());
+                rb.setProperty("networkId", this.networkId);
+                rb.setProperty("checkAmount", this.checkAmount);
                 try {
                     rb.callMethod("setQueue");
                     String errStat = rb.getProperty("errStat");
@@ -80,6 +85,62 @@ public class UploadBean {
                     ctx.addMessage("msg", fmsg);
                     return "";
                 }
+            }
+        } catch (IOException ex) {
+            FacesMessage fmsg = new FacesMessage(ex.getMessage());
+            fmsg.setSeverity(FacesMessage.SEVERITY_FATAL);
+            FacesContext ctx = FacesContext.getCurrentInstance();
+            ctx.addMessage("msg", fmsg);
+            return "";
+        }
+        return "/aopQueue?faces-redirect=true";
+    }
+
+    public String postCheckReconFile() {
+        try {
+            if(file==null || file.getFileName().isEmpty() || "".equals(file.getFileName())) {
+                FacesMessage msg = new FacesMessage("Please select file for upload");
+                msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return "";                
+            }
+            if ("-1".equals(networkId)) {
+                FacesMessage msg = new FacesMessage("Network ID is missing");
+                msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return "";
+            }
+            if (this.checkAmount == null || this.checkAmount.isEmpty()) {
+                FacesMessage msg = new FacesMessage("Check amount is required");
+                msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return "";
+            }
+            RedObject rb = new RedObject("WDE", "AOP:Queue");
+            rb.setProperty("fileName", file.getFileName());
+            rb.setProperty("networkId", this.networkId);
+            rb.setProperty("checkAmount", this.checkAmount);
+            try {
+                rb.callMethod("setQueue");
+                String errStat = rb.getProperty("errStat");
+                String errCode = rb.getProperty("errCode");
+                String errMsg = rb.getProperty("errMsg");
+                if (errStat.equals("-1")) {
+                    errMsg = "Error: " + errCode + " " + errMsg;
+                    FacesMessage fmsg = new FacesMessage(errMsg);
+                    fmsg.setSeverity(FacesMessage.SEVERITY_ERROR);
+                    FacesContext ctx = FacesContext.getCurrentInstance();
+                    ctx.addMessage("msg", fmsg);
+                    return "";
+                }
+                copyFile(file.getFileName(), file.getInputstream());
+            } catch (RbException ex) {
+                Logger.getLogger(UploadBean.class.getName()).log(Level.SEVERE, null, ex);
+                FacesMessage fmsg = new FacesMessage(ex.getMessage());
+                fmsg.setSeverity(FacesMessage.SEVERITY_FATAL);
+                FacesContext ctx = FacesContext.getCurrentInstance();
+                ctx.addMessage("msg", fmsg);
+                return "";
             }
         } catch (IOException ex) {
             FacesMessage fmsg = new FacesMessage(ex.getMessage());
@@ -123,5 +184,47 @@ public class UploadBean {
      */
     public void setVendorCode(String vendorCode) {
         this.vendorCode = vendorCode;
+    }
+
+    /**
+     * @return the networkId
+     */
+    public String getNetworkName() {
+        return networkName;
+    }
+
+    /**
+     * @param networkId the networkId to set
+     */
+    public void setNetworkName(String networkId) {
+        this.networkName = networkId;
+    }
+
+    /**
+     * @return the networkId
+     */
+    public String getNetworkId() {
+        return networkId;
+    }
+
+    /**
+     * @param networkId the networkdId to set
+     */
+    public void setNetworkId(String networkId) {
+        this.networkId = networkId;
+    }
+
+    /**
+     * @return the checkAmount
+     */
+    public String getCheckAmount() {
+        return checkAmount;
+    }
+
+    /**
+     * @param checkAmount the checkAmount to set
+     */
+    public void setCheckAmount(String checkAmount) {
+        this.checkAmount = checkAmount;
     }
 }
