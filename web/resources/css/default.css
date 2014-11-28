@@ -17,15 +17,15 @@ h1 {
 }
 
 a:link, a:visited {
-  color: #045491;
-  font-weight : bold;
-  text-decoration: none;
+    color: #045491;
+    font-weight : bold;
+    text-decoration: none;
 }
 
 a:link:hover, a:visited:hover  {
-  color: #045491;
-  font-weight : bold;
-  text-decoration : underline;
+    color: #045491;
+    font-weight : bold;
+    text-decoration : underline;
 }
 
 .custom tr {
@@ -42,4 +42,37 @@ a:link:hover, a:visited:hover  {
 .myStyle {
     color: white;
     background: blue;
+}
+
+.ui-dialog-contain {
+    opacity: 1 !important;
+    background: #FFFFFF !important;
+}
+
+.ui-dialog .ui-header .ui-btn-icon-notext {
+    display: none !important;
+}
+
+.ui-dialog-background {
+    opacity: 0.5;
+    display: block !important;
+    -webkit-transition: opacity 0.5s ease-in;
+}
+
+.ui-dialog-background.pop.in {
+    opacity: 1;
+    -webkit-transition: opacity 0.5s ease-in;
+}
+
+.ui-dialog {
+    min-height: 100% !important;
+    background: transparent !important;
+}
+
+.banner,
+.banner .ui-widget-content {
+    background-color: #313338;
+    background-image: url("../images/ma-logo.png");
+    background-repeat: no-repeat;
+    background-position: 10px;
 }

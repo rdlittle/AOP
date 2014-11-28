@@ -10,13 +10,13 @@ package com.webfront.model;
  *
  * @author rlittle
  */
-public class IbvMapping {
+public class AffiliateMapping {
     private String id;
     private String columnName;
     private String outputField;
     private String exclude;
 
-    public IbvMapping() {
+    public AffiliateMapping() {
         this.id=new String();
         this.columnName=new String();
         this.outputField=new String();

@@ -20,34 +20,34 @@
                 <h:form id="form">
                     
                     <p:panelGrid columns="3" styleClass="custom">
-                        <h:outputText value="Vendor ID" style="text-align: right;"/>
-                        <p:selectOneMenu id="vendorID" value="#{vendorDetailBean.vendorMasterId}">
-                            <f:selectItems value="#{webDEBean.vendorList}" var="vendor" 
+                        <h:outputText value="Affiliate Master ID" style="text-align: right;"/>
+                        <p:selectOneMenu id="masterId" value="#{affiliateDetailBean.affiliateMasterId}">
+                            <f:selectItems value="#{affiliateMasterBean.affiliateMasterList}" var="vendor" 
                                            itemLabel="#{vendor.value}"
                                            itemValue="#{vendor.key}">
                             </f:selectItems>
-                            <p:ajax listener="#{vendorDetailBean.changeMasterId}" update="@form"/>
+                            <p:ajax listener="#{affiliateDetailBean.changeMasterId}" update="@form"/>
                         </p:selectOneMenu>
                         <h:outputText value=""/>
 
                         <h:outputText value="Edit / Add new store" />
-                        <p:selectOneMenu id="storeList" value="#{vendorDetail.id}">
+                        <p:selectOneMenu id="storeList" value="#{affiliateDetail.id}">
                             <f:selectItem itemValue="" itemLabel="Select"/>
-                            <f:selectItems value="#{vendorDetailBean.storeList}" var="stores"
+                            <f:selectItems value="#{affiliateDetailBean.storeList}" var="stores"
                                            itemLabel="#{stores.value}" itemValue="#{stores.key}">
                             </f:selectItems>
-                            <p:ajax listener="#{vendorDetail.changeStore}" update="@form"/>
+                            <p:ajax listener="#{affiliateDetail.changeStore}" update="@form"/>
                             <p:ajax listener="#{campaignBean.changeCampaign}"/>
                         </p:selectOneMenu>
                         <h:outputText value=""/>
 
                         <h:outputText value="Date Entered"/>
-                        <h:inputText id="createDate" value="#{vendorDetail.createDate}" readonly="true"/>
-                        <p:selectBooleanCheckbox id="isActive" value="#{vendorDetail.isActive}" itemLabel="Active" />
+                        <h:inputText id="createDate" value="#{affiliateDetail.createDate}" readonly="true"/>
+                        <p:selectBooleanCheckbox id="isActive" value="#{affiliateDetail.isActive}" itemLabel="Active" />
 
                         <h:outputText value="Store ID"/>
-                        <h:inputText id="storeId" value="#{vendorDetail.storeId}"/>
-                        <p:selectBooleanCheckbox id="isTiered" value="#{vendorDetail.tiered}" itemLabel="Tiered" />
+                        <h:inputText id="storeId" value="#{affiliateDetail.storeId}"/>
+                        <p:selectBooleanCheckbox id="isTiered" value="#{affiliateDetail.tiered}" itemLabel="Tiered" />
 
                     </p:panelGrid>
 
@@ -72,16 +72,16 @@
                             <h:outputText value="Tiered Commission Key"/>                            
                             <h:outputText value=""/>
 
-                            <h:inputText id="ibv" value="#{vendorDetail.defaultIBV}" size="5" />
-                            <h:inputText id="comm" value="#{vendorDetail.defaultCommission}" size="5" />
-                            <h:selectOneMenu id="commType" value="#{vendorDetail.defaultCommissionType}">
+                            <h:inputText id="ibv" value="#{affiliateDetail.defaultIBV}" size="5" />
+                            <h:inputText id="comm" value="#{affiliateDetail.defaultCommission}" size="5" />
+                            <h:selectOneMenu id="commType" value="#{affiliateDetail.defaultCommissionType}">
                                 <f:selectItem itemValue="" itemLabel="Select"/>
                                 <f:selectItem itemValue="F" itemLabel="Fixed"/>
                                 <f:selectItem itemValue="P" itemLabel="Percentage"/>
                             </h:selectOneMenu>
-                            <h:inputText id="cb" value="#{vendorDetail.cbTermsId}" size="5"/>
-                            <h:inputText id="currencyType" value="#{vendorDetail.currencyType}" size="5" />
-                            <h:inputText id="commKey" value="#{vendorDetail.tieredCommissionKeys}" size="5" />
+                            <h:inputText id="cb" value="#{affiliateDetail.cbTermsId}" size="5"/>
+                            <h:inputText id="currencyType" value="#{affiliateDetail.currencyType}" size="5" />
+                            <h:inputText id="commKey" value="#{affiliateDetail.tieredCommissionKeys}" size="5" />
                             <h:outputText value="Add"/>
                         </p:panelGrid>
 
@@ -91,14 +91,14 @@
                             </f:facet>
                             <h:outputText value="Minimum Pay Period"/>
                             <h:outputText value="Maximum Pay Period"/>
-                            <p:selectOneRadio id="minPayPeriod" value="#{vendorDetail.minPay}" layout="grid" columns="1">
+                            <p:selectOneRadio id="minPayPeriod" value="#{affiliateDetail.minPay}" layout="grid" columns="1">
                                 <f:selectItem itemLabel="35 to 45 days" itemValue="3545"/>
                                 <f:selectItem itemLabel="45 to 60 days" itemValue="4560"/>
                                 <f:selectItem itemLabel="60 to 90 days" itemValue="6090"/>
                                 <f:selectItem itemLabel="Over 90 days" itemValue="OVER90"/>
-                                <p:ajax listener="#{vendorDetail.ajaxHandler}"/>
+                                <p:ajax listener="#{affiliateDetail.ajaxHandler}"/>
                             </p:selectOneRadio>
-                            <p:selectOneRadio id="maxPayPeriod" value="#{vendorDetail.maxPay}" layout="grid" columns="1">
+                            <p:selectOneRadio id="maxPayPeriod" value="#{affiliateDetail.maxPay}" layout="grid" columns="1">
                                 <f:selectItem itemLabel="3 Months" itemValue="3"/>
                                 <f:selectItem itemLabel="4 Months" itemValue="4"/>
                                 <f:selectItem itemLabel="6 Months" itemValue="6"/>
@@ -106,7 +106,7 @@
                             </p:selectOneRadio> 
                             <h:outputText value=""/>
                             <p:panelGrid columns="1" styleClass="custom">
-                                <p:selectOneMenu id="threshhold" value="#{vendorDetail.threshhold}">
+                                <p:selectOneMenu id="threshhold" value="#{affiliateDetail.threshhold}">
                                     <f:selectItem itemValue="" itemLabel="Select"/>
                                     <f:selectItem itemValue="100000" itemLabel="1000.00"/>
                                     <f:selectItem itemValue="200000" itemLabel="2000.00"/>
@@ -122,23 +122,23 @@
                             <h:outputText value="IBV Terms"/>
                             <h:outputText value="CB Terms"/>
 
-                            <h:inputTextarea id="ibvTerms" value="#{vendorDetail.ibvTerms}" 
+                            <h:inputTextarea id="ibvTerms" value="#{affiliateDetail.ibvTerms}" 
                                              style="width: 100%;" rows="4">
-                                <p:ajax listener="#{vendorDetail.ajaxHandler}"/>
+                                <p:ajax listener="#{affiliateDetail.ajaxHandler}"/>
                             </h:inputTextarea>
-                            <h:inputTextarea id="cbTerms" value="#{vendorDetail.cbTerms}" 
+                            <h:inputTextarea id="cbTerms" value="#{affiliateDetail.cbTerms}" 
                                              style="width: 100%;" rows="4">
-                                <p:ajax listener="#{vendorDetail.ajaxHandler}"/>
+                                <p:ajax listener="#{affiliateDetail.ajaxHandler}"/>
                             </h:inputTextarea>
 
-                            <p:selectBooleanCheckbox id="displayIBV" value="#{vendorDetail.displayIBV}" itemLabel="Display">
-                                <p:ajax listener="#{vendorDetail.ajaxHandler}" />
+                            <p:selectBooleanCheckbox id="displayIBV" value="#{affiliateDetail.displayIBV}" itemLabel="Display">
+                                <p:ajax listener="#{affiliateDetail.ajaxHandler}" />
                             </p:selectBooleanCheckbox>
-                            <p:selectBooleanCheckbox id="displayCB" value="#{vendorDetail.displayCB}" itemLabel="Display">
-                                <p:ajax listener="#{vendorDetail.ajaxHandler}"/>
+                            <p:selectBooleanCheckbox id="displayCB" value="#{affiliateDetail.displayCB}" itemLabel="Display">
+                                <p:ajax listener="#{affiliateDetail.ajaxHandler}"/>
                             </p:selectBooleanCheckbox>
-                            <p:selectBooleanCheckbox id="ibvGift" itemLabel="IBV On Gift Card" value="#{vendorDetail.ibvOnGiftCard}"/>
-                            <p:selectBooleanCheckbox id="bypassCb" itemLabel="Bypass Cashback" value="#{vendorDetail.cbExclude}" />
+                            <p:selectBooleanCheckbox id="ibvGift" itemLabel="IBV On Gift Card" value="#{affiliateDetail.ibvOnGiftCard}"/>
+                            <p:selectBooleanCheckbox id="bypassCb" itemLabel="Bypass Cashback" value="#{affiliateDetail.cbExclude}" />
                         </p:panelGrid>
                         
                         <h:outputText value=""/>
@@ -194,7 +194,7 @@
                             </p:column>
                         </p:dataTable>
                     </p:panel>
-                    <p:commandButton id="btnSubmit" ajax="false" actionListener="#{vendorDetail.save}" value="Submit"/>
+                    <p:commandButton id="btnSubmit" ajax="false" actionListener="#{affiliateDetail.save}" value="Submit"/>
                 </h:form>
 
             </ui:define>

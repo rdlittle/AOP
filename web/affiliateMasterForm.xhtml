@@ -18,89 +18,90 @@
                 
                 <h:form id="form">
                     <p:growl id="notifications"/>
-                    <p:panelGrid columns="2" styleClass="custom" style="width: 75%; margin: auto auto;" >
-                        <h:outputText value="Vendor ID" style="margin-left: auto;"/>
-                        <h:outputText value="#{vendorMaster.ID}"/>
-                        <h:outputLabel for="vendorID" value="Edit/Add new vendor number"  style="margin-left: auto;"/>
-                        <p:selectOneMenu id="vendorID" value="#{vendorMaster.ID}">
-                            <f:selectItems value="#{webDEBean.vendorList}" var="vendor" 
+                    <p:panelGrid columns="2" styleClass="custom" style="width: 85%; margin: auto auto;" >
+                        <h:outputText value="Affiliate Master ID" style="margin-left: auto;"/>
+                        <h:outputText value="#{affiliateMaster.ID}"/>
+                        <h:outputLabel for="vendorID" value="Edit/Add new affiliate master number"  style="margin-left: auto;"/>
+                        <p:selectOneMenu id="vendorID" value="#{affiliateMaster.ID}">
+                            <f:selectItems value="#{affiliateMasterBean.affiliateMasterList}" var="vendor" 
                                            itemLabel="#{vendor.value}"
                                            itemValue="#{vendor.key}">
                             </f:selectItems>
-                            <p:ajax listener="#{vendorMaster.changeVendor}" update="@form"/>
+                            <p:ajax listener="#{affiliateMaster.changeVendor}" update="@form"/>
                         </p:selectOneMenu>
 
                         <h:outputLabel value="Name" style="text-align: right;"/>
-                        <h:inputText id="vendorName" value="#{vendorMaster.name}" style="width: 400px;"/>
+                        <h:inputText id="vendorName" value="#{affiliateMaster.name}" style="width: 400px;"/>
                         <p:panelGrid columns="2" style="margin: 2em;">
                             <h:outputText value="Category" style="text-align: right;"/>
-                            <h:selectOneMenu id="category" value="#{vendorMaster.category}">
+                            <h:selectOneMenu id="category" value="#{affiliateMaster.category}">
                                 <f:selectItem itemValue="" itemLabel=""/>
                                 <f:selectItem itemValue="SPIBV" itemLabel="SP IBV"/>
                                 <f:selectItem itemValue="DPIBV" itemLabel="DP IBV"/>
                                 <f:selectItem itemValue="TPIBV" itemLabel="TP IBV"/>
-                                <f:ajax listener="#{vendorMaster.changeCategory}" />
+                                <f:ajax listener="#{affiliateMaster.changeCategory}" />
                             </h:selectOneMenu>
                             <h:outputText value="Vendor Type" style="text-align: right;"/>
-                            <h:selectOneMenu id="vendorType" value="#{vendorMaster.type}">
+                            <h:selectOneMenu id="vendorType" value="#{affiliateMaster.type}">
                                 <f:selectItem itemValue="" itemLabel=""/>
                                 <f:selectItem itemValue="S" itemLabel="Single Store"/>
                                 <f:selectItem itemValue="V" itemLabel="Vendor"/>
-                                <f:ajax listener="#{vendorMaster.changeType}" />
+                                <f:ajax listener="#{affiliateMaster.changeType}" />
                             </h:selectOneMenu> 
                             <h:outputText value="Prefix" style="text-align: right;"/>
-                            <h:inputText id="prefix" value="#{vendorMaster.prefix}"/>                            
+                            <h:inputText id="prefix" value="#{affiliateMaster.prefix}"/>                            
                         </p:panelGrid>
 
                         <p:panelGrid columns="2" style="margin: 2em;">
                             <h:outputText value="Country" style="text-align: right;"/>
-                            <p:selectOneMenu id="countryCode" value="#{vendorMaster.country}">
+                            <p:selectOneMenu id="countryCode" value="#{affiliateMaster.country}">
                                 <f:selectItems value="#{webDEBean.countryCodes}" var="ctry" 
                                                itemLabel="#{ctry.value}"
                                                itemValue="#{ctry.key}">
                                 </f:selectItems>
-                                <f:ajax listener="#{vendorMaster.changeCountry}"/>
+                                <f:ajax listener="#{affiliateMaster.changeCountry}"/>
                             </p:selectOneMenu>                            
                             <h:outputText value="Vendor Currency" style="text-align: right;"/>
-                            <p:selectOneMenu id="currencyType" value="#{vendorMaster.currency}">
+                            <p:selectOneMenu id="currencyType" value="#{affiliateMaster.currency}">
                                 <f:selectItems value="#{webDEBean.currencyTypes}" var="curr" 
                                                itemLabel="#{curr.value}"
                                                itemValue="#{curr.key}">
                                 </f:selectItems>
-                                <f:ajax listener="#{vendorMaster.changeCurrency}" render="currencyType"/>
+                                <f:ajax listener="#{affiliateMaster.changeCurrency}" render="currencyType"/>
                             </p:selectOneMenu>
                         </p:panelGrid> 
 
                         <p:panel style="margin-right: 100px; border: none;">
 
-                            <p:commandLink id="newColumn" actionListener="#{vendorMaster.addNewColumn}" 
-                                           process="@this" update="@this @form" rendered="#{!vendorMaster.newColumn}"
+                            <p:commandLink id="newColumn" actionListener="#{affiliateMaster.addNewColumn}" 
+                                           process="@this" update="@this @form" rendered="#{!affiliateMaster.newColumn}"
                                            value="Add" />
-                            <p:commandLink id="saveColumn" actionListener="#{vendorMaster.saveColumn}" 
-                                           process="@this" update="@this @form" rendered="#{vendorMaster.newColumn}"
+                            <p:commandLink id="saveColumn" actionListener="#{affiliateMaster.saveColumn}" 
+                                           process="@this" update="@this @form" rendered="#{affiliateMaster.newColumn}"
                                            value="Save" />
-                            <p:dataTable id="fieldTable" var="mf" value="#{vendorMaster.fieldMapList}" rowKey="#{mf.key}" 
-                                         rowIndexVar="mfidx" binding="#{vendorMaster.selector}" widgetVar="fieldTable">
+                            <p:dataTable id="fieldTable" var="mf" value="#{affiliateMaster.fieldMapList}" rowKey="#{mf.key}" 
+                                         rowIndexVar="mfidx" binding="#{affiliateMaster.selector}" widgetVar="fieldTable" 
+                                         resizableColumns="true" >
                                 <f:facet name="header">
                                     <h:outputText value="Report Mapping"/>
                                 </f:facet>
-                                <p:column headerText="Column">
+                                <p:column id = "rowNum" headerText="Column" width="75" style="text-align: left;">
                                     <h:outputText value="#{mfidx+1}"/>
                                     <h:inputHidden id="rowCounter" value="#{mfidx+1}" />
                                 </p:column>
-                                <p:column headerText="Field Name">
-                                    <p:selectOneMenu id="mappedField1" value="#{vendorMaster.getField(mfidx)}" 
-                                                     valueChangeListener="#{vendorMaster.fieldMapChangeListener}">
+                                <p:column id="fieldName" headerText="Field Name" width="100">
+                                    <p:selectOneMenu id="mappedField1" value="#{affiliateMaster.getField(mfidx)}" 
+                                                     valueChangeListener="#{affiliateMaster.fieldMapChangeListener}">
                                         <f:selectItems value="#{webDEBean.mappedFields}" var="mp" 
                                                        itemValue="#{mp.key}" 
                                                        itemLabel="#{mp.value}">
                                         </f:selectItems>
-                                        <f:ajax execute="@this" event="change" listener="#{vendorMaster.changeField}"/>
+                                        <f:ajax execute="@this" event="change" listener="#{affiliateMaster.changeField}"/>
                                     </p:selectOneMenu>
                                 </p:column>
-                                <p:column headerText="Delete" style="text-align: center;">
+                                <p:column id="delColumn" headerText="Delete" width="30">
                                     <p:commandLink id="removeField" process="@this" update="@this @form"
-                                                   actionListener="#{vendorMaster.removeField(mfidx)}">
+                                                   actionListener="#{affiliateMaster.removeField(mfidx)}">
                                         <p:graphicImage value="delete.png" height="16"/>
                                     </p:commandLink>
                                 </p:column>
@@ -110,14 +111,14 @@
                         <p:panelGrid columns="2" style="margin: auto;">
                             <h:outputText value="Data Feed Access" style="font-size: 1.5em;"/>
                             <h:outputText value=""/>
-                            <p:selectOneRadio id="feedAccessMethod" value="#{vendorMaster.dataFeedAccessType}" 
+                            <p:selectOneRadio id="feedAccessMethod" value="#{affiliateMaster.dataFeedAccessType}" 
                                               layout="grid" columns="1" style="margin-bottom: 1.5em;">
                                 <f:selectItems value="#{webDEBean.accessMethods}" var="am" itemValue="#{am.key}" itemLabel="#{am.value}">
                                 </f:selectItems>
                             </p:selectOneRadio>
                             <p:panelGrid columns="1">
                                 <h:outputText value="Report Format"/>
-                                <p:selectOneMenu id = "fileFormat" value="#{vendorMaster.dataFeedFormat}">
+                                <p:selectOneMenu id = "fileFormat" value="#{affiliateMaster.dataFeedFormat}">
                                     <f:selectItems value="#{webDEBean.fileFormats}" var="ff" 
                                                    itemValue="#{ff.key}" itemLabel="#{ff.value}">
                                     </f:selectItems>
@@ -125,19 +126,19 @@
                             </p:panelGrid>
 
                             <h:outputText value="URL"/>
-                            <h:inputText id="url" value="#{vendorMaster.dataFeedURL}"/>
+                            <h:inputText id="url" value="#{affiliateMaster.dataFeedURL}"/>
 
                             <h:outputText value="User Name"/>
-                            <h:inputText id="userName" value="#{vendorMaster.userName}"/>
+                            <h:inputText id="userName" value="#{affiliateMaster.userName}"/>
 
                             <h:outputText value="Password"/>
-                            <h:inputText id="password" value="#{vendorMaster.password}"/>                            
+                            <h:inputText id="password" value="#{affiliateMaster.password}"/>                            
                         </p:panelGrid>
 
                         <h:outputText value=""/>
                         <p:panelGrid columns="2">
                             <p:column>
-                                <p:commandButton value="Save" actionListener="#{vendorMaster.saveRecord}" 
+                                <p:commandButton value="Save" actionListener="#{affiliateMaster.saveRecord}" 
                                                  process="@this" ajax="true" update="notifications"/>
                             </p:column>
                             <p:column>

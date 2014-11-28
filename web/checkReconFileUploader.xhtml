@@ -13,7 +13,7 @@
             <ui:define name="content">
                 <h:form id="form1" enctype="multipart/form-data">
                     <span style="width: 99%; text-align: center; margin: 2em auto;">
-                        <h2>Affiliate Order Processing</h2>
+                        <h2>Affiliate Payment Processing</h2>
                     </span>
                     <p:messages showDetail="false"/>
                     <p:panelGrid columns="2" styleClass="custom" style="width: 50%; margin: auto;">
@@ -30,7 +30,6 @@
 
                         <h:outputText value="Check Amount"/>
                         <p:inputText id="checkAmount" value="#{uploadBean.checkAmount}" required="true">
-                            <f:convertNumber type="currency" currencySymbol="$"/>
                         </p:inputText>
 
                         <h:outputText value="Select File"/>

@@ -43,7 +43,7 @@
 .right_content {
     background-color: #dddddd;
     padding: 5px;
-    margin: 0px 170px 0px 170px;
+    margin: 0px 50px 0px 50px;
 }
 
 #top a:link, #top a:visited {
@@ -58,8 +58,9 @@
   text-decoration : underline;
 }
 
-.leftColumn tr td {
-    margin-right: 15px;
+.leftColumn .ui-state-default {
+    width: 2%;
+    text-align: left;
 }
 
 .rightColumn tr td {
@@ -75,4 +76,12 @@
 .redCell tr td {
     background: salmon;
     color: white;
+}
+
+.ui-datatable-scrollable-header-box {
+    padding-right: 16px !important; /*originally this is 40px*/
+ }
+ 
+.ui-datatable-scrollable-body {
+    overflow-y: scroll !important;
 }

@@ -9,8 +9,8 @@ import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.model.AffiliateOrder;
 import com.webfront.model.SelectItem;
-import com.webfront.model.VendorDetail;
-import com.webfront.model.VendorMaster;
+import com.webfront.model.AffiliateDetail;
+import com.webfront.model.AffiliateMaster;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,7 +35,7 @@ public class BatchManagementBean implements Serializable {
 
     private String mgmtRole;
     private Float checkAmt;
-    private String vendorId;
+    private String affiliateMasterId;
     private String userId;
     private int internalDate;
     private String externalDate;
@@ -48,12 +48,12 @@ public class BatchManagementBean implements Serializable {
     private String orderNumber;
     private String vendorName;
     private String storeName;
-    @ManagedProperty(value = "#{vendorDetailBean}")
-    private VendorDetailBean detail;
-    @ManagedProperty(value = "#{vendorMaster}")
-    private VendorMaster vendorMaster;
-    @ManagedProperty(value = "#{vendorDetail}")
-    private VendorDetail vendorDetail;
+    @ManagedProperty(value = "#{affiliateDetailBean}")
+    private AffiliateDetailBean detail;
+    @ManagedProperty(value = "#{affiliateMaster}")
+    private AffiliateMaster affiliateMaster;
+    @ManagedProperty(value = "#{affiliateDetail}")
+    private AffiliateDetail affiliateDetail;
     private ArrayList<AffiliateOrder> searchResults;
 
     private static final Map<String, String> roleItems;
@@ -80,12 +80,12 @@ public class BatchManagementBean implements Serializable {
     }
 
     public void changeValue(AjaxBehaviorEvent event) {
-        this.vendorMaster.changeVendor(event);
-        this.vendorId = this.vendorMaster.getID();
-        this.detail.setVendorMasterId(vendorId);
+        this.affiliateMaster.changeVendor(event);
+        this.affiliateMasterId = this.affiliateMaster.getID();
+        this.detail.setAffiliateMasterId(affiliateMasterId);
         this.detail.changeMasterId(event);
         this.detail.setStoreList(new ArrayList<SelectItem>());
-        this.vendorName = this.vendorMaster.getName();
+        this.vendorName = this.affiliateMaster.getName();
     }
 
     public void doSearch() {
@@ -93,10 +93,10 @@ public class BatchManagementBean implements Serializable {
         RedObject rb = new RedObject("WDE", "AOP:AffiliateOrders");
         rb.setProperty("vendorOrderNum", orderNumber);
         if (this.getVendorId() != null) {
-            rb.setProperty("vendorId", this.getVendorId());
+            rb.setProperty("affiliateMasterId", this.getVendorId());
         }
-        if (this.vendorDetail != null) {
-            rb.setProperty("vendorDiv", this.vendorDetail.getId());
+        if (this.affiliateDetail != null) {
+            rb.setProperty("vendorDiv", this.affiliateDetail.getId());
         }
         try {
             rb.callMethod("getAoSearch");
@@ -111,7 +111,7 @@ public class BatchManagementBean implements Serializable {
                 ctx.addMessage("msg", fmsg);
             } else {
                 UniDynArray orderIdList = rb.getPropertyToDynArray("orderId");
-                UniDynArray vendorIdList = rb.getPropertyToDynArray("vendorId");
+                UniDynArray affiliateMasterIdList = rb.getPropertyToDynArray("affiliateMasterId");
                 UniDynArray vendorDivList = rb.getPropertyToDynArray("vendorDiv");
                 UniDynArray vendorOrderNumList = rb.getPropertyToDynArray("vendorOrderNum");
                 UniDynArray orderRefList = rb.getPropertyToDynArray("orderRef");
@@ -129,7 +129,7 @@ public class BatchManagementBean implements Serializable {
                 for (int val = 1; val <= vals; val++) {
                     AffiliateOrder ao = new AffiliateOrder();
                     ao.setId(orderIdList.extract(1, val).toString());
-                    ao.setVendorId(vendorIdList.extract(1, val).toString());
+                    ao.setVendorId(affiliateMasterIdList.extract(1, val).toString());
                     ao.setVendorDiv(vendorDivList.extract(1, val).toString());
                     ao.setVendorOrderNum(vendorOrderNumList.extract(1, val).toString());
                     ao.setOrderRef(orderRefList.extract(1, val).toString());
@@ -167,17 +167,17 @@ public class BatchManagementBean implements Serializable {
     }
 
     /**
-     * @return the vendorId
+     * @return the affiliateMasterId
      */
     public String getVendorId() {
-        return vendorId;
+        return affiliateMasterId;
     }
 
     /**
-     * @param vendorId the vendorId to set
+     * @param affiliateMasterId the affiliateMasterId to set
      */
-    public void setVendorId(String vendorId) {
-        this.vendorId = vendorId;
+    public void setVendorId(String affiliateMasterId) {
+        this.affiliateMasterId = affiliateMasterId;
     }
 
     public Map<String, String> getMgmtRoles() {
@@ -364,29 +364,29 @@ public class BatchManagementBean implements Serializable {
     /**
      * @return the detail
      */
-    public VendorDetailBean getDetail() {
+    public AffiliateDetailBean getDetail() {
         return detail;
     }
 
     /**
      * @param detail the detail to set
      */
-    public void setDetail(VendorDetailBean detail) {
+    public void setDetail(AffiliateDetailBean detail) {
         this.detail = detail;
     }
 
     /**
-     * @return the vendorMaster
+     * @return the affiliateMaster
      */
-    public VendorMaster getVendorMaster() {
-        return vendorMaster;
+    public AffiliateMaster getAffiliateMaster() {
+        return affiliateMaster;
     }
 
     /**
-     * @param vendorMaster the vendorMaster to set
+     * @param affiliateMaster the affiliateMaster to set
      */
-    public void setVendorMaster(VendorMaster vendorMaster) {
-        this.vendorMaster = vendorMaster;
+    public void setAffiliateMaster(AffiliateMaster affiliateMaster) {
+        this.affiliateMaster = affiliateMaster;
     }
 
     /**
@@ -404,17 +404,17 @@ public class BatchManagementBean implements Serializable {
     }
 
     /**
-     * @return the vendorDetail
+     * @return the affiliateDetail
      */
-    public VendorDetail getVendorDetail() {
-        return vendorDetail;
+    public AffiliateDetail getAffiliateDetail() {
+        return affiliateDetail;
     }
 
     /**
-     * @param vendorDetail the vendorDetail to set
+     * @param affiliateDetail the affiliateDetail to set
      */
-    public void setVendorDetail(VendorDetail vendorDetail) {
-        this.vendorDetail = vendorDetail;
+    public void setAffiliateDetail(AffiliateDetail affiliateDetail) {
+        this.affiliateDetail = affiliateDetail;
     }
 
 }

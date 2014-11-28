@@ -22,10 +22,10 @@ import javax.faces.event.AjaxBehaviorEvent;
  */
 @ManagedBean
 @SessionScoped
-public class VendorDetailBean {
+public class AffiliateDetailBean {
 
-    private String vendorMasterId;
-    private String vendorDetailId;
+    private String affiliateMasterId;
+    private String affiliateDetailId;
     private String storeName;
 
     private ArrayList<SelectItem> storeList;
@@ -49,15 +49,15 @@ public class VendorDetailBean {
      * @param storeList the storeList to set
      */
     public void setStoreList(ArrayList<SelectItem> storeList) {
-        RedObject rb = new RedObject("WDE", "Vendor:Detail");
+        RedObject rb = new RedObject("WDE", "Affiliates:Detail");
         if(this.storeList != null) {
             if(!this.storeList.isEmpty()) {
                 this.storeList.clear();
             }
         }
-        rb.setProperty("vendorMasterId", vendorMasterId);
+        rb.setProperty("masterId", affiliateMasterId);
         try {
-            rb.callMethod("getIbvDetailList");
+            rb.callMethod("getAffiliateDetailList");
             String errStat = rb.getProperty("errStat");
             String errCode = rb.getProperty("errCode");
             String errMsg = rb.getProperty("errMsg");
@@ -70,7 +70,7 @@ public class VendorDetailBean {
                 storeList.add(new SelectItem(key, value));
             }
         } catch (RbException ex) {
-            Logger.getLogger(VendorDetailBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AffiliateDetailBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.storeList = storeList;
     }
@@ -78,31 +78,31 @@ public class VendorDetailBean {
     
 
     /**
-     * @return the vendorMasterId
+     * @return the affiliateMasterId
      */
-    public String getVendorMasterId() {
-        return vendorMasterId;
+    public String getAffiliateMasterId() {
+        return affiliateMasterId;
     }
 
     /**
-     * @param vendorMasterId the vendorMasterId to set
+     * @param affiliateMasterId the affiliateMasterId to set
      */
-    public void setVendorMasterId(String vendorMasterId) {
-        this.vendorMasterId = vendorMasterId;
+    public void setAffiliateMasterId(String affiliateMasterId) {
+        this.affiliateMasterId = affiliateMasterId;
     }
 
     /**
-     * @return the vendorDetailId
+     * @return the affiliateDetailId
      */
-    public String getVendorDetailId() {
-        return vendorDetailId;
+    public String getAffiliateDetailId() {
+        return affiliateDetailId;
     }
 
     /**
-     * @param vendorDetailId the vendorDetailId to set
+     * @param affiliateDetailId the affiliateDetailId to set
      */
-    public void setVendorDetailId(String vendorDetailId) {
-        this.vendorDetailId = vendorDetailId;
+    public void setAffiliateDetailId(String affiliateDetailId) {
+        this.affiliateDetailId = affiliateDetailId;
     }
 
     /**
@@ -135,7 +135,7 @@ public class VendorDetailBean {
                 minPayList.add(new SelectItem(key,value));
             }
         } catch (RbException ex) {
-            Logger.getLogger(VendorDetailBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AffiliateDetailBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.minPayList = minPayList;
     }
@@ -170,20 +170,20 @@ public class VendorDetailBean {
                 maxPayList.add(new SelectItem(key,value));
             }            
         } catch (RbException ex) {
-            Logger.getLogger(VendorDetailBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AffiliateDetailBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.maxPayList = maxPayList;
     }
 
     public void changeStore(AjaxBehaviorEvent event) {
-        RedObject rbo = new RedObject("WDE", "Vendor:Detail");
-        rbo.setProperty("id", getVendorDetailId());
+        RedObject rbo = new RedObject("WDE", "Affiliates:Detail");
+        rbo.setProperty("id", getAffiliateDetailId());
         try {
-            rbo.callMethod("getIbvDetailRec");
+            rbo.callMethod("getDetail");
             String str=rbo.getProperty("storeName");
             this.storeName=str;
         } catch (RbException ex) {
-            Logger.getLogger(VendorDetailBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AffiliateDetailBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     /**

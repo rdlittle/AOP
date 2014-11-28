@@ -22,7 +22,7 @@ import javax.faces.bean.SessionScoped;
  */
 @ManagedBean
 @SessionScoped
-public final class WebDEBean implements Serializable {
+public final class AffiliateNetworkBean implements Serializable {
 
     private RedObject rbo;
     private LinkedList<SelectItem> affiliateMasterList;
@@ -40,10 +40,10 @@ public final class WebDEBean implements Serializable {
     /**
      * Creates a new instance of WebDEBean
      */
-    public WebDEBean() {
+    public AffiliateNetworkBean() {
         todayInternal = 1;
         setTodayInternal(1);
-        setRbo(new RedObject("WDE", "AOP:Forms"));
+        setRbo(new RedObject("WDE", "Affiliates:Network"));
         setAffiliateMasterList(new LinkedList<SelectItem>());
         setNetworkList(new ArrayList<SelectItem>());
         setCurrencyTypes(new LinkedList<SelectItem>());
@@ -92,7 +92,7 @@ public final class WebDEBean implements Serializable {
             }
             this.affiliateMasterList = vendors;
         } catch (RbException ex) {
-            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AffiliateNetworkBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -114,7 +114,7 @@ public final class WebDEBean implements Serializable {
             String iDate = getRbo().getProperty("iDate");
             todayInternal = Integer.parseInt(iDate);
         } catch (RbException ex) {
-            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AffiliateNetworkBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -129,7 +129,7 @@ public final class WebDEBean implements Serializable {
             String oDate = getRbo().getProperty("oDate");
             setTodayExternal(oDate);
         } catch (RbException ex) {
-            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AffiliateNetworkBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return todayExternal;
     }
@@ -185,7 +185,7 @@ public final class WebDEBean implements Serializable {
                 currencyTypes.add(new SelectItem(key, value));
             }
         } catch (RbException ex) {
-            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AffiliateNetworkBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.currencyTypes = currencyTypes;
     }
@@ -212,7 +212,7 @@ public final class WebDEBean implements Serializable {
                 cc.add(new SelectItem(key, value));
             }
         } catch (RbException ex) {
-            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AffiliateNetworkBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.countryCodes = cc;
     }
@@ -239,7 +239,7 @@ public final class WebDEBean implements Serializable {
                 mf.add(new SelectItem(key, value));
             }
         } catch (RbException ex) {
-            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AffiliateNetworkBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.mappedFields = mf;
     }
@@ -268,7 +268,7 @@ public final class WebDEBean implements Serializable {
             }
 
         } catch (RbException rbe) {
-            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, rbe);
+            Logger.getLogger(AffiliateNetworkBean.class.getName()).log(Level.SEVERE, null, rbe);
         }
         this.accessMethods = list;
     }
@@ -307,7 +307,7 @@ public final class WebDEBean implements Serializable {
             }
 
         } catch (RbException rbe) {
-            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, rbe);
+            Logger.getLogger(AffiliateNetworkBean.class.getName()).log(Level.SEVERE, null, rbe);
         }
         this.fileFormats = fileFormats;
     }
@@ -323,7 +323,7 @@ public final class WebDEBean implements Serializable {
                 userId = getRbo().getProperty("logName");
                 setUserId(userId);
             } catch (RbException ex) {
-                Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(AffiliateNetworkBean.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return userId;
@@ -364,7 +364,7 @@ public final class WebDEBean implements Serializable {
             }
             this.networkList = networkList;
         } catch (RbException ex) {
-            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AffiliateNetworkBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

@@ -8,7 +8,7 @@ package com.webfront.controller;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.beans.WebDEBean;
-import com.webfront.model.VendorDetail;
+import com.webfront.model.AffiliateDetail;
 import com.webfront.model.SelectItem;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -21,13 +21,13 @@ import javax.faces.context.FacesContext;
  *
  * @author rlittle
  */
-public class VendorDetailController implements Serializable {
+public class AffiliateDetailController implements Serializable {
 
     private RedObject rb;
     private ArrayList<SelectItem> storeList;
 
-    public VendorDetailController() {
-        this.rb = new RedObject("WDE", "Vendor:Detail");
+    public AffiliateDetailController() {
+        this.rb = new RedObject("WDE", "Affiliates:Detail");
     }
 
     /**
@@ -58,15 +58,15 @@ public class VendorDetailController implements Serializable {
         this.storeList = storeList;
     }
 
-    public VendorDetail getVendorDetail(String id) {
-        VendorDetail newStore = new VendorDetail();
+    public AffiliateDetail getAffiliateDetail(String id) {
+        AffiliateDetail newStore = new AffiliateDetail();
         try {
             getRb().setProperty("id", id);
-            getRb().callMethod("getIbvDetailRec");
+            getRb().callMethod("getDetail");
             String errStat = getRb().getProperty("errStat");
             String errCode = getRb().getProperty("errCode");
             String errMsg = getRb().getProperty("errMsg");
-            newStore.setVendorMasterId(getRb().getProperty("vendorMasterId"));
+            newStore.setAffiliateMasterId(getRb().getProperty("masterId"));
             newStore.setStoreName(getRb().getProperty("storeName"));
             newStore.setSubVendorId(getRb().getProperty("subVendorId"));
             newStore.setCreateDate(getRb().getProperty("createDate"));
@@ -97,10 +97,10 @@ public class VendorDetailController implements Serializable {
         return newStore;
     }
 
-    public void setIbvDetail(VendorDetail rec) {
+    public void setAffiliateDetail(AffiliateDetail rec) {
         try {
             getRb().setProperty("id", rec.getId());
-            getRb().setProperty("vendorMasterId", rec.getVendorMasterId());
+            getRb().setProperty("affiliateMasterId", rec.getAffiliateMasterId());
             getRb().setProperty("storeName", rec.getStoreName());
             getRb().setProperty("subVendorId", rec.getSubVendorId());
             getRb().setProperty("createDate", rec.getCreateDate());
@@ -124,7 +124,7 @@ public class VendorDetailController implements Serializable {
             getRb().setProperty("cbTerms", rec.getCbTerms());
             getRb().setProperty("ibvOnGiftCard", rec.isIbvOnGiftCard() ? "1" : "0");
 
-            getRb().callMethod("setIbvDetailRec");
+            getRb().callMethod("setAffiliateDetailRec");
             String errStat = getRb().getProperty("errStat");
             String errCode = getRb().getProperty("errCode");
             String errMsg = getRb().getProperty("errMsg");

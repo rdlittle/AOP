@@ -39,7 +39,8 @@ public class UploadBean {
      * Creates a new instance of UploadBean
      */
     public UploadBean() {
-        uploadDir = "/home/uvuser/EXPORT/";
+//        uploadDir = "/home/uvuser/EXPORT/";
+        
     }
 
     public UploadedFile getFile() {
@@ -51,6 +52,7 @@ public class UploadBean {
     }
 
     public String upload() {
+        uploadDir = "/usr/local/dmcdev/AFFILIATE.PAYMENT/";
         try {
             if ("-1".equals(vendorCode)) {
                 FacesMessage msg = new FacesMessage("Vendor code is missing");
@@ -59,7 +61,7 @@ public class UploadBean {
                 return "";
             } else {
                 RedObject rb = new RedObject("WDE", "AOP:Queue");
-                rb.setProperty("vendorMasterId", this.vendorCode);
+                rb.setProperty("affiliateMasterId", this.vendorCode);
                 rb.setProperty("fileName", file.getFileName());
                 rb.setProperty("networkId", this.networkId);
                 rb.setProperty("checkAmount", this.checkAmount);
@@ -97,6 +99,7 @@ public class UploadBean {
     }
 
     public String postCheckReconFile() {
+        uploadDir = "/usr/local/dmcdev/AFFILIATE.PAYMENT/";
         try {
             if(file==null || file.getFileName().isEmpty() || "".equals(file.getFileName())) {
                 FacesMessage msg = new FacesMessage("Please select file for upload");
@@ -120,6 +123,7 @@ public class UploadBean {
             rb.setProperty("fileName", file.getFileName());
             rb.setProperty("networkId", this.networkId);
             rb.setProperty("checkAmount", this.checkAmount);
+            rb.setProperty("queueType", "payment");
             try {
                 rb.callMethod("setQueue");
                 String errStat = rb.getProperty("errStat");
@@ -149,7 +153,7 @@ public class UploadBean {
             ctx.addMessage("msg", fmsg);
             return "";
         }
-        return "/aopQueue?faces-redirect=true";
+        return "/paymentQueue?faces-redirect=true";
     }
 
     public void copyFile(String fileName, InputStream in) {

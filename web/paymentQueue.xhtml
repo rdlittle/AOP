@@ -3,8 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:p="http://primefaces.org/ui">
 
     <body>
 
@@ -12,39 +11,44 @@
 
             <ui:define name="content">
                 <span style="width: 99%; text-align: center; margin: 2em auto;">
-                    <h2>Affiliate Order Processing Queue</h2>
+                    <h2>Affiliate Payment Processing Queue</h2>
                 </span>
                 <h:form id="form">
                     <p:growl id="msg" />
-                    <h:inputHidden id ="queueType" value = ""/>
-                    <p:dataTable id="aopQueue" var="queueItem" value="#{aopQueueBean.queueList}" selection="#{aopQueueBean.selectedItems}" 
-                                 rowKey="#{queueItem.fileName}">
+                    <p:dataTable id="paymentQueue" var="queueItem" value="#{aopQueueBean.paymentQueueList}" selection="#{aopQueueBean.selectedItems}" 
+                                 rowKey="#{queueItem.fileName}" resizableColumns="true">
                         <p:column selectionMode="multiple" width="2%" style="text-align: center;"/>
-                        <p:column headerText="Vendor Master ID" width="8%">
-                            <h:outputText value="#{queueItem.affiliateMasterId}"/>
-                        </p:column>                    
-                        <p:column headerText="Upload Date" width="5%">
+                        <p:column headerText="Ctry" width="20" style="text-align: left;">
+                            <h:outputText value="#{queueItem.networkCountry}"/>
+                        </p:column>                        
+                        <p:column headerText="Network">
+                            <h:outputText value="#{queueItem.networkName}"/>
+                        </p:column>
+                        <p:column headerText="Check Amount">
+                            <h:outputText value="#{queueItem.checkAmount}"/>
+                        </p:column>                        
+                        <p:column headerText="Upload Date">
                             <h:outputText value="#{queueItem.uploadDate}"/>
                         </p:column>
-                        <p:column headerText="Upload Time" width="5%">
+                        <p:column headerText="Upload Time">
                             <h:outputText value="#{queueItem.uploadTime}"/>
                         </p:column>                    
-                        <p:column headerText="User" width="5%">
+                        <p:column headerText="User">
                             <h:outputText value="#{queueItem.userName}"/>
                         </p:column>
-                        <p:column headerText="Status" width="5%">
+                        <p:column headerText="Status">
                             <h:outputText value="#{queueItem.statusName}"/>
                         </p:column>
-                        <p:column headerText="Lines" width="5%">
+                        <p:column headerText="Lines">
                             <h:outputText value="#{queueItem.lineCount}"/>
                         </p:column> 
-                        <p:column headerText="Orders" width="5%">
+                        <p:column headerText="Orders">
                             <h:outputText value="#{queueItem.orderCount}"/>
                         </p:column> 
-                        <p:column headerText="Errors" width="5%">
+                        <p:column headerText="Errors">
                             <h:outputText value="#{queueItem.errors}"/>
                         </p:column> 
-                        <p:column headerText="Report Name" width="25%">
+                        <p:column headerText="Report Name">
                             <h:outputText value="#{queueItem.fileName}"/>
                         </p:column>
                         <p:column headerText="Run Stage">

@@ -28,10 +28,10 @@ import javax.faces.event.AjaxBehaviorEvent;
 @SessionScoped
 public class AffiliateOrderBean implements Serializable {
 
-    @ManagedProperty(value = "#{vendorDetailBean}")
-    private VendorDetailBean detail;
-    private String vendorMasterId;
-    private String vendorDetailId;
+    @ManagedProperty(value = "#{affiliateDetailBean}")
+    private AffiliateDetailBean detail;
+    private String affiliateMasterId;
+    private String affiliateDetailId;
     private boolean errorsOnly;
 
     private ArrayList<AffiliateOrder> orderList;
@@ -50,10 +50,10 @@ public class AffiliateOrderBean implements Serializable {
     public void setOrderList() {
         this.orderList = new ArrayList<>();
         this.orderList.clear();
-        if (vendorMasterId != null && !vendorMasterId.isEmpty()) {
+        if (affiliateMasterId != null && !affiliateMasterId.isEmpty()) {
             RedObject rb = new RedObject("WDE", "AOP:AffiliateOrders");
-            rb.setProperty("vendorId", vendorMasterId);
-            String vendorDiv = this.vendorDetailId;
+            rb.setProperty("vendorId", affiliateMasterId);
+            String vendorDiv = this.affiliateDetailId;
             if (vendorDiv != null && !"".equals(vendorDiv)) {
                 int idx = vendorDiv.indexOf("*");
                 if (idx > 0) {
@@ -123,31 +123,31 @@ public class AffiliateOrderBean implements Serializable {
     }
 
     /**
-     * @return the vendorMasterId
+     * @return the affiliateMasterId
      */
-    public String getVendorMasterId() {
-        return vendorMasterId;
+    public String getAffiliateMasterId() {
+        return affiliateMasterId;
     }
 
     /**
-     * @param vendorMasterId the vendorMasterId to set
+     * @param affiliateMasterId the affiliateMasterId to set
      */
-    public void setVendorMasterId(String vendorMasterId) {
-        this.vendorMasterId = vendorMasterId;
+    public void setAffiliateMasterId(String affiliateMasterId) {
+        this.affiliateMasterId = affiliateMasterId;
     }
 
     /**
-     * @return the vendorDetailId
+     * @return the affiliateDetailId
      */
-    public String getVendorDetailId() {
-        return vendorDetailId;
+    public String getAffiliateDetailId() {
+        return affiliateDetailId;
     }
 
     /**
-     * @param vendorDetailId the vendorDetailId to set
+     * @param affiliateDetailId the affiliateDetailId to set
      */
-    public void setVendorDetailId(String vendorDetailId) {
-        this.vendorDetailId = vendorDetailId;
+    public void setAffiliateDetailId(String affiliateDetailId) {
+        this.affiliateDetailId = affiliateDetailId;
     }
 
     /**
@@ -167,24 +167,24 @@ public class AffiliateOrderBean implements Serializable {
     /**
      * @return the detail
      */
-    public VendorDetailBean getDetail() {
+    public AffiliateDetailBean getDetail() {
         return detail;
     }
 
     /**
      * @param detail the detail to set
      */
-    public void setDetail(VendorDetailBean detail) {
+    public void setDetail(AffiliateDetailBean detail) {
         this.detail = detail;
     }
 
     public void changeHandler(AjaxBehaviorEvent event) {
         if (this.detail != null) {
-            if (this.detail.getVendorMasterId() != null && !"".equals(this.detail.getVendorMasterId())) {
-                this.setVendorMasterId(this.detail.getVendorMasterId());
+            if (this.detail.getAffiliateMasterId() != null && !"".equals(this.detail.getAffiliateMasterId())) {
+                this.setAffiliateMasterId(this.detail.getAffiliateMasterId());
             }
-            if (this.detail.getVendorDetailId() != null && !"".equals(this.detail.getVendorDetailId())) {
-                this.setVendorDetailId(this.detail.getVendorDetailId());
+            if (this.detail.getAffiliateDetailId() != null && !"".equals(this.detail.getAffiliateDetailId())) {
+                this.setAffiliateDetailId(this.detail.getAffiliateDetailId());
                 detail.changeStore(event);
             }
             setOrderList();

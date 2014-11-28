@@ -9,7 +9,7 @@ import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.model.Campaign;
-import com.webfront.model.VendorDetail;
+import com.webfront.model.AffiliateDetail;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,12 +31,12 @@ import javax.faces.event.AjaxBehaviorEvent;
 @SessionScoped
 public class CampaignBean {
 
-    @ManagedProperty(value = "#{vendorDetail}")
-    private VendorDetail detail;
+    @ManagedProperty(value = "#{affiliateDetail}")
+    private AffiliateDetail detail;
     private ArrayList<Campaign> list;
     private Campaign activeCampaign;
-    private String vendorMasterId;
-    private String vendorDetailId;
+    private String affiliateMasterId;
+    private String affiliateDetailId;
     private Calendar calendar;
     private Date campaignStart;
     private Date campaignEnd;
@@ -46,8 +46,8 @@ public class CampaignBean {
     public CampaignBean() {
         this.list = new ArrayList<>();
         this.activeCampaign = new Campaign();
-        this.vendorMasterId = new String();
-        this.vendorDetailId = new String();
+        this.affiliateMasterId = new String();
+        this.affiliateDetailId = new String();
         this.calendar = Calendar.getInstance();
         this.newCampaign = false;
         this.list = new ArrayList<>();
@@ -76,8 +76,8 @@ public class CampaignBean {
             if (this.activeCampaign != null) {
                 campaignList.add(this.activeCampaign);
             }
-            rb.setProperty("vendorMasterId", detail.getVendorMasterId());
-            rb.setProperty("vendorDetailId", ssid);
+            rb.setProperty("affiliateMasterId", detail.getAffiliateMasterId());
+            rb.setProperty("affiliateDetailId", ssid);
             try {
                 rb.callMethod("getCampaignHist");
                 String errStat = rb.getProperty("errStat").toString();
@@ -121,13 +121,13 @@ public class CampaignBean {
 
     public void changeCampaign(AjaxBehaviorEvent event) {
         if (this.detail != null) {
-            if (this.vendorDetailId == null) {
-                this.vendorDetailId = this.detail.getId();
+            if (this.affiliateDetailId == null) {
+                this.affiliateDetailId = this.detail.getId();
             }
 
-            if (!this.vendorDetailId.equals(this.detail.getId())) {
+            if (!this.affiliateDetailId.equals(this.detail.getId())) {
                 setList(new ArrayList<Campaign>());
-                this.vendorDetailId = this.detail.getId();
+                this.affiliateDetailId = this.detail.getId();
                 this.newCampaign = false;
             }
         }
@@ -142,8 +142,8 @@ public class CampaignBean {
             String sid = detail.getId();
             int idx = sid.indexOf("*");
             String ssid = sid.substring(idx + 1);
-            rb.setProperty("vendorMasterId", detail.getVendorMasterId());
-            rb.setProperty("vendorDetailId", ssid);
+            rb.setProperty("affiliateMasterId", detail.getAffiliateMasterId());
+            rb.setProperty("affiliateDetailId", ssid);
             this.activeCampaign = new Campaign();
             try {
                 rb.callMethod("getCampaign");
@@ -178,44 +178,44 @@ public class CampaignBean {
     }
 
     /**
-     * @return the vendorMasterId
+     * @return the affiliateMasterId
      */
-    public String getVendorMasterId() {
-        return vendorMasterId;
+    public String getAffiliateMasterId() {
+        return affiliateMasterId;
     }
 
     /**
-     * @param vendorMasterId the vendorMasterId to set
+     * @param affiliateMasterId the affiliateMasterId to set
      */
-    public void setVendorMasterId(String vendorMasterId) {
-        this.vendorMasterId = vendorMasterId;
+    public void setAffiliateMasterId(String affiliateMasterId) {
+        this.affiliateMasterId = affiliateMasterId;
     }
 
     /**
-     * @return the vendorDetailId
+     * @return the affiliateDetailId
      */
-    public String getVendorDetailId() {
-        return vendorDetailId;
+    public String getAffiliateDetailId() {
+        return affiliateDetailId;
     }
 
     /**
-     * @param vendorDetailId the vendorDetailId to set
+     * @param affiliateDetailId the affiliateDetailId to set
      */
-    public void setVendorDetailId(String vendorDetailId) {
-        this.vendorDetailId = vendorDetailId;
+    public void setAffiliateDetailId(String affiliateDetailId) {
+        this.affiliateDetailId = affiliateDetailId;
     }
 
     /**
      * @return the detailBean
      */
-    public VendorDetail getDetail() {
+    public AffiliateDetail getDetail() {
         return detail;
     }
 
     /**
      * @param detail the IBVDetail to set
      */
-    public void setDetail(VendorDetail detail) {
+    public void setDetail(AffiliateDetail detail) {
         this.detail = detail;
     }
 
@@ -297,8 +297,8 @@ public class CampaignBean {
             int idx = sid.indexOf("*");
             String ssid = sid.substring(idx + 1);
             RedObject rb = new RedObject("WDE", "AOP:Cashback");
-            rb.setProperty("vendorMasterId", this.detail.getVendorMasterId());
-            rb.setProperty("vendorDetailId", ssid);
+            rb.setProperty("affiliateMasterId", this.detail.getAffiliateMasterId());
+            rb.setProperty("affiliateDetailId", ssid);
             rb.setProperty("startDate", sDate);
             rb.setProperty("endDate", eDate);
             rb.setProperty("cbIncrease", this.getNewCashback());

@@ -33,8 +33,8 @@
                                         <h:outputText value="Vendor ID"/>
                                     </p:column>
                                     <p:column>
-                                        <p:selectOneMenu value="#{vendorMaster.ID}">
-                                            <f:selectItems id="vendorID" value="#{webDEBean.vendorList}" var="vendor" 
+                                        <p:selectOneMenu value="#{affiliateMaster.ID}">
+                                            <f:selectItems id="vendorID" value="#{webDEBean.affiliateMasterList}" var="vendor" 
                                                            itemLabel="#{vendor.value}"
                                                            itemValue="#{vendor.key}">
                                             </f:selectItems>
@@ -48,9 +48,9 @@
                                         <h:outputText value="Store" />
                                     </p:column>
                                     <p:column>
-                                        <p:selectOneMenu id="storeList" value="#{vendorDetailBean.vendorDetailId}">
+                                        <p:selectOneMenu id="storeList" value="#{affiliateDetailBean.affiliateDetailId}">
                                             <f:selectItem itemValue="0" itemLabel="All Stores"/>
-                                            <f:selectItems value="#{vendorDetailBean.storeList}" var="stores"
+                                            <f:selectItems value="#{affiliateDetailBean.storeList}" var="stores"
                                                            itemLabel="#{stores.value}" itemValue="#{stores.key}">
                                             </f:selectItems>
                                             <f:ajax execute="mgmtForm" render="mgmtForm"/>

@@ -26,13 +26,13 @@
                                 <h:outputText value="Vendor ID " styleClass="leftColumn"/>
                             </p:column>
                             <p:column>
-                                <p:selectOneMenu id="vendorID" value="#{vendorDetailBean.vendorMasterId}">
-                                    <f:selectItems value="#{webDEBean.vendorList}" var="vendor" 
+                                <p:selectOneMenu id="vendorID" value="#{affiliateDetailBean.affiliateMasterId}">
+                                    <f:selectItems value="#{webDEBean.affiliateMasterList}" var="vendor" 
                                                    itemLabel="#{vendor.value}"
                                                    itemValue="#{vendor.key}">
                                     </f:selectItems>
                                     <f:ajax execute="form" render="form"/>
-                                    <p:ajax listener="#{vendorDetailBean.changeMasterId}" update="@form"/>
+                                    <p:ajax listener="#{affiliateDetailBean.changeMasterId}" update="@form"/>
 
                                 </p:selectOneMenu>
                                 <h:outputText value=""/>
@@ -62,9 +62,9 @@
                                 <h:outputText value="Store" />
                             </p:column>
                             <p:column>
-                                <p:selectOneMenu id="storeList" value="#{vendorDetailBean.vendorDetailId}">
+                                <p:selectOneMenu id="storeList" value="#{affiliateDetailBean.affiliateDetailId}">
                                     <f:selectItem itemValue="" itemLabel="Select"/>
-                                    <f:selectItems value="#{vendorDetailBean.storeList}" var="stores"
+                                    <f:selectItems value="#{affiliateDetailBean.storeList}" var="stores"
                                                    itemLabel="#{stores.value}" itemValue="#{stores.key}">
                                     </f:selectItems>
                                     <f:ajax execute="form" render="form"/>

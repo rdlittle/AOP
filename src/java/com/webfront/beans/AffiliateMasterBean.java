@@ -22,32 +22,28 @@ import javax.faces.bean.SessionScoped;
  */
 @ManagedBean
 @SessionScoped
-public final class WebDEBean implements Serializable {
+public final class AffiliateMasterBean implements Serializable {
 
     private RedObject rbo;
     private LinkedList<SelectItem> affiliateMasterList;
     private ArrayList<SelectItem> networkList;
     private int todayInternal;
     private String todayExternal;
-    private LinkedList<SelectItem> currencyTypes;
-    private LinkedList<SelectItem> countryCodes;
     private LinkedList<SelectItem> mappedFields;
     private ArrayList<SelectItem> accessMethods;
     private ArrayList<SelectItem> fileFormats;
-    
+
     private String userId;
 
     /**
      * Creates a new instance of WebDEBean
      */
-    public WebDEBean() {
+    public AffiliateMasterBean() {
         todayInternal = 1;
         setTodayInternal(1);
-        setRbo(new RedObject("WDE", "AOP:Forms"));
+        setRbo(new RedObject("WDE", "Affiliates:Master"));
         setAffiliateMasterList(new LinkedList<SelectItem>());
         setNetworkList(new ArrayList<SelectItem>());
-        setCurrencyTypes(new LinkedList<SelectItem>());
-        setCountryCodes(new LinkedList<SelectItem>());
         setMappedFields(new LinkedList<SelectItem>());
         setAccessMethods(new ArrayList<SelectItem>());
         setFileFormats(new ArrayList<SelectItem>());
@@ -71,6 +67,23 @@ public final class WebDEBean implements Serializable {
      * @return the vendorNames
      */
     public LinkedList<SelectItem> getAffiliateMasterList() {
+        LinkedList<SelectItem> list = new LinkedList<>();
+        try {
+            getRbo().callMethod("getMasterList");
+            UniDynArray vendorNames = getRbo().getPropertyToDynArray("affiliateName");
+            UniDynArray vendorIds = getRbo().getPropertyToDynArray("masterId");
+            int vals = vendorNames.dcount(1);
+            SelectItem defaultItem = new SelectItem("-1", "Select Affiliate");
+            list.add(defaultItem);
+            for (int i = 1; i <= vals; i++) {
+                String str = vendorNames.extract(1, i).toString();
+                String vid = vendorIds.extract(1, i).toString();
+                list.add(new SelectItem(vid, str));
+            }
+        } catch (RbException ex) {
+            Logger.getLogger(AffiliateMasterBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        affiliateMasterList = list;
         return affiliateMasterList;
     }
 
@@ -80,8 +93,8 @@ public final class WebDEBean implements Serializable {
     public void setAffiliateMasterList(LinkedList<SelectItem> vendors) {
         try {
             getRbo().callMethod("getAffiliateMasterList");
-            UniDynArray vendorNames = getRbo().getPropertyToDynArray("affiliateMasterList");
-            UniDynArray vendorIds = getRbo().getPropertyToDynArray("affiliateMasterId");
+            UniDynArray vendorNames = getRbo().getPropertyToDynArray("affiliateName");
+            UniDynArray vendorIds = getRbo().getPropertyToDynArray("masterId");
             int vals = vendorNames.dcount(1);
             SelectItem defaultItem = new SelectItem("-1", "Select Affiliate");
             vendors.add(defaultItem);
@@ -92,7 +105,7 @@ public final class WebDEBean implements Serializable {
             }
             this.affiliateMasterList = vendors;
         } catch (RbException ex) {
-            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AffiliateMasterBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -114,7 +127,7 @@ public final class WebDEBean implements Serializable {
             String iDate = getRbo().getProperty("iDate");
             todayInternal = Integer.parseInt(iDate);
         } catch (RbException ex) {
-            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AffiliateMasterBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -129,7 +142,7 @@ public final class WebDEBean implements Serializable {
             String oDate = getRbo().getProperty("oDate");
             setTodayExternal(oDate);
         } catch (RbException ex) {
-            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AffiliateMasterBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return todayExternal;
     }
@@ -141,80 +154,12 @@ public final class WebDEBean implements Serializable {
         this.todayExternal = todayExternal;
     }
 
-    /**
-     * @return the currencyTypes
-     */
-    public LinkedList<SelectItem> getCurrencyTypes() {
-        return currencyTypes;
-    }
-
-    public LinkedList<SelectItem> getCountryCodes() {
-        return countryCodes;
-    }
-
     public LinkedList<SelectItem> getMappedFields() {
         return mappedFields;
     }
 
     public ArrayList<SelectItem> getAccessMethods() {
         return accessMethods;
-    }
-
-    /**
-     * @param currencyTypes the currencyTypes to set
-     */
-    public void setCurrencyTypes(LinkedList<SelectItem> currencyTypes) {
-        try {
-            RedObject rb = new RedObject("WDE", "UTILS:Files");
-            rb.setProperty("fileName", "PARAMS");
-            rb.setProperty("id", "LOCALE.INFO");
-            rb.setProperty("keyField", "7");
-            rb.setProperty("valueField", "8");
-            rb.callMethod("getSelectObject");
-            String errStat = rb.getProperty("errStat");
-            String errCode = rb.getProperty("errCode");
-            String errMsg = rb.getProperty("errMsg");
-            UniDynArray keys = rb.getPropertyToDynArray("keyList");
-            UniDynArray values = rb.getPropertyToDynArray("valueList");
-            int vals = keys.dcount(1);
-            SelectItem defaultItem = new SelectItem("-1", "- Select -");
-            currencyTypes.add(defaultItem);
-            for (int i = 1; i <= vals; i++) {
-                String key = keys.extract(1, i).toString();
-                String value = values.extract(1, i).toString();
-                currencyTypes.add(new SelectItem(key, value));
-            }
-        } catch (RbException ex) {
-            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        this.currencyTypes = currencyTypes;
-    }
-
-    public void setCountryCodes(LinkedList<SelectItem> cc) {
-        try {
-            RedObject rb = new RedObject("WDE", "UTILS:Files");
-            rb.setProperty("fileName", "PARAMS");
-            rb.setProperty("id", "LOCALE.INFO");
-            rb.setProperty("keyField", "1");
-            rb.setProperty("valueField", "4");
-            rb.callMethod("getSelectObject");
-            String errStat = rb.getProperty("errStat");
-            String errCode = rb.getProperty("errCode");
-            String errMsg = rb.getProperty("errMsg");
-            UniDynArray keys = rb.getPropertyToDynArray("keyList");
-            UniDynArray values = rb.getPropertyToDynArray("valueList");
-            int vals = keys.dcount(1);
-            SelectItem defaultItem = new SelectItem("-1", "- Select -");
-            cc.add(defaultItem);
-            for (int i = 1; i <= vals; i++) {
-                String key = keys.extract(1, i).toString();
-                String value = values.extract(1, i).toString();
-                cc.add(new SelectItem(key, value));
-            }
-        } catch (RbException ex) {
-            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        this.countryCodes = cc;
     }
 
     public void setMappedFields(LinkedList<SelectItem> mf) {
@@ -239,7 +184,7 @@ public final class WebDEBean implements Serializable {
                 mf.add(new SelectItem(key, value));
             }
         } catch (RbException ex) {
-            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AffiliateMasterBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.mappedFields = mf;
     }
@@ -268,7 +213,7 @@ public final class WebDEBean implements Serializable {
             }
 
         } catch (RbException rbe) {
-            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, rbe);
+            Logger.getLogger(AffiliateMasterBean.class.getName()).log(Level.SEVERE, null, rbe);
         }
         this.accessMethods = list;
     }
@@ -307,7 +252,7 @@ public final class WebDEBean implements Serializable {
             }
 
         } catch (RbException rbe) {
-            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, rbe);
+            Logger.getLogger(AffiliateMasterBean.class.getName()).log(Level.SEVERE, null, rbe);
         }
         this.fileFormats = fileFormats;
     }
@@ -316,14 +261,14 @@ public final class WebDEBean implements Serializable {
      * @return the userId
      */
     public String getUserId() {
-        if(userId == null || userId.isEmpty()) {
+        if (userId == null || userId.isEmpty()) {
             try {
                 setRbo(new RedObject("WDE", "AOP:Utils"));
                 getRbo().callMethod("getLogName");
                 userId = getRbo().getProperty("logName");
                 setUserId(userId);
             } catch (RbException ex) {
-                Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(AffiliateMasterBean.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return userId;
@@ -340,7 +285,7 @@ public final class WebDEBean implements Serializable {
      * @return the networkList
      */
     public ArrayList<SelectItem> getNetworkList() {
-        if(networkList==null) {
+        if (networkList == null) {
             this.networkList = new ArrayList<SelectItem>();
         }
         return networkList;
@@ -364,7 +309,7 @@ public final class WebDEBean implements Serializable {
             }
             this.networkList = networkList;
         } catch (RbException ex) {
-            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AffiliateMasterBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

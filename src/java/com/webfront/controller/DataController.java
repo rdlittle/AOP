@@ -59,7 +59,7 @@ public final class DataController {
 
     public List<BatchItem> getBatchList() {
         String newVendorId = mgmtBean.getVendorId();
-        String vendorDiv = mgmtBean.getDetail().getVendorDetailId();
+        String vendorDiv = mgmtBean.getDetail().getAffiliateDetailId();
         if(vendorDiv.equals("0")) {
             vendorDiv="";
         } else {

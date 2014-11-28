@@ -6,7 +6,7 @@
 
 package com.webfront.model;
 
-import com.webfront.controller.VendorDetailController;
+import com.webfront.controller.AffiliateDetailController;
 import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -18,10 +18,10 @@ import javax.faces.event.AjaxBehaviorEvent;
  */
 @ManagedBean
 @SessionScoped
-public class VendorDetail implements Serializable {
-    private VendorDetailController controller;
+public class AffiliateDetail implements Serializable {
+    private AffiliateDetailController controller;
     private String id;
-    private String vendorMasterId;
+    private String affiliateMasterId;
     private String storeName;
     private String subVendorId;
     private String createDate;
@@ -46,10 +46,10 @@ public class VendorDetail implements Serializable {
     private boolean ibvOnGiftCard;
     private String threshhold;
 
-    public VendorDetail() {
-        this.controller = new VendorDetailController();
+    public AffiliateDetail() {
+        this.controller = new AffiliateDetailController();
         this.id=new String();
-        this.vendorMasterId=new String();
+        this.affiliateMasterId=new String();
         this.storeName=new String();
         this.subVendorId=new String();
         this.createDate=new String();
@@ -72,7 +72,7 @@ public class VendorDetail implements Serializable {
         this.ibvOnGiftCard=false;
     }
     
-    public void changeVendorMaster(AjaxBehaviorEvent event) {
+    public void changeAffiliateMaster(AjaxBehaviorEvent event) {
         
     }
     
@@ -85,12 +85,13 @@ public class VendorDetail implements Serializable {
     }
     
     public void save() {
-        controller.setIbvDetail(this);
+        controller.setAffiliateDetail(this);
     }
     public void changeStore(AjaxBehaviorEvent event) {
-        VendorDetail newStore = getController().getVendorDetail(getId());
+        String storeId = getId();
+        AffiliateDetail newStore = getController().getAffiliateDetail(storeId);
         if(newStore != null) {
-            setVendorMasterId(newStore.getVendorMasterId());
+            setAffiliateMasterId(newStore.getAffiliateMasterId());
             setStoreName(newStore.getStoreName());
             setSubVendorId(newStore.getSubVendorId());
             setCreateDate(newStore.getCreateDate());
@@ -118,29 +119,29 @@ public class VendorDetail implements Serializable {
     /**
      * @return the controller
      */
-    public VendorDetailController getController() {
+    public AffiliateDetailController getController() {
         return controller;
     }
 
     /**
      * @param controller the controller to set
      */
-    public void setController(VendorDetailController controller) {
+    public void setController(AffiliateDetailController controller) {
         this.controller = controller;
     }
 
     /**
-     * @return the vendorMasterId
+     * @return the affiliateMasterId
      */
-    public String getVendorMasterId() {
-        return vendorMasterId;
+    public String getAffiliateMasterId() {
+        return affiliateMasterId;
     }
 
     /**
-     * @param vendorMasterId the vendorMasterId to set
+     * @param affiliateMasterId the affiliateMasterId to set
      */
-    public void setVendorMasterId(String vendorMasterId) {
-        this.vendorMasterId = vendorMasterId;
+    public void setAffiliateMasterId(String affiliateMasterId) {
+        this.affiliateMasterId = affiliateMasterId;
     }
 
     /**

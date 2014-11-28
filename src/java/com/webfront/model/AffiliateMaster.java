@@ -5,7 +5,7 @@
  */
 package com.webfront.model;
 
-import com.webfront.controller.VendorMasterController;
+import com.webfront.controller.AffiliateMasterController;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,10 +22,10 @@ import javax.faces.event.ValueChangeEvent;
  */
 @ManagedBean
 @SessionScoped
-public final class VendorMaster implements Serializable {
+public final class AffiliateMaster implements Serializable {
 
-    @ManagedProperty(value = "#{vendorMasterController}")
-    private VendorMasterController controller;
+    @ManagedProperty(value = "#{affiliateMasterController}")
+    private AffiliateMasterController controller;
     protected String ID;
     protected String name;
     protected String category;
@@ -43,20 +43,20 @@ public final class VendorMaster implements Serializable {
     protected boolean active;
     protected String nextDetailId;
     protected String field1;
-    protected HashMap<Integer, IbvMapping> fieldMap;
+    protected HashMap<Integer, AffiliateMapping> fieldMap;
     private ArrayList<SelectItem> fieldMapList;
     protected boolean newColumn;
     private Integer mfidx;
     private UIComponent selector;
     
-    public VendorMaster() {
+    public AffiliateMaster() {
 
     }
 
     public void addNewColumn() {
         int nextColumn = getFieldMap().size();
         nextColumn++;
-        IbvMapping ibvMapping = new IbvMapping();
+        AffiliateMapping ibvMapping = new AffiliateMapping();
         ibvMapping.setId(Integer.toString(nextColumn));
         getFieldMap().put(nextColumn, ibvMapping);
         getFieldMapList().add(new SelectItem(Integer.toString(nextColumn), ibvMapping.getColumnName()));
@@ -79,7 +79,7 @@ public final class VendorMaster implements Serializable {
     
     public void changeVendor(AjaxBehaviorEvent event) {
         setID(ID);
-        VendorMaster rec=getController().getVendorMaster(ID);
+        AffiliateMaster rec=getController().getAffiliateMaster(ID);
         setName(rec.getName());
         setCategory(rec.getCategory());
         setType(rec.getType());
@@ -101,11 +101,11 @@ public final class VendorMaster implements Serializable {
     }
 
     public void saveRecord() {
-        getController().setVendorMaster(this);
+        getController().setAffiliateMaster(this);
     }
     
     public void ajaxHandler(AjaxBehaviorEvent event) {
-        System.out.println("VendorMaster.ajaxHandler()");
+        System.out.println("AffiliateMaster.ajaxHandler()");
     }
 
     public void changeCategory(AjaxBehaviorEvent event) {
@@ -151,7 +151,7 @@ public final class VendorMaster implements Serializable {
     public void removeField(Integer i) {
         i+=1;
         if(i<= getFieldMap().size() && i>0) {
-            HashMap<Integer,IbvMapping> map=getFieldMap();
+            HashMap<Integer,AffiliateMapping> map=getFieldMap();
             ArrayList<SelectItem> list=getFieldMapList();
             map.remove(i);
             SelectItem sel=list.get(i-1);
@@ -399,14 +399,14 @@ public final class VendorMaster implements Serializable {
         this.field1 = field1;
     }
 
-    public final void setFieldMap(HashMap<Integer, IbvMapping> fm) {
+    public final void setFieldMap(HashMap<Integer, AffiliateMapping> fm) {
         this.fieldMap = fm;
     }
 
     /**
      * @return the fieldMap
      */
-    public HashMap<Integer, IbvMapping> getFieldMap() {
+    public HashMap<Integer, AffiliateMapping> getFieldMap() {
         return fieldMap;
     }
 
@@ -441,14 +441,14 @@ public final class VendorMaster implements Serializable {
     /**
      * @return the controller
      */
-    public VendorMasterController getController() {
+    public AffiliateMasterController getController() {
         return controller;
     }
 
     /**
      * @param controller the controller to set
      */
-    public void setController(VendorMasterController controller) {
+    public void setController(AffiliateMasterController controller) {
         this.controller = controller;
     }
 

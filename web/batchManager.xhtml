@@ -20,8 +20,8 @@
                                 <h:outputText value="#{batchManagementBean.mgmtRole}" style="text-align: right;"/>
 
                                 <h:outputText value="Vendor ID"/>
-                                <h:outputText value="#{batchManagementBean.vendorId}"/>
-                                
+                                <h:outputText value="#{batchManagementBean.affiliateMasterId}"/>
+
                                 <h:outputText value="Store"/>
                                 <h:outputText value="#{batchManagementBean.storeName}"/>
 
@@ -45,13 +45,30 @@
                     </p:fragment>
                 </h:panelGrid>
 
-
                 <h:form id="tableForm">
+
+                    <p:ajaxStatus style="display:block;margin-bottom:.5em; height:24px;">
+                        <f:facet name="default">
+                            <h:outputText value="" />
+                        </f:facet>
+
+                        <f:facet name="start">
+                            <p:graphicImage name="/images/ajaxloadingbar.gif" />
+                        </f:facet>
+
+                        <f:facet name="complete">
+                            <h:outputText value="" />
+                        </f:facet>
+                    </p:ajaxStatus>
+
                     <p:treeTable id="batchTable" var="row" value="#{batchTree.root}"
                                  widgetVar="batchTable" selection="#{batchTree.selectedNode}"
                                  scrollable="true" scrollHeight="450"
                                  selectionMode="single">
-                        <p:ajax event="select" listener="#{batchTree.getDetail}" update=":tableForm:batchTable"/>
+                        <p:ajax event="select" listener="#{batchTree.getDetail}" update=":tableForm:batchTable">
+
+                        </p:ajax>
+
                         <p:ajax event="unselect" listener="#{batchTree.rowUnSelector}" update=":tableForm:batchTable"/>
                         <p:column sortBy="description" headerText="Store Name/Order Number" style="width: 20%;">
                             <h:outputText value="#{row.description}"/>

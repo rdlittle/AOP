@@ -12,7 +12,7 @@ package com.webfront.model;
 public class CheckReconcilliation {
     
     private String networkId;
-    private String vendorId;
+    private String affiliateMasterId;
     private String storeId;
     private String postDate;
     private String payingId;
@@ -36,17 +36,17 @@ public class CheckReconcilliation {
     }
 
     /**
-     * @return the vendorId
+     * @return the affiliateMasterId
      */
-    public String getVendorId() {
-        return vendorId;
+    public String getAffiliateMasterId() {
+        return affiliateMasterId;
     }
 
     /**
-     * @param vendorId the vendorId to set
+     * @param affiliateMasterId the affiliateMasterId to set
      */
-    public void setVendorId(String vendorId) {
-        this.vendorId = vendorId;
+    public void setAffiliateMasterId(String affiliateMasterId) {
+        this.affiliateMasterId = affiliateMasterId;
     }
 
     /**

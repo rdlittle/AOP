@@ -15,24 +15,29 @@
 
     <h:body>
         <p:layout fullPage="true">
-            <p:layoutUnit position="north" size="40" resizable="true" closable="true" collapsible="true">
-                <ui:insert name="banner">Header</ui:insert>
+            <p:layoutUnit position="north" size="50" resizable="true" closable="true" collapsible="true" styleClass="banner">
+                <ui:insert name="banner">
+                    
+                </ui:insert>
             </p:layoutUnit>
 
             <p:layoutUnit position="west" size="200" header="AOP Menu" collapsible="true">
                 <p:menu toggleable="true">
-                    <p:submenu label="Affiliate Management">
-                        <p:menuitem value="Vendor Maintenance" url="/faces/vendorForm.xhtml"/>
-                        <p:menuitem value="Store Maintenance" url="/faces/storeForm.xhtml"/>
-                    </p:submenu>
-                    <p:submenu label="Order Management">
-                        <p:menuitem value="Process Report" url="/faces/aopUploader.xhtml"/>
-                        <p:menuitem value="Processing Queue" url="/faces/aopQueue.xhtml"/>
+                    <p:submenu label="Affiliates">
+                        <p:menuitem value="Vendor management" url="/faces/affiliateMasterForm.xhtml"/>
+                        <p:menuitem value="Store management" url="/faces/affiliateStoreForm.xhtml"/>
                     </p:submenu>
                     <p:submenu label="Batch Management">
-                        <p:menuitem value="Batch Listing" url="/faces/batchManagementInputForm.xhtml"/>
-                        <p:menuitem value="Error Listing" url="/faces/affiliateErrorListing.xhtml"/>
-                        <p:menuitem value="Check Reconcilliation" url="/faces/checkReconFileUploader.xhtml"/>
+                        <p:menuitem value="Batch listing" url="/faces/batchManagementInputForm.xhtml"/>
+                        <p:menuitem value="Error listing" url="/faces/affiliateErrorListing.xhtml"/>
+                    </p:submenu>
+                    <p:submenu label="Order Management">
+                        <p:menuitem value="Process a report" url="/faces/aopUploader.xhtml"/>
+                        <p:menuitem value="Processing queue" url="/faces/aopQueue.xhtml"/>
+                    </p:submenu>   
+                    <p:submenu label="Payment Processing">
+                        <p:menuitem value="Check reconcilliation" url="/faces/checkReconFileUploader.xhtml"/>                        
+                        <p:menuitem value="Payment queue" url="/faces/paymentQueue.xhtml"/>
                     </p:submenu>
                 </p:menu>
             </p:layoutUnit>

@@ -17,7 +17,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
-import javax.faces.event.ValueChangeEvent;
 
 /**
  *
@@ -29,14 +28,20 @@ public class AopQueueBean {
 
     private ArrayList<AopQueue> queueList;
     private ArrayList<AopQueue> selectedItems = new ArrayList<>();
+    private String queueType;
 
+    public ArrayList<AopQueue> getPaymentQueueList() {
+        queueType = "payment";
+        return getQueueList();
+    }
     /**
      * @return the queueList
      */
     public ArrayList<AopQueue> getQueueList() {
         this.queueList = new ArrayList<>();
         RedObject rb = new RedObject("WDE", "AOP:Queue");
-        //rb.setProperty("vendorMasterId", "vendorMasterId");
+        rb.setProperty("queueType", queueType);
+        //rb.setProperty("affiliateMasterId", "affiliateMasterId");
         //rb.setProperty("userName", "userName");
         //rb.setProperty("processStatus", "processStatus");
         try {
@@ -51,9 +56,9 @@ public class AopQueueBean {
                 FacesContext ctx = FacesContext.getCurrentInstance();
                 ctx.addMessage("msg", fmsg);
             } else {
-                int vals = Integer.parseInt(rb.getProperty("itemCount").toString());
+                int vals = Integer.parseInt(rb.getProperty("itemCount"));
                 if (vals > 0) {
-                    UniDynArray vendorList = rb.getPropertyToDynArray("vendorMasterId");
+                    UniDynArray affiliateMasterList = rb.getPropertyToDynArray("affiliateMasterId");
                     UniDynArray fileNameList = rb.getPropertyToDynArray("fileName");
                     UniDynArray pathList = rb.getPropertyToDynArray("path");
                     UniDynArray errorCountList = rb.getPropertyToDynArray("errorCount");
@@ -65,10 +70,14 @@ public class AopQueueBean {
                     UniDynArray orderCountList = rb.getPropertyToDynArray("orderCount");
                     UniDynArray uploadTimeList = rb.getPropertyToDynArray("uploadTime");
                     UniDynArray runLevelList = rb.getPropertyToDynArray("runLevel");
+                    UniDynArray checkAmountList = rb.getPropertyToDynArray("checkAmount");
+                    UniDynArray networkIdList = rb.getPropertyToDynArray("networkId");
+                    UniDynArray networkNameList = rb.getPropertyToDynArray("networkName");
+                    UniDynArray networkCountryList = rb.getPropertyToDynArray("networkCountry");
 
                     for (int val = 1; val <= vals; val++) {
                         AopQueue aopQueue = new AopQueue();
-                        aopQueue.setVendorMasterId(vendorList.extract(1, val).toString());
+                        aopQueue.setAffiliateMasterId(affiliateMasterList.extract(1, val).toString());
                         aopQueue.setFileName(fileNameList.extract(1, val).toString());
                         aopQueue.setPath(pathList.extract(1, val).toString());
                         aopQueue.setErrors(errorCountList.extract(1, val).toString());
@@ -79,14 +88,18 @@ public class AopQueueBean {
                         aopQueue.setLineCount(lineCountList.extract(1, val).toString());
                         aopQueue.setOrderCount(orderCountList.extract(1, val).toString());
                         aopQueue.setUploadTime(uploadTimeList.extract(1, val).toString());
-                        aopQueue.setRunLevel(runLevelList.extract(1,val).toString());
+                        aopQueue.setRunLevel(runLevelList.extract(1, val).toString());
+                        aopQueue.setCheckAmount(checkAmountList.extract(1, val).toString());
+                        aopQueue.setNetworkdId(networkIdList.extract(1, val).toString());
+                        aopQueue.setNetworkName(networkNameList.extract(1, val).toString());
+                        aopQueue.setNetworkCountry(networkCountryList.extract(1, val).toString());
                         this.queueList.add(aopQueue);
                     }
                 }
             }
         } catch (RbException ex) {
             Logger.getLogger(AopQueueBean.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("AopQueBean.getQueList() exception: "+ex.toString());
+            System.out.println("AopQueBean.getQueList() exception: " + ex.toString());
         }
         return this.queueList;
     }
@@ -100,17 +113,39 @@ public class AopQueueBean {
 
     public void processSelected(ActionEvent actionEvent) {
         if (selectedItems != null) {
-            for (AopQueue item : selectedItems) {
-                String fn = item.getFileName();
-                if (item.isDeleteFlag()) {
-                    System.out.println("Deleting " + fn);
+            try {
+                UniDynArray fileNames = new UniDynArray();
+                UniDynArray affiliateMasterList = new UniDynArray();
+                UniDynArray processLevels = new UniDynArray();
+                int i = 0;
+                for (AopQueue item : selectedItems) {
+                    i++;
+                    fileNames.insert(1, i, item.getFileName());
+                    affiliateMasterList.insert(1, i, item.getAffiliateMasterId());
+                    processLevels.insert(1, i, item.getStatus());
                 }
-                if (item.isPreRunFlag()) {
-                    System.out.println("Pre-run " + fn);
+                RedObject rb = new RedObject("WDE", "AOP:Queue");
+                rb.setProperty("fileName", fileNames.toString());
+                rb.setProperty("affiliateMasterId", affiliateMasterList.toString());
+                rb.setProperty("runLevel", processLevels.toString());
+                rb.callMethod("setQueue");
+                UniDynArray errStat = rb.getPropertyToDynArray("errStat");
+                UniDynArray errCode = rb.getPropertyToDynArray("errCode");
+                UniDynArray errMsg = rb.getPropertyToDynArray("errMsg");
+                int errCount = errStat.count(1);
+                String errMsgs="";
+                if (errCount > 0) {
+                    for(int e=0; i<= errCount; e++) {
+                        errMsgs+=fileNames.extract(1, e).toString()+": ";
+                        errMsgs+=errMsg.extract(1, e).toString()+"\n";
+                    }
+                    FacesMessage fmsg = new FacesMessage(errMsgs);
+                    fmsg.setSeverity(FacesMessage.SEVERITY_ERROR);
+                    FacesContext ctx = FacesContext.getCurrentInstance();
+                    ctx.addMessage("msg", fmsg);
                 }
-                if (item.isRunFlag()) {
-                    System.out.println("Run " + fn);
-                }
+            } catch (RbException ex) {
+                Logger.getLogger(AopQueueBean.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -120,13 +155,12 @@ public class AopQueueBean {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(summary));
         //System.out.println(selectedItems.size());
     }
-    
+
 //    public void toggleSelect(ValueChangeEvent vce) {
 //        String summary = "Checkbox event";
 //        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(summary));
 //        //System.out.println(selectedItems.size());
 //    }
-
     /**
      * @return the selectedItems
      */
@@ -139,5 +173,19 @@ public class AopQueueBean {
      */
     public void setSelectedItems(ArrayList<AopQueue> selectedItems) {
         this.selectedItems = selectedItems;
+    }
+
+    /**
+     * @return the queueType
+     */
+    public String getQueueType() {
+        return queueType;
+    }
+
+    /**
+     * @param queueType the queueType to set
+     */
+    public void setQueueType(String queueType) {
+        this.queueType = queueType;
     }
 }

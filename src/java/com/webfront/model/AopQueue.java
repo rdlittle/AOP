@@ -14,7 +14,7 @@ import javax.faces.event.ActionEvent;
  * @author rlittle
  */
 public class AopQueue {
-    private String vendorMasterId;
+    private String affiliateMasterId;
     private String path;
     private String errors;
     private String status;
@@ -31,6 +31,10 @@ public class AopQueue {
     HashMap<String,String> statusNames;
     HashMap<String,String> runStage;
     private String runLevel;
+    private String checkAmount;
+    private String networkdId;
+    private String networkName;
+    private String networkCountry;
 
     public AopQueue() {
         this.statusNames=new HashMap<>();
@@ -45,17 +49,17 @@ public class AopQueue {
         this.runLevel="0";
     }
     /**
-     * @return the vendorMasterId
+     * @return the affiliateMasterId
      */
-    public String getVendorMasterId() {
-        return vendorMasterId;
+    public String getAffiliateMasterId() {
+        return affiliateMasterId;
     }
 
     /**
-     * @param vendorMasterId the vendorMasterId to set
+     * @param affiliateMasterId the affiliateMasterId to set
      */
-    public void setVendorMasterId(String vendorMasterId) {
-        this.vendorMasterId = vendorMasterId;
+    public void setAffiliateMasterId(String affiliateMasterId) {
+        this.affiliateMasterId = affiliateMasterId;
     }
 
     /**
@@ -260,6 +264,62 @@ public class AopQueue {
      */
     public void setRunLevel(String runLevel) {
         this.runLevel = runLevel;
+    }
+
+    /**
+     * @return the checkAmount
+     */
+    public String getCheckAmount() {
+        return checkAmount;
+    }
+
+    /**
+     * @param checkAmount the checkAmount to set
+     */
+    public void setCheckAmount(String checkAmount) {
+        this.checkAmount = checkAmount;
+    }
+
+    /**
+     * @return the networkdId
+     */
+    public String getNetworkdId() {
+        return networkdId;
+    }
+
+    /**
+     * @param networkdId the networkdId to set
+     */
+    public void setNetworkdId(String networkdId) {
+        this.networkdId = networkdId;
+    }
+
+    /**
+     * @return the networkName
+     */
+    public String getNetworkName() {
+        return networkName;
+    }
+
+    /**
+     * @param networkName the networkName to set
+     */
+    public void setNetworkName(String networkName) {
+        this.networkName = networkName;
+    }
+
+    /**
+     * @return the networkCountry
+     */
+    public String getNetworkCountry() {
+        return networkCountry;
+    }
+
+    /**
+     * @param networkCountry the networkCountry to set
+     */
+    public void setNetworkCountry(String networkCountry) {
+        this.networkCountry = networkCountry;
     }
     
 }
