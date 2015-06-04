@@ -32,7 +32,7 @@ public final class AffiliateMasterBean implements Serializable {
     private LinkedList<SelectItem> mappedFields;
     private ArrayList<SelectItem> accessMethods;
     private ArrayList<SelectItem> fileFormats;
-
+    private String networkId;
     private String userId;
 
     /**
@@ -47,6 +47,7 @@ public final class AffiliateMasterBean implements Serializable {
         setMappedFields(new LinkedList<SelectItem>());
         setAccessMethods(new ArrayList<SelectItem>());
         setFileFormats(new ArrayList<SelectItem>());
+        networkId = "";
     }
 
     /**
@@ -69,6 +70,9 @@ public final class AffiliateMasterBean implements Serializable {
     public LinkedList<SelectItem> getAffiliateMasterList() {
         LinkedList<SelectItem> list = new LinkedList<>();
         try {
+            if(networkId!=null) {
+                getRbo().setProperty("networkId", networkId);
+            }
             getRbo().callMethod("getMasterList");
             UniDynArray vendorNames = getRbo().getPropertyToDynArray("affiliateName");
             UniDynArray vendorIds = getRbo().getPropertyToDynArray("masterId");
@@ -92,7 +96,7 @@ public final class AffiliateMasterBean implements Serializable {
      */
     public void setAffiliateMasterList(LinkedList<SelectItem> vendors) {
         try {
-            getRbo().callMethod("getAffiliateMasterList");
+            getRbo().callMethod("getMasterList");
             UniDynArray vendorNames = getRbo().getPropertyToDynArray("affiliateName");
             UniDynArray vendorIds = getRbo().getPropertyToDynArray("masterId");
             int vals = vendorNames.dcount(1);
@@ -296,12 +300,11 @@ public final class AffiliateMasterBean implements Serializable {
      */
     public void setNetworkList(ArrayList<SelectItem> networkList) {
         try {
-            getRbo().callMethod("getNetworkList");
-            UniDynArray networkIds = getRbo().getPropertyToDynArray("networkId");
-            UniDynArray networkNames = getRbo().getPropertyToDynArray("networkName");
+            RedObject networkRbo = new RedObject("WDE", "Affiliates:Network");
+            networkRbo.callMethod("getNetworkList");
+            UniDynArray networkIds = networkRbo.getPropertyToDynArray("networkId");
+            UniDynArray networkNames = networkRbo.getPropertyToDynArray("networkName");
             int vals = networkNames.dcount(1);
-            SelectItem defaultItem = new SelectItem("-1", "Select Network");
-            networkList.add(defaultItem);
             for (int i = 1; i <= vals; i++) {
                 String netId = networkIds.extract(1, i).toString();
                 String netName = networkNames.extract(1, i).toString();
@@ -311,5 +314,19 @@ public final class AffiliateMasterBean implements Serializable {
         } catch (RbException ex) {
             Logger.getLogger(AffiliateMasterBean.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    /**
+     * @return the networkId
+     */
+    public String getNetworkId() {
+        return networkId;
+    }
+
+    /**
+     * @param networkId the networkId to set
+     */
+    public void setNetworkId(String networkId) {
+        this.networkId = networkId;
     }
 }

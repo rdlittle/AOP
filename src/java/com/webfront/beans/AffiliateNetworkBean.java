@@ -7,6 +7,8 @@ package com.webfront.beans;
 import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
+import com.webfront.model.AffiliateNetwork;
+import com.webfront.model.AffiliatePayment;
 import com.webfront.model.SelectItem;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import org.primefaces.event.SelectEvent;
 
 /**
  *
@@ -25,7 +28,6 @@ import javax.faces.bean.SessionScoped;
 public final class AffiliateNetworkBean implements Serializable {
 
     private RedObject rbo;
-    private LinkedList<SelectItem> affiliateMasterList;
     private ArrayList<SelectItem> networkList;
     private int todayInternal;
     private String todayExternal;
@@ -34,8 +36,15 @@ public final class AffiliateNetworkBean implements Serializable {
     private LinkedList<SelectItem> mappedFields;
     private ArrayList<SelectItem> accessMethods;
     private ArrayList<SelectItem> fileFormats;
-    
+    private AffiliatePayment payment;
+    private String networkId;
     private String userId;
+    private String masterId;
+    private ArrayList<SelectItem> members;
+    private SelectItem selectedItem;
+    private ArrayList<SelectItem> unassignedMembers;
+    private AffiliateNetwork selectedNetwork;
+    private boolean selected;
 
     /**
      * Creates a new instance of WebDEBean
@@ -44,13 +53,15 @@ public final class AffiliateNetworkBean implements Serializable {
         todayInternal = 1;
         setTodayInternal(1);
         setRbo(new RedObject("WDE", "Affiliates:Network"));
-        setAffiliateMasterList(new LinkedList<SelectItem>());
-        setNetworkList(new ArrayList<SelectItem>());
         setCurrencyTypes(new LinkedList<SelectItem>());
         setCountryCodes(new LinkedList<SelectItem>());
         setMappedFields(new LinkedList<SelectItem>());
         setAccessMethods(new ArrayList<SelectItem>());
         setFileFormats(new ArrayList<SelectItem>());
+        unassignedMembers = new ArrayList<>();
+        payment = new AffiliatePayment();
+        networkId = "";
+        selected = false;
     }
 
     /**
@@ -65,35 +76,6 @@ public final class AffiliateNetworkBean implements Serializable {
      */
     public void setRbo(RedObject rbo) {
         this.rbo = rbo;
-    }
-
-    /**
-     * @return the vendorNames
-     */
-    public LinkedList<SelectItem> getAffiliateMasterList() {
-        return affiliateMasterList;
-    }
-
-    /**
-     * @param vendors the vendorNames to set
-     */
-    public void setAffiliateMasterList(LinkedList<SelectItem> vendors) {
-        try {
-            getRbo().callMethod("getAffiliateMasterList");
-            UniDynArray vendorNames = getRbo().getPropertyToDynArray("affiliateMasterList");
-            UniDynArray vendorIds = getRbo().getPropertyToDynArray("affiliateMasterId");
-            int vals = vendorNames.dcount(1);
-            SelectItem defaultItem = new SelectItem("-1", "Select Affiliate");
-            vendors.add(defaultItem);
-            for (int i = 1; i <= vals; i++) {
-                String str = vendorNames.extract(1, i).toString();
-                String vid = vendorIds.extract(1, i).toString();
-                vendors.add(new SelectItem(vid, str));
-            }
-            this.affiliateMasterList = vendors;
-        } catch (RbException ex) {
-            Logger.getLogger(AffiliateNetworkBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     /**
@@ -316,7 +298,7 @@ public final class AffiliateNetworkBean implements Serializable {
      * @return the userId
      */
     public String getUserId() {
-        if(userId == null || userId.isEmpty()) {
+        if (userId == null || userId.isEmpty()) {
             try {
                 setRbo(new RedObject("WDE", "AOP:Utils"));
                 getRbo().callMethod("getLogName");
@@ -340,31 +322,243 @@ public final class AffiliateNetworkBean implements Serializable {
      * @return the networkList
      */
     public ArrayList<SelectItem> getNetworkList() {
-        if(networkList==null) {
-            this.networkList = new ArrayList<SelectItem>();
-        }
+        setNetworkList();
         return networkList;
+    }
+
+    public void onChangeNetwork(String newId) {
+        if (newId != null && !"".equals(newId)) {
+            setNetworkId(newId);
+        }
+        setMembers();
     }
 
     /**
      * @param networkList the networkList to set
      */
-    public void setNetworkList(ArrayList<SelectItem> networkList) {
+    public void setNetworkList() {
+        networkList = new ArrayList<>();
+        setRbo(new RedObject("WDE", "Affiliates:Network"));
         try {
             getRbo().callMethod("getNetworkList");
             UniDynArray networkIds = getRbo().getPropertyToDynArray("networkId");
             UniDynArray networkNames = getRbo().getPropertyToDynArray("networkName");
             int vals = networkNames.dcount(1);
-            SelectItem defaultItem = new SelectItem("-1", "Select Network");
-            networkList.add(defaultItem);
             for (int i = 1; i <= vals; i++) {
                 String netId = networkIds.extract(1, i).toString();
                 String netName = networkNames.extract(1, i).toString();
                 networkList.add(new SelectItem(netId, netName));
             }
-            this.networkList = networkList;
         } catch (RbException ex) {
             Logger.getLogger(AffiliateNetworkBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    /**
+     * @return the payment
+     */
+    public AffiliatePayment getPayment(String checkId) {
+        return payment;
+    }
+
+    /**
+     * @param payment the payment to set
+     */
+    public void setPayment(AffiliatePayment payment) {
+        this.payment = payment;
+    }
+
+    /**
+     * @return the networkId
+     */
+    public String getNetworkId() {
+        return networkId;
+    }
+
+    /**
+     * @param networkId the networkId to set
+     */
+    public void setNetworkId(String networkId) {
+        this.networkId = networkId;
+    }
+
+    /**
+     * @return the members
+     */
+    public ArrayList<SelectItem> getMembers() {
+        return members;
+    }
+
+    public void onChangeVendor() {
+        System.out.println(masterId);
+    }
+    
+    public void onDeleteMember() {
+        if (selectedItem != null) {
+            try {
+                setRbo(new RedObject("WDE", "Affiliates:Network"));
+                getRbo().setProperty("networkId", networkId);
+                getRbo().setProperty("memberId", selectedItem.getKey());
+                getRbo().setProperty("isRemoving", "1");
+                getRbo().callMethod("setNetwork");
+                String errStat = getRbo().getProperty("errStat");
+                String errCode = getRbo().getProperty("errCode");
+                String errMsg = getRbo().getProperty("errMsg");
+                setMembers();
+                masterId = "-1";
+                selected=false;
+                selectedItem = null;
+            } catch (RbException rbe) {
+                Logger.getLogger(AffiliateNetworkBean.class.getName()).log(Level.SEVERE, null, rbe);
+            }
+        }        
+    }
+    
+    public void onRowSelect(SelectEvent  se) {
+        selected=true;
+    }
+    
+    public void onRowUnselect(SelectEvent se) {
+        selected=false;
+    }
+
+    public void onAddMember() {
+        if (!"".equals(masterId)) {
+            try {
+                setRbo(new RedObject("WDE", "Affiliates:Network"));
+                getRbo().setProperty("networkId", networkId);
+                getRbo().setProperty("memberId", masterId);
+                getRbo().setProperty("isRemoving", "");
+                getRbo().callMethod("setNetwork");
+                String errStat = getRbo().getProperty("errStat");
+                String errCode = getRbo().getProperty("errCode");
+                String errMsg = getRbo().getProperty("errMsg");
+                setMembers();
+                masterId = "-1";
+            } catch (RbException rbe) {
+                Logger.getLogger(AffiliateNetworkBean.class.getName()).log(Level.SEVERE, null, rbe);
+            }
+        }
+    }
+
+    public void setMembers() {
+        members = new ArrayList<>();
+        try {
+            setRbo(new RedObject("WDE", "Affiliates:Network"));
+            getRbo().setProperty("networkId", networkId);
+            getRbo().callMethod("getNetwork");
+            String errStat = getRbo().getProperty("errStat");
+            String errCode = getRbo().getProperty("errCode");
+            String errMsg = getRbo().getProperty("errMsg");
+            UniDynArray keys = getRbo().getPropertyToDynArray("memberId");
+            UniDynArray values = getRbo().getPropertyToDynArray("memberName");
+            int vals = keys.dcount(1);
+            for (int val = 1; val <= vals; val++) {
+                SelectItem item = new SelectItem();
+                String key = keys.extract(1, val).toString();
+                String value = values.extract(1, val).toString();
+                item.setKey(key);
+                item.setValue(value);
+                members.add(item);
+            }
+        } catch (RbException rbe) {
+            Logger.getLogger(AffiliateNetworkBean.class.getName()).log(Level.SEVERE, null, rbe);
+        }
+    }
+
+    /**
+     * @return the selectedNetwork
+     */
+    public AffiliateNetwork getSelectedNetwork() {
+        return selectedNetwork;
+    }
+
+    /**
+     * @param selectedNetwork the selectedNetwork to set
+     */
+    public void setSelectedNetwork(AffiliateNetwork selectedNetwork) {
+        this.selectedNetwork = selectedNetwork;
+    }
+
+    /**
+     * @return the nonMembers
+     */
+    public ArrayList<SelectItem> getUnassignedMembers() {
+        if (!"".equals(networkId)) {
+            setUnassignedMembers(new ArrayList<SelectItem>());
+        }
+        return this.unassignedMembers;
+    }
+
+    /**
+     * @param nonMembers the nonMembers to set
+     */
+    public void setUnassignedMembers(ArrayList<SelectItem> nonMembers) {
+        this.unassignedMembers = new ArrayList<>();
+        try {
+            setRbo(new RedObject("WDE", "Affiliates:Master"));
+            getRbo().setProperty("isUnassigned", "1");
+            getRbo().callMethod("getMasterList");
+            String errStat = getRbo().getProperty("errStat");
+            String errCode = getRbo().getProperty("errCode");
+            String errMsg = getRbo().getProperty("errMsg");
+            UniDynArray keys = getRbo().getPropertyToDynArray("masterId");
+            UniDynArray values = getRbo().getPropertyToDynArray("affiliateName");
+            int vals = keys.dcount(1);
+            for (int val = 1; val <= vals; val++) {
+                SelectItem item = new SelectItem();
+                String key = keys.extract(1, val).toString();
+                String value = values.extract(1, val).toString();
+                item.setKey(key);
+                item.setValue(value);
+                this.unassignedMembers.add(item);
+            }
+
+        } catch (RbException rbe) {
+            Logger.getLogger(AffiliateNetworkBean.class.getName()).log(Level.SEVERE, null, rbe);
+        }
+    }
+
+    /**
+     * @return the masterId
+     */
+    public String getMasterId() {
+        return masterId;
+    }
+
+    /**
+     * @param masterId the masterId to set
+     */
+    public void setMasterId(String masterId) {
+        this.masterId = masterId;
+    }
+
+    /**
+     * @return the selectedItem
+     */
+    public SelectItem getSelectedItem() {
+        return selectedItem;
+    }
+
+    /**
+     * @param selectedItem the selectedItem to set
+     */
+    public void setSelectedItem(SelectItem selectedItem) {
+        this.selectedItem = selectedItem;
+    }
+
+    /**
+     * @return the isSelected
+     */
+    public boolean isSelected() {
+        return selected;
+    }
+
+    /**
+     * @param isSelected the isSelected to set
+     */
+    public void setSelected(boolean isSelected) {
+        this.selected = isSelected;
+    }
+
 }

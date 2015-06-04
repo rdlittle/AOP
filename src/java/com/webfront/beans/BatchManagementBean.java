@@ -35,7 +35,7 @@ public class BatchManagementBean implements Serializable {
 
     private String mgmtRole;
     private Float checkAmt;
-    private String affiliateMasterId;
+    private String masterId;
     private String userId;
     private int internalDate;
     private String externalDate;
@@ -81,8 +81,9 @@ public class BatchManagementBean implements Serializable {
 
     public void changeValue(AjaxBehaviorEvent event) {
         this.affiliateMaster.changeVendor(event);
-        this.affiliateMasterId = this.affiliateMaster.getID();
-        this.detail.setAffiliateMasterId(affiliateMasterId);
+        this.masterId = this.affiliateMaster.getID();
+        
+        this.detail.setAffiliateMasterId(masterId);
         this.detail.changeMasterId(event);
         this.detail.setStoreList(new ArrayList<SelectItem>());
         this.vendorName = this.affiliateMaster.getName();
@@ -90,13 +91,13 @@ public class BatchManagementBean implements Serializable {
 
     public void doSearch() {
         this.searchResults = new ArrayList<>();
-        RedObject rb = new RedObject("WDE", "AOP:AffiliateOrders");
+        RedObject rb = new RedObject("WDE", "Affiliates:Orders");
         rb.setProperty("vendorOrderNum", orderNumber);
-        if (this.getVendorId() != null) {
-            rb.setProperty("affiliateMasterId", this.getVendorId());
+        if (this.getMasterId() != null) {
+            rb.setProperty("masterId", this.getMasterId());
         }
         if (this.affiliateDetail != null) {
-            rb.setProperty("vendorDiv", this.affiliateDetail.getId());
+            rb.setProperty("divId", this.affiliateDetail.getId());
         }
         try {
             rb.callMethod("getAoSearch");
@@ -111,8 +112,8 @@ public class BatchManagementBean implements Serializable {
                 ctx.addMessage("msg", fmsg);
             } else {
                 UniDynArray orderIdList = rb.getPropertyToDynArray("orderId");
-                UniDynArray affiliateMasterIdList = rb.getPropertyToDynArray("affiliateMasterId");
-                UniDynArray vendorDivList = rb.getPropertyToDynArray("vendorDiv");
+                UniDynArray affiliateMasterIdList = rb.getPropertyToDynArray("masterId");
+                UniDynArray vendorDivList = rb.getPropertyToDynArray("divId");
                 UniDynArray vendorOrderNumList = rb.getPropertyToDynArray("vendorOrderNum");
                 UniDynArray orderRefList = rb.getPropertyToDynArray("orderRef");
                 UniDynArray orderDateList = rb.getPropertyToDynArray("orderDate");
@@ -169,15 +170,15 @@ public class BatchManagementBean implements Serializable {
     /**
      * @return the affiliateMasterId
      */
-    public String getVendorId() {
-        return affiliateMasterId;
+    public String getMasterId() {
+        return masterId;
     }
 
     /**
      * @param affiliateMasterId the affiliateMasterId to set
      */
-    public void setVendorId(String affiliateMasterId) {
-        this.affiliateMasterId = affiliateMasterId;
+    public void setMasterId(String affiliateMasterId) {
+        this.masterId = affiliateMasterId;
     }
 
     public Map<String, String> getMgmtRoles() {

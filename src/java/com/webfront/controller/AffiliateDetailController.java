@@ -100,7 +100,7 @@ public class AffiliateDetailController implements Serializable {
     public void setAffiliateDetail(AffiliateDetail rec) {
         try {
             getRb().setProperty("id", rec.getId());
-            getRb().setProperty("affiliateMasterId", rec.getAffiliateMasterId());
+            getRb().setProperty("masterId", rec.getAffiliateMasterId());
             getRb().setProperty("storeName", rec.getStoreName());
             getRb().setProperty("subVendorId", rec.getSubVendorId());
             getRb().setProperty("createDate", rec.getCreateDate());

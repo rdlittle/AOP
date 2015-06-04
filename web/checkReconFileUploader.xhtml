@@ -13,7 +13,7 @@
             <ui:define name="content">
                 <h:form id="form1" enctype="multipart/form-data">
                     <span style="width: 99%; text-align: center; margin: 2em auto;">
-                        <h2>Affiliate Payment Processing</h2>
+                        <h2>Affiliate Check Reconciliation</h2>
                     </span>
                     <p:messages showDetail="false"/>
                     <p:panelGrid columns="2" styleClass="custom" style="width: 50%; margin: auto;">
@@ -21,16 +21,33 @@
                         <h:inputHidden id="userId" value="#{webDEBean.userId}"/>
 
                         <h:outputText value="Affiliate Network"/>
-                        <p:selectOneMenu value="#{uploadBean.networkId}" style="width: 400px;" required="true">
-                            <f:selectItems id="networkId" value="#{webDEBean.networkList}" var="network" 
+                        <p:selectOneMenu id = "networkSelector" value="#{uploadBean.networkId}" style="width: 400px;" required="true">
+                            <p:ajax listener="#{affiliateNetworkBean.onChangeNetwork(uploadBean.networkId)}" update="vendorSelector"/>
+                            <f:selectItems id="networkId" value="#{affiliateNetworkBean.networkList}" var="network" 
                                            itemLabel="#{network.value}"
                                            itemValue="#{network.key}">
                             </f:selectItems>
                         </p:selectOneMenu>
 
+                        <h:outputText value="Affiliate Vendor"/>
+                        <p:selectOneMenu id = "vendorSelector" value="#{uploadBean.vendorCode}" style="width: 400px;" required="true">
+                            <f:selectItem itemValue="-1" itemLabel="All vendors"/>
+                            <f:selectItems id="vendorId" value="#{affiliateNetworkBean.members}" var="vendor" 
+                                           itemLabel="#{vendor.value}"
+                                           itemValue="#{vendor.key}">
+                            </f:selectItems>
+                        </p:selectOneMenu>                        
+
                         <h:outputText value="Check Amount"/>
                         <p:inputText id="checkAmount" value="#{uploadBean.checkAmount}" required="true">
                         </p:inputText>
+
+                        <h:outputText value="Check Date"/>
+                        <p:calendar id="checkDate" value="#{uploadBean.checkDate}">
+                        </p:calendar>
+
+                        <h:outputText value = "Check ID"/>
+                        <h:inputText id="checkId" value="#{uploadBean.checkId}"/>
 
                         <h:outputText value="Select File"/>
                         <p:fileUpload mode="simple" value="#{uploadBean.file}" required="true" />

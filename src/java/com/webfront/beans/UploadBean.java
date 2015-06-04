@@ -34,6 +34,9 @@ public class UploadBean {
     private String networkName;
     private String networkId;
     private String checkAmount;
+    private String checkId;
+    private String checkDate;
+    private String keyStatus;
 
     /**
      * Creates a new instance of UploadBean
@@ -65,6 +68,7 @@ public class UploadBean {
                 rb.setProperty("fileName", file.getFileName());
                 rb.setProperty("networkId", this.networkId);
                 rb.setProperty("checkAmount", this.checkAmount);
+                rb.setProperty("checkId",this.checkId);
                 try {
                     rb.callMethod("setQueue");
                     String errStat = rb.getProperty("errStat");
@@ -124,6 +128,7 @@ public class UploadBean {
             rb.setProperty("networkId", this.networkId);
             rb.setProperty("checkAmount", this.checkAmount);
             rb.setProperty("queueType", "payment");
+            rb.setProperty("checkId",this.checkId);
             try {
                 rb.callMethod("setQueue");
                 String errStat = rb.getProperty("errStat");
@@ -230,5 +235,47 @@ public class UploadBean {
      */
     public void setCheckAmount(String checkAmount) {
         this.checkAmount = checkAmount;
+    }
+
+    /**
+     * @return the checkId
+     */
+    public String getCheckId() {
+        return checkId;
+    }
+
+    /**
+     * @param checkId the checkId to set
+     */
+    public void setCheckId(String checkId) {
+        this.checkId = checkId;
+    }
+
+    /**
+     * @return the checkDate
+     */
+    public String getCheckDate() {
+        return checkDate;
+    }
+
+    /**
+     * @param checkDate the checkDate to set
+     */
+    public void setCheckDate(String checkDate) {
+        this.checkDate = checkDate;
+    }
+
+    /**
+     * @return the keyStatus
+     */
+    public String getKeyStatus() {
+        return keyStatus;
+    }
+
+    /**
+     * @param keyStatus the keyStatus to set
+     */
+    public void setKeyStatus(String keyStatus) {
+        this.keyStatus = keyStatus;
     }
 }

@@ -57,11 +57,11 @@ public final class BatchSummaryBean implements Serializable {
     }
 
     public void populateTree() {
-        String newVendorId = mgmtBean.getVendorId();
+        String newVendorId = mgmtBean.getMasterId();
         ArrayList<String> tempStoreList=new ArrayList<>();
         if (!newVendorId.equals(this.vendorID)) {
             try {
-                setVendorID(mgmtBean.getVendorId());
+                setVendorID(mgmtBean.getMasterId());
                 setRbo(new RedObject("WDE", "AOP:Batch"));
                 ArrayList<BatchItem> tempList = new ArrayList<>();
                 getRbo().setProperty("vendorID", getVendorID());

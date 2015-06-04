@@ -51,14 +51,14 @@ public class AffiliateOrderBean implements Serializable {
         this.orderList = new ArrayList<>();
         this.orderList.clear();
         if (affiliateMasterId != null && !affiliateMasterId.isEmpty()) {
-            RedObject rb = new RedObject("WDE", "AOP:AffiliateOrders");
-            rb.setProperty("vendorId", affiliateMasterId);
+            RedObject rb = new RedObject("WDE", "Affiliates:Orders");
+            rb.setProperty("masterId", affiliateMasterId);
             String vendorDiv = this.affiliateDetailId;
             if (vendorDiv != null && !"".equals(vendorDiv)) {
                 int idx = vendorDiv.indexOf("*");
                 if (idx > 0) {
                     vendorDiv = vendorDiv.substring(idx + 1);
-                    rb.setProperty("vendorDiv", vendorDiv);
+                    rb.setProperty("divId", vendorDiv);
                 }
             }
             rb.setProperty("errorsOnly", errorsOnly ? "1" : "0");
@@ -83,7 +83,7 @@ public class AffiliateOrderBean implements Serializable {
                     UniDynArray ibvTotalList = rb.getPropertyToDynArray("ibvTotal");
                     UniDynArray placementIdList = rb.getPropertyToDynArray("placementId");
                     UniDynArray errorCountList = rb.getPropertyToDynArray("errorCount");
-                    UniDynArray vendorOrderNumList = rb.getPropertyToDynArray("vendorOrderNum");
+                    UniDynArray vendorOrderNumList = rb.getPropertyToDynArray("affiliateOrderNum");
                     UniDynArray commissionTotalList = rb.getPropertyToDynArray("commissionTotal");
                     UniDynArray storeNameList = rb.getPropertyToDynArray("storeName");
 

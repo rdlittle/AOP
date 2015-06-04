@@ -15,47 +15,58 @@
                 </span>
                 <h:form id="form">
                     <p:growl id="msg" />
-                    <p:dataTable id="paymentQueue" var="queueItem" value="#{aopQueueBean.paymentQueueList}" selection="#{aopQueueBean.selectedItems}" 
-                                 rowKey="#{queueItem.fileName}" resizableColumns="true">
-                        <p:column selectionMode="multiple" width="2%" style="text-align: center;"/>
-                        <p:column headerText="Ctry" width="20" style="text-align: left;">
+                    <p:dataTable id="paymentQueue" var="queueItem" 
+                                 value="#{aopQueueBean.paymentQueueList}" 
+                                 selection="#{aopQueueBean.selectedItems}" 
+                                 rowKey="#{queueItem.fileName}" 
+                                 rowSelectMode="checkbox"
+                                 resizableColumns="true">
+                        <p:column id="proc" selectionMode="multiple" style="text-align: left;" width="1%"/>
+                        <h:inputHidden id="aoQueueId" value="#{queueItem.aoQueueId}"/>
+                        <p:column headerText="Ctry" style="text-align: left;" width="2%">
                             <h:outputText value="#{queueItem.networkCountry}"/>
                         </p:column>                        
-                        <p:column headerText="Network">
+                        <p:column headerText="Network" width="10%">
                             <h:outputText value="#{queueItem.networkName}"/>
                         </p:column>
-                        <p:column headerText="Check Amount">
+                        <p:column headerText="Check ID" style="text-align: left;" width="5%">
+                            <h:outputText value="#{queueItem.checkId}"/>
+                        </p:column>                                                
+                        <p:column headerText="Check Amount" style="text-align: right;" width="5%">
                             <h:outputText value="#{queueItem.checkAmount}"/>
                         </p:column>                        
-                        <p:column headerText="Upload Date">
+                        <p:column headerText="Upload Date" style="text-align: center;" width="5%">
                             <h:outputText value="#{queueItem.uploadDate}"/>
                         </p:column>
-                        <p:column headerText="Upload Time">
+                        <p:column headerText="Upload Time" style="text-align: center;" width="5%">
                             <h:outputText value="#{queueItem.uploadTime}"/>
                         </p:column>                    
-                        <p:column headerText="User">
+                        <p:column headerText="User" style="text-align: left;" width="3%">
                             <h:outputText value="#{queueItem.userName}"/>
                         </p:column>
-                        <p:column headerText="Status">
+                        <p:column headerText="Status" width="5%" style="text-align: center;">
                             <h:outputText value="#{queueItem.statusName}"/>
                         </p:column>
-                        <p:column headerText="Lines">
+                        <p:column headerText="Lines" width="5%" style="text-align: center;">
                             <h:outputText value="#{queueItem.lineCount}"/>
                         </p:column> 
-                        <p:column headerText="Orders">
+                        <p:column headerText="Orders" width="5%" style="text-align: center;">
                             <h:outputText value="#{queueItem.orderCount}"/>
                         </p:column> 
-                        <p:column headerText="Errors">
+                        <p:column headerText="Errors" width="5%" style="text-align: center;">
                             <h:outputText value="#{queueItem.errors}"/>
                         </p:column> 
-                        <p:column headerText="Report Name">
+                        <p:column headerText="Report Name" width="26%" style="text-align: left;">
                             <h:outputText value="#{queueItem.fileName}"/>
                         </p:column>
-                        <p:column headerText="Run Stage">
-                            <h:outputText value="#{queueItem.runStage}"/>
-                        </p:column>                    
+                        <p:ajax event="rowSelectCheckbox" listener="#{aopQueueBean.onRowSelect(se)}" update="@form:processButton"/>
+                        <p:ajax event="rowUnselectCheckbox" listener="#{aopQueueBean.onRowUnselect(se)}" update="@form:processButton"/>
+                        <p:poll id="poll" interval="10" listener="#{aopQueueBean.rePoll}" update="@form:paymentQueue"/>
                     </p:dataTable>
-                    <p:commandButton actionListener="#{aopQueueBean.processSelected}" ajax="false" process=":form:aopQueue" value="Process"/>
+                    <p:commandButton id="processButton" value="Delete"
+                                     action="#{aopQueueBean.deleteSelected}" 
+                                     disabled="#{!aopQueueBean.selected}"
+                                     update="@form:paymentQueue"/>
                 </h:form>
             </ui:define>
         </ui:composition>

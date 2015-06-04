@@ -47,6 +47,7 @@ public class AffiliateMasterController implements Serializable {
             String errCode = rbo.getProperty("errCode");
             String errMsg = rbo.getProperty("errMsg");
             affiliateMaster.setName(rbo.getProperty("affiliateName"));
+            affiliateMaster.setNetworkId(rbo.getProperty("networkId"));
             affiliateMaster.setCategory(rbo.getProperty("category"));
             affiliateMaster.setType(rbo.getProperty("type"));
             affiliateMaster.setPrefix(rbo.getProperty("prefix"));
@@ -77,9 +78,10 @@ public class AffiliateMasterController implements Serializable {
 
     public void setAffiliateMaster(AffiliateMaster rec) {
         affiliateMaster = rec;
-        RedObject rbo = new RedObject("WDE", "Vendor:Master");
+        RedObject rbo = new RedObject("WDE", "Affiliates:Master");
         rbo.setProperty("id", rec.getID());
-        rbo.setProperty("vendorName", rec.getName());
+        rbo.setProperty("affiliateName", rec.getName());
+        rbo.setProperty("networkId", rec.getNetworkId());
         rbo.setProperty("category", rec.getCategory());
         rbo.setProperty("type", rec.getType());
         rbo.setProperty("prefix", rec.getPrefix());

@@ -14,11 +14,11 @@
                 <span style="width: 99%; text-align: center; margin: 2em auto;">
                     <h2>Vendor And Store Selection</h2>
                 </span>
-                
-                <p:messages id="msgs" autoUpdate="true" />
-                
+
+                <p:growl id="msgs"></p:growl>
+
                 <h:form id="form">
-                    
+
                     <p:panelGrid columns="3" styleClass="custom">
                         <h:outputText value="Affiliate Master ID" style="text-align: right;"/>
                         <p:selectOneMenu id="masterId" value="#{affiliateDetailBean.affiliateMasterId}">
@@ -51,61 +51,55 @@
 
                     </p:panelGrid>
 
-                    <p:panelGrid columns="2" style="width: 100%;" styleClass="custom">
-                        <p:panelGrid columns="7" style="width: 100%;" >
-                            <f:facet name="header">
-                                <h:outputText value="Commission / IBV / Cashback"/>    
-                            </f:facet>
-                            <h:outputText value=""/>
-                            <h:outputText value=""/>
-                            <h:outputText value=""/>
-                            <h:outputText value=""/>
-                            <h:outputText value=""/>
-                            <h:outputText value=""/>
-                            <h:outputText value=""/>
+                    <p:panelGrid style="width: 95%; margin: 1.25em auto 1em auto;">
+                        <p:column>
+                            <p:panelGrid columns="7" style="width: 100%;" >
+                                <f:facet name="header">
+                                    <h:outputText value="Commission / IBV / Cashback"/>    
+                                </f:facet>
+                                <h:outputText value="IBV"/>
+                                <h:outputText value="Comm"/>
+                                <h:outputText value="Commission Type"/>
+                                <h:outputText value="CB"/>
+                                <h:outputText value="Currency Type"/>
+                                <h:outputText value="Tiered Commission Key"/>                            
+                                <h:outputText value=""/>
 
-                            <h:outputText value="IBV"/>
-                            <h:outputText value="Comm"/>
-                            <h:outputText value="Commission Type"/>
-                            <h:outputText value="CB"/>
-                            <h:outputText value="Currency Type"/>
-                            <h:outputText value="Tiered Commission Key"/>                            
-                            <h:outputText value=""/>
+                                <h:inputText id="ibv" value="#{affiliateDetail.defaultIBV}" size="5" />
+                                <h:inputText id="comm" value="#{affiliateDetail.defaultCommission}" size="5" />
+                                <h:selectOneMenu id="commType" value="#{affiliateDetail.defaultCommissionType}">
+                                    <f:selectItem itemValue="" itemLabel="Select"/>
+                                    <f:selectItem itemValue="F" itemLabel="Fixed"/>
+                                    <f:selectItem itemValue="P" itemLabel="Percentage"/>
+                                </h:selectOneMenu>
+                                <h:inputText id="cb" value="#{affiliateDetail.cbTermsId}" size="5"/>
+                                <h:inputText id="currencyType" value="#{affiliateDetail.currencyType}" size="5" />
+                                <h:inputText id="commKey" value="#{affiliateDetail.tieredCommissionKeys}" size="5" />
+                                <h:outputText value="Add"/>
+                            </p:panelGrid>
+                        </p:column>
 
-                            <h:inputText id="ibv" value="#{affiliateDetail.defaultIBV}" size="5" />
-                            <h:inputText id="comm" value="#{affiliateDetail.defaultCommission}" size="5" />
-                            <h:selectOneMenu id="commType" value="#{affiliateDetail.defaultCommissionType}">
-                                <f:selectItem itemValue="" itemLabel="Select"/>
-                                <f:selectItem itemValue="F" itemLabel="Fixed"/>
-                                <f:selectItem itemValue="P" itemLabel="Percentage"/>
-                            </h:selectOneMenu>
-                            <h:inputText id="cb" value="#{affiliateDetail.cbTermsId}" size="5"/>
-                            <h:inputText id="currencyType" value="#{affiliateDetail.currencyType}" size="5" />
-                            <h:inputText id="commKey" value="#{affiliateDetail.tieredCommissionKeys}" size="5" />
-                            <h:outputText value="Add"/>
-                        </p:panelGrid>
-
-                        <p:panelGrid columns="2" styleClass="custom">
-                            <f:facet name="header">
-                                <h:outputText value="Terms And Conditions"/>
-                            </f:facet>
-                            <h:outputText value="Minimum Pay Period"/>
-                            <h:outputText value="Maximum Pay Period"/>
-                            <p:selectOneRadio id="minPayPeriod" value="#{affiliateDetail.minPay}" layout="grid" columns="1">
-                                <f:selectItem itemLabel="35 to 45 days" itemValue="3545"/>
-                                <f:selectItem itemLabel="45 to 60 days" itemValue="4560"/>
-                                <f:selectItem itemLabel="60 to 90 days" itemValue="6090"/>
-                                <f:selectItem itemLabel="Over 90 days" itemValue="OVER90"/>
-                                <p:ajax listener="#{affiliateDetail.ajaxHandler}"/>
-                            </p:selectOneRadio>
-                            <p:selectOneRadio id="maxPayPeriod" value="#{affiliateDetail.maxPay}" layout="grid" columns="1">
-                                <f:selectItem itemLabel="3 Months" itemValue="3"/>
-                                <f:selectItem itemLabel="4 Months" itemValue="4"/>
-                                <f:selectItem itemLabel="6 Months" itemValue="6"/>
-                                <f:selectItem itemLabel="Threshold must be met" itemValue="T"/>
-                            </p:selectOneRadio> 
-                            <h:outputText value=""/>
-                            <p:panelGrid columns="1" styleClass="custom">
+                        <p:column style="text-align: center;" rowspan="2">
+                            <p:panelGrid columns="2" style="width: 90%; margin: auto;">
+                                <f:facet name="header">
+                                    <h:outputText value="Terms And Conditions"/>
+                                </f:facet>
+                                <h:outputText value="Minimum Pay Period"/>
+                                <h:outputText value="Maximum Pay Period"/>
+                                <p:selectOneRadio id="minPayPeriod" value="#{affiliateDetail.minPay}" layout="grid" columns="1">
+                                    <f:selectItem itemLabel="35 to 45 days" itemValue="3545"/>
+                                    <f:selectItem itemLabel="45 to 60 days" itemValue="4560"/>
+                                    <f:selectItem itemLabel="60 to 90 days" itemValue="6090"/>
+                                    <f:selectItem itemLabel="Over 90 days" itemValue="OVER90"/>
+                                    <p:ajax listener="#{affiliateDetail.ajaxHandler}"/>
+                                </p:selectOneRadio>
+                                <p:selectOneRadio id="maxPayPeriod" value="#{affiliateDetail.maxPay}" layout="grid" columns="1">
+                                    <f:selectItem itemLabel="3 Months" itemValue="3"/>
+                                    <f:selectItem itemLabel="4 Months" itemValue="4"/>
+                                    <f:selectItem itemLabel="6 Months" itemValue="6"/>
+                                    <f:selectItem itemLabel="Threshold must be met" itemValue="T"/>
+                                </p:selectOneRadio> 
+                                <h:outputText value="Threshold"/>
                                 <p:selectOneMenu id="threshhold" value="#{affiliateDetail.threshhold}">
                                     <f:selectItem itemValue="" itemLabel="Select"/>
                                     <f:selectItem itemValue="100000" itemLabel="1000.00"/>
@@ -114,36 +108,39 @@
                                     <f:selectItem itemValue="400000" itemLabel="4000.00"/>
                                     <f:selectItem itemValue="500000" itemLabel="5000.00"/>
                                 </p:selectOneMenu>
-                                <h:outputText value="Threshold"/>
                             </p:panelGrid>
-                        </p:panelGrid>
+                        </p:column>
 
-                        <p:panelGrid columns = "2" style="width: 100%;" styleClass="custom">
-                            <h:outputText value="IBV Terms"/>
-                            <h:outputText value="CB Terms"/>
+                        <p:row>
+                            <p:column>
+                                <p:panelGrid columns = "2" style="width: 100%;" styleClass="custom">
+                                    <h:outputText value="IBV Terms"/>
+                                    <h:outputText value="CB Terms"/>
 
-                            <h:inputTextarea id="ibvTerms" value="#{affiliateDetail.ibvTerms}" 
-                                             style="width: 100%;" rows="4">
-                                <p:ajax listener="#{affiliateDetail.ajaxHandler}"/>
-                            </h:inputTextarea>
-                            <h:inputTextarea id="cbTerms" value="#{affiliateDetail.cbTerms}" 
-                                             style="width: 100%;" rows="4">
-                                <p:ajax listener="#{affiliateDetail.ajaxHandler}"/>
-                            </h:inputTextarea>
+                                    <h:inputTextarea id="ibvTerms" value="#{affiliateDetail.ibvTerms}" 
+                                                     style="width: 100%;" rows="4">
+                                        <p:ajax listener="#{affiliateDetail.ajaxHandler}"/>
+                                    </h:inputTextarea>
+                                    <h:inputTextarea id="cbTerms" value="#{affiliateDetail.cbTerms}" 
+                                                     style="width: 100%;" rows="4">
+                                        <p:ajax listener="#{affiliateDetail.ajaxHandler}"/>
+                                    </h:inputTextarea>
 
-                            <p:selectBooleanCheckbox id="displayIBV" value="#{affiliateDetail.displayIBV}" itemLabel="Display">
-                                <p:ajax listener="#{affiliateDetail.ajaxHandler}" />
-                            </p:selectBooleanCheckbox>
-                            <p:selectBooleanCheckbox id="displayCB" value="#{affiliateDetail.displayCB}" itemLabel="Display">
-                                <p:ajax listener="#{affiliateDetail.ajaxHandler}"/>
-                            </p:selectBooleanCheckbox>
-                            <p:selectBooleanCheckbox id="ibvGift" itemLabel="IBV On Gift Card" value="#{affiliateDetail.ibvOnGiftCard}"/>
-                            <p:selectBooleanCheckbox id="bypassCb" itemLabel="Bypass Cashback" value="#{affiliateDetail.cbExclude}" />
-                        </p:panelGrid>
-                        
+                                    <p:selectBooleanCheckbox id="displayIBV" value="#{affiliateDetail.displayIBV}" itemLabel="Display">
+                                        <p:ajax listener="#{affiliateDetail.ajaxHandler}" />
+                                    </p:selectBooleanCheckbox>
+                                    <p:selectBooleanCheckbox id="displayCB" value="#{affiliateDetail.displayCB}" itemLabel="Display">
+                                        <p:ajax listener="#{affiliateDetail.ajaxHandler}"/>
+                                    </p:selectBooleanCheckbox>
+                                    <p:selectBooleanCheckbox id="ibvGift" itemLabel="IBV On Gift Card" value="#{affiliateDetail.ibvOnGiftCard}"/>
+                                    <p:selectBooleanCheckbox id="bypassCb" itemLabel="Bypass Cashback" value="#{affiliateDetail.cbExclude}" />
+                                </p:panelGrid>
+                            </p:column>
+                        </p:row>
+
                         <h:outputText value=""/>
                     </p:panelGrid>
-                    
+
                     <p:panel styleClass="custom" style="margin-top: 2em;">
                         <p:commandLink id="newCampaignLink" actionListener="#{campaignBean.createCampaign}" 
                                        rendered="#{!campaignBean.newCampaign}" ajax="true" update="campaignGrid @this @form">
@@ -162,10 +159,21 @@
                             <p:inputText id="increase" value="#{campaignBean.newCashback}" style="width: 100px;" rendered="#{campaignBean.newCampaign}"/>
                         </p:panelGrid>
 
-                        <p:dataTable var="campaign" value="#{campaignBean.list}">
+                        <p:dataTable  
+                            id="campaignTable"
+                            value="#{campaignBean.list}"
+                            var="campaign" 
+                            selection="#{campaignBean.selectedCampaign}"
+                            selectionMode="single"
+                            rowKey="#{campaign.id}">
+                            <p:ajax event="rowSelect" listener="#{campaignBean.onRowSelect}" update=":form:campaignTable" />
+                            <p:ajax event="rowUnselect" listener="#{campaignBean.onRowUnselect}" update=":form:campaignTable" />
                             <f:facet name="header">Cashback Campaigns</f:facet>
                             <p:column headerText="Status" >
                                 <h:outputText value="#{campaign.status}"/>
+                            </p:column>                            
+                            <p:column headerText="Seq">
+                                <h:outputText value="#{campaign.seqNum}"/>
                             </p:column>                            
                             <p:column headerText="Start Date">
                                 <h:outputText value="#{campaign.startDate}"/>
@@ -188,9 +196,14 @@
                             <p:column headerText="Date">
                                 <h:outputText value="#{campaign.editDate}"/>
                             </p:column> 
-                            <p:column headerText="Force Stop">
+                            <p:column headerText="Action">
                                 <h:commandButton action="#{campaignBean.setCampaignStop}" value="Stop"
                                                  rendered="#{campaign.canStop}"/>
+                                <h:commandButton value="Delete"
+                                                 action="#{campaignBean.deleteCampaign()}"
+                                                 rendered="#{campaign.canDelete}">
+                                    <f:setPropertyActionListener value="#{campaign}" target="#{campaignBean.selectedCampaign}"/>
+                                </h:commandButton>
                             </p:column>
                         </p:dataTable>
                     </p:panel>

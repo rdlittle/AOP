@@ -26,6 +26,8 @@ public class Campaign {
     private String editTime;
     private HashMap<String,String> statusLabels;
     private boolean canStop;
+    private boolean canDelete;
+    private String seqNum;
 
     public Campaign() {
         statusLabels=new HashMap<>();
@@ -211,8 +213,7 @@ public class Campaign {
      */
     public boolean isCanStop() {
         int nbr=Integer.parseInt(this.status);
-        if(nbr<3) return true;
-        return false;
+        return (nbr>0 && nbr<3);
     }
 
     /**
@@ -220,6 +221,28 @@ public class Campaign {
      */
     public void setCanStop(boolean canStop) {
         this.canStop = canStop;
+    }
+    
+    public boolean isCanDelete() {
+        return (this.status.equals("0"));
+    }
+    
+    public void setCanDelete(Boolean b) {
+        
+    }
+
+    /**
+     * @return the seqNum
+     */
+    public String getSeqNum() {
+        return seqNum;
+    }
+
+    /**
+     * @param seqNum the seqNum to set
+     */
+    public void setSeqNum(String seqNum) {
+        this.seqNum = seqNum;
     }
 
 }

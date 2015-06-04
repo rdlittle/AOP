@@ -30,7 +30,7 @@
                             <p:panelGrid styleClass="custom">
                                 <p:row>
                                     <p:column>
-                                        <h:outputText value="Vendor ID"/>
+                                        <h:outputText value="Affiliate ID"/>
                                     </p:column>
                                     <p:column>
                                         <p:selectOneMenu value="#{affiliateMaster.ID}">
@@ -94,10 +94,13 @@
                             <p:panelGrid styleClass="custom">
                                 <p:row>
                                     <p:column>
-                                        <p:selectOneRadio value="#{batchManagementBean.batchType}" layout="grid" columns="1">
-                                            <f:selectItem itemLabel="Not Processed" itemValue="NP"/>
-                                            <f:selectItem itemLabel="Processed" itemValue="P"/>
-                                            <f:selectItem itemLabel="All" itemValue="BOTH"/>
+                                        <p:selectOneRadio value="#{batchManagementBean.batchType}" layout="grid" columns="2">
+                                            <f:selectItem itemValue="P" itemLabel="Processed"/>
+                                            <f:selectItem itemValue="N" itemLabel="Not Processed"/>
+                                            <f:selectItem itemValue="PE" itemLabel="Paid Errors"/>
+                                            <f:selectItem itemValue="ND" itemLabel="Not Paid Deferred"/>
+                                            <f:selectItem itemValue="RP" itemLabel="Received Payment"/>
+                                            <f:selectItem itemValue="U" itemLabel="Upload"/>
                                         </p:selectOneRadio>
                                     </p:column>
                                 </p:row>

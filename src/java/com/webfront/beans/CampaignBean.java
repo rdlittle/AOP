@@ -14,14 +14,18 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
+import javax.faces.application.FacesMessage.Severity;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.event.UnselectEvent;
 
 /**
  *
@@ -34,7 +38,9 @@ public class CampaignBean {
     @ManagedProperty(value = "#{affiliateDetail}")
     private AffiliateDetail detail;
     private ArrayList<Campaign> list;
+    private List<Campaign> list2;
     private Campaign activeCampaign;
+    private Campaign selectedCampaign;
     private String affiliateMasterId;
     private String affiliateDetailId;
     private Calendar calendar;
@@ -72,10 +78,6 @@ public class CampaignBean {
             String sid = detail.getId();
             int idx = sid.indexOf("*");
             String ssid = sid.substring(idx + 1);
-            getActiveCampaign();
-            if (this.activeCampaign != null) {
-                campaignList.add(this.activeCampaign);
-            }
             rb.setProperty("affiliateMasterId", detail.getAffiliateMasterId());
             rb.setProperty("affiliateDetailId", ssid);
             try {
@@ -88,6 +90,7 @@ public class CampaignBean {
                 } else {
                     int rows = Integer.valueOf(rb.getProperty("campaignCount").toString());
                     if (rows > 0) {
+                        UniDynArray idList = rb.getPropertyToDynArray("id");
                         UniDynArray cbBase = rb.getPropertyToDynArray("cbBase");
                         UniDynArray cbIncrease = rb.getPropertyToDynArray("cbIncrease");
                         UniDynArray cbTotal = rb.getPropertyToDynArray("cbTotal");
@@ -97,8 +100,10 @@ public class CampaignBean {
                         UniDynArray time = rb.getPropertyToDynArray("time");
                         UniDynArray user = rb.getPropertyToDynArray("user");
                         UniDynArray status = rb.getPropertyToDynArray("status");
+                        UniDynArray seqNums = rb.getPropertyToDynArray("seqNum");
                         for (int row = 1; row <= rows; row++) {
                             Campaign campaign = new Campaign();
+                            campaign.setId(idList.extract(1, row).toString());
                             campaign.setCbBase(cbBase.extract(1, row).toString());
                             campaign.setCbIncrease(cbIncrease.extract(1, row).toString());
                             campaign.setCbTotal(cbTotal.extract(1, row).toString());
@@ -108,6 +113,7 @@ public class CampaignBean {
                             campaign.setEditTime(time.extract(1, row).toString());
                             campaign.setUser(user.extract(1, row).toString());
                             campaign.setStatus(status.extract(1, row).toString());
+                            campaign.setSeqNum(seqNums.extract(1, row).toString());
                             campaignList.add(campaign);
                         }
                     }
@@ -129,6 +135,36 @@ public class CampaignBean {
                 setList(new ArrayList<Campaign>());
                 this.affiliateDetailId = this.detail.getId();
                 this.newCampaign = false;
+            }
+        }
+    }
+
+    public void deleteCampaign() {
+        if (this.selectedCampaign != null) {
+            RedObject rb = new RedObject("WDE", "AOP:Cashback");
+            rb.setProperty("id", this.selectedCampaign.getId());
+            try {
+                rb.callMethod("deleteCampaign");
+                String errStat = rb.getProperty("errStat").toString();
+                String errCode = rb.getProperty("errCode").toString();
+                String errMsg = rb.getProperty("errMsg").toString();
+                FacesMessage fmsg;
+                Severity severity;
+                if (errStat.equals("-1")) {
+                    severity = FacesMessage.SEVERITY_ERROR;
+                    errMsg = "Error: " + errCode + " " + errMsg;
+                } else {
+                    severity = FacesMessage.SEVERITY_INFO;
+                    errMsg = "Campaign deleted";
+                    list.remove(this.selectedCampaign);
+                    this.selectedCampaign=null;
+                }
+                fmsg = new FacesMessage(errMsg);
+                fmsg.setSeverity(severity);
+                FacesContext ctx = FacesContext.getCurrentInstance();
+                ctx.addMessage("msg", fmsg);
+            } catch (RbException ex) {
+                Logger.getLogger(CampaignBean.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -160,6 +196,7 @@ public class CampaignBean {
                     this.activeCampaign.setEditTime(rb.getProperty("editTime"));
                     this.activeCampaign.setUser(rb.getProperty("user"));
                     this.activeCampaign.setStatus(rb.getProperty("status"));
+                    this.activeCampaign.setSeqNum(rb.getProperty("seqNum"));
                 } else {
                     this.activeCampaign = null;
                 }
@@ -306,6 +343,7 @@ public class CampaignBean {
             rb.setProperty("date", today);
             rb.setProperty("time", time);
             rb.setProperty("status", "0");
+            rb.setProperty("seqNum", "");
             try {
                 rb.callMethod(("setCampaign"));
                 String errStat = rb.getProperty("errStat");
@@ -348,4 +386,50 @@ public class CampaignBean {
         this.newCashback = newCashback;
     }
 
+    /**
+     * @return the selectedCampaign
+     */
+    public Campaign getSelectedCampaign() {
+        return selectedCampaign;
+    }
+
+    /**
+     * @param selectedCampaign the selectedCampaign to set
+     */
+    public void setSelectedCampaign(Campaign selectedCampaign) {
+        this.selectedCampaign = selectedCampaign;
+    }
+
+    /**
+     * @return the list2
+     */
+    public List<Campaign> getList2() {
+        return list2;
+    }
+
+    /**
+     * @param list2 the list2 to set
+     */
+    public void setList2(List<Campaign> list2) {
+        this.list2 = list2;
+    }
+
+    /*
+     public void onRowSelect(SelectEvent event) {
+     FacesMessage msg = new FacesMessage("Car Selected", ((Car) event.getObject()).getId());
+     FacesContext.getCurrentInstance().addMessage(null, msg);
+     }
+ 
+     public void onRowUnselect(UnselectEvent event) {
+     FacesMessage msg = new FacesMessage("Car Unselected", ((Car) event.getObject()).getId());
+     FacesContext.getCurrentInstance().addMessage(null, msg);
+     }
+     */
+    public void onRowSelect(SelectEvent event) {
+        selectedCampaign = (Campaign) event.getObject();
+    }
+
+    public void onRowUnselect(UnselectEvent event) {
+
+    }
 }

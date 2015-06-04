@@ -9,11 +9,13 @@ import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.model.SelectItem;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.component.UISelectItems;
 import javax.faces.event.AjaxBehaviorEvent;
 
 /**
@@ -22,7 +24,7 @@ import javax.faces.event.AjaxBehaviorEvent;
  */
 @ManagedBean
 @SessionScoped
-public class AffiliateDetailBean {
+public class AffiliateDetailBean implements Serializable {
 
     private String affiliateMasterId;
     private String affiliateDetailId;
@@ -31,11 +33,18 @@ public class AffiliateDetailBean {
     private ArrayList<SelectItem> storeList;
     private ArrayList<SelectItem> minPayList;
     private ArrayList<SelectItem> maxPayList;
+    
+    private UISelectItems selItems;
 
     /**
      * @return the storeList
      */
     public ArrayList<SelectItem> getStoreList() {
+        if(storeList==null || storeList.isEmpty()) {
+            if(affiliateMasterId!=null) {
+                setStoreList(null);
+            }
+        }
         return storeList;
     }
 
@@ -198,5 +207,19 @@ public class AffiliateDetailBean {
      */
     public void setStoreName(String storeName) {
         this.storeName = storeName;
+    }
+
+    /**
+     * @return the selItems
+     */
+    public UISelectItems getSelItems() {
+        return selItems;
+    }
+
+    /**
+     * @param selItems the selItems to set
+     */
+    public void setSelItems(UISelectItems selItems) {
+        this.selItems = selItems;
     }
 }

@@ -15,7 +15,7 @@
                     <p:messages showDetail="true"/>
                     <p:panelGrid columns="2" styleClass="custom" style="width: 50%; margin: auto;">
                         <h:inputHidden id="userId" value="#{webDEBean.userId}"/>
-                        
+                        <h:outputText value = ""/>
                         <h:outputText value="Vendor"/>
                         <p:selectOneMenu value="#{uploadBean.vendorCode}" style="width: 400px;">
                             <f:selectItems id="vendorID" value="#{webDEBean.affiliateMasterList}" var="vendor" 

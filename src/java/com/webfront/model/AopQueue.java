@@ -14,6 +14,7 @@ import javax.faces.event.ActionEvent;
  * @author rlittle
  */
 public class AopQueue {
+    private String aoQueueId;
     private String affiliateMasterId;
     private String path;
     private String errors;
@@ -31,6 +32,7 @@ public class AopQueue {
     HashMap<String,String> statusNames;
     HashMap<String,String> runStage;
     private String runLevel;
+    private String checkId;
     private String checkAmount;
     private String networkdId;
     private String networkName;
@@ -320,6 +322,34 @@ public class AopQueue {
      */
     public void setNetworkCountry(String networkCountry) {
         this.networkCountry = networkCountry;
+    }
+
+    /**
+     * @return the checkId
+     */
+    public String getCheckId() {
+        return checkId;
+    }
+
+    /**
+     * @param checkId the checkId to set
+     */
+    public void setCheckId(String checkId) {
+        this.checkId = checkId;
+    }
+
+    /**
+     * @return the aoQueId
+     */
+    public String getAoQueueId() {
+        return aoQueueId;
+    }
+
+    /**
+     * @param aoQueId the aoQueId to set
+     */
+    public void setAoQueueId(String aoQueId) {
+        this.aoQueueId = aoQueId;
     }
     
 }

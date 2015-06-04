@@ -74,7 +74,7 @@
                         </p:row>
                     </p:panelGrid>
 
-                    <p:dataTable id="aeListing" var="ae" value="#{affiliateOrderBean.orderList}">
+                    <p:dataTable id="aeListing" var="ae" value="#{affiliateOrderBean.orderList}" resizableColumns="true">
                         <p:column headerText="Store">
                             <h:outputText value="#{ae.storeName}"/>
                         </p:column>
@@ -86,12 +86,12 @@
                                 <h:outputText value="#{ae.vendorOrderNum}"/>
                             </h:commandLink>
                         </p:column> 
-                        <p:column headerText="Commission" style="text-align: right; width: 200px;">
+                        <p:column headerText="Commission" style="text-align: right;" width="100">
                             <h:outputText value="#{ae.commissionTotal}">
                                 <f:convertNumber currencyCode="USD" type="currency" />
                             </h:outputText>
                         </p:column>
-                        <p:column headerText="IBV" style="text-align: right;">
+                        <p:column headerText="IBV" style="text-align: right;" width="100">
                             <h:outputText value="#{ae.ibvTotal}"/>
                         </p:column> 
                     </p:dataTable>

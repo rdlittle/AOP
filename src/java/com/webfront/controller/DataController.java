@@ -58,7 +58,7 @@ public final class DataController {
     }
 
     public List<BatchItem> getBatchList() {
-        String newVendorId = mgmtBean.getVendorId();
+        String newVendorId = mgmtBean.getMasterId();
         String vendorDiv = mgmtBean.getDetail().getAffiliateDetailId();
         if(vendorDiv.equals("0")) {
             vendorDiv="";
@@ -71,19 +71,19 @@ public final class DataController {
             this.orderList=null;
         }
         if (!newVendorId.equals(this.vendorId) ||this.batchList == null || this.batchList.isEmpty()) {
-            setRbo(new RedObject("WDE", "AOP:Batch"));
+            setRbo(new RedObject("WDE", "Affiliates:Headers"));
             try {
                 vendorId = newVendorId;
                 ArrayList<BatchItem> tempList = new ArrayList<>();
-                getRbo().setProperty("vendorID", vendorId);
-                getRbo().setProperty("vendorDiv", vendorDiv);
-                getRbo().callMethod("getAOHeaders");
+                getRbo().setProperty("masterId", vendorId);
+                getRbo().setProperty("divId", vendorDiv);
+                getRbo().callMethod("getHeaders");
                 String batches = new String(getRbo().getProperty("batchID").getBytes(Charset.forName("ISO8859-1")));
                 UniDynArray batchIds = getRbo().getPropertyToDynArray("batchID");
                 UniDynArray aoIDs = getRbo().getPropertyToDynArray("aoIDList");
                 UniDynArray storeNames = getRbo().getPropertyToDynArray("storeNameList");
                 UniDynArray storeIds = getRbo().getPropertyToDynArray("storeId");
-                UniDynArray vendorDivs = getRbo().getPropertyToDynArray("vendorDiv");
+                UniDynArray vendorDivs = getRbo().getPropertyToDynArray("divId");
                 UniDynArray processDates = getRbo().getPropertyToDynArray("processDateList");
                 UniDynArray processTimes = getRbo().getPropertyToDynArray("processTimeList");
                 UniDynArray commissions = getRbo().getPropertyToDynArray("commissionList");
@@ -157,15 +157,15 @@ public final class DataController {
     public List<BatchItem> getSelectBatchList(String vendorId, String batchId) {
         List<BatchItem> list = new ArrayList<>();
         try {
-            setRbo(new RedObject("WDE", "AOP:Batch"));
-            getRbo().setProperty("vendorID", vendorId);
+            setRbo(new RedObject("WDE", "Affiliates:Headers"));
+            getRbo().setProperty("masterId", vendorId);
             getRbo().setProperty("batchID", batchId);
-            getRbo().callMethod("getAOHeaders");
+            getRbo().callMethod("getHeaders");
             UniDynArray batchIds = getRbo().getPropertyToDynArray("batchID");
             UniDynArray aoIDs = getRbo().getPropertyToDynArray("aoIDList");
             UniDynArray storeNames = getRbo().getPropertyToDynArray("storeNameList");
             UniDynArray storeIds = getRbo().getPropertyToDynArray("storeId");
-            UniDynArray vendorDivs = getRbo().getPropertyToDynArray("vendorDiv");
+            UniDynArray vendorDivs = getRbo().getPropertyToDynArray("divId");
             UniDynArray processDates = getRbo().getPropertyToDynArray("processDateList");
             UniDynArray processTimes = getRbo().getPropertyToDynArray("processTimeList");
             UniDynArray commissions = getRbo().getPropertyToDynArray("commissionList");

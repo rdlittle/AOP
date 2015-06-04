@@ -34,7 +34,7 @@ public final class WebDEBean implements Serializable {
     private LinkedList<SelectItem> mappedFields;
     private ArrayList<SelectItem> accessMethods;
     private ArrayList<SelectItem> fileFormats;
-    
+
     private String userId;
 
     /**
@@ -316,7 +316,7 @@ public final class WebDEBean implements Serializable {
      * @return the userId
      */
     public String getUserId() {
-        if(userId == null || userId.isEmpty()) {
+        if (userId == null || userId.isEmpty()) {
             try {
                 setRbo(new RedObject("WDE", "AOP:Utils"));
                 getRbo().callMethod("getLogName");
@@ -340,10 +340,95 @@ public final class WebDEBean implements Serializable {
      * @return the networkList
      */
     public ArrayList<SelectItem> getNetworkList() {
-        if(networkList==null) {
+        if (networkList == null) {
             this.networkList = new ArrayList<SelectItem>();
         }
         return networkList;
+    }
+
+    public ArrayList<SelectItem> getKeyValues(String fileName, String itemId) {
+        ArrayList<SelectItem> list = new ArrayList<>();
+        try {
+            RedObject rb = new RedObject("WDE", "UTILS:Files");
+            rb.setProperty("fileName", fileName);
+            rb.setProperty("id", itemId);
+            rb.setProperty("keyField", "1");
+            rb.setProperty("valueField", "2");
+            rb.callMethod("getSelectObject");
+            String errStat = rb.getProperty("errStat");
+            String errCode = rb.getProperty("errCode");
+            String errMsg = rb.getProperty("errMsg");
+            UniDynArray keys = rb.getPropertyToDynArray("keyList");
+            UniDynArray values = rb.getPropertyToDynArray("valueList");
+            int vals = keys.dcount(1);
+            for (int val = 1; val <= vals; val++) {
+                SelectItem item = new SelectItem();
+                String key = keys.extract(1, val).toString();
+                String value = values.extract(1, val).toString();
+                item.setKey(key);
+                item.setValue(value);
+                list.add(item);
+            }
+
+        } catch (RbException rbe) {
+            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, rbe);
+        }
+        return list;
+    }
+    
+    public ArrayList<SelectItem> getKeyValues(String fileName, String itemId, String keyField, String valueField) {
+        ArrayList<SelectItem> list = new ArrayList<>();
+        try {
+            RedObject rb = new RedObject("WDE", "UTILS:Files");
+            rb.setProperty("fileName", fileName);
+            rb.setProperty("id", itemId);
+            rb.setProperty("keyField", keyField);
+            rb.setProperty("valueField", valueField);
+            rb.callMethod("getKeyValuePair");
+            String errStat = rb.getProperty("errStat");
+            String errCode = rb.getProperty("errCode");
+            String errMsg = rb.getProperty("errMsg");
+            UniDynArray keys = rb.getPropertyToDynArray("keyList");
+            UniDynArray values = rb.getPropertyToDynArray("valueList");
+            int vals = keys.dcount(1);
+            for (int val = 1; val <= vals; val++) {
+                SelectItem item = new SelectItem();
+                String key = keys.extract(1, val).toString();
+                String value = values.extract(1, val).toString();
+                item.setKey(key);
+                item.setValue(value);
+                list.add(item);
+            }
+
+        } catch (RbException rbe) {
+            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, rbe);
+        }
+        return list;
+    }    
+
+    public ArrayList<String> getValues(String fileName, String itemId, String keyField) {
+        ArrayList<String> list = new ArrayList<>();
+        try {
+            RedObject rb = new RedObject("WDE", "UTILS:Files");
+            rb.setProperty("fileName", fileName);
+            rb.setProperty("id", itemId);
+            rb.setProperty("keyField", keyField);
+            rb.callMethod("getKeyValuePair");
+            String errStat = rb.getProperty("errStat");
+            String errCode = rb.getProperty("errCode");
+            String errMsg = rb.getProperty("errMsg");
+            UniDynArray keys = rb.getPropertyToDynArray("keyList");
+            UniDynArray values = rb.getPropertyToDynArray("valueList");
+            int vals = keys.dcount(1);
+            for (int val = 1; val <= vals; val++) {
+                String key = keys.extract(1, val).toString();
+                list.add(key);
+            }
+
+        } catch (RbException rbe) {
+            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, rbe);
+        }
+        return list;
     }
 
     /**
@@ -367,4 +452,6 @@ public final class WebDEBean implements Serializable {
             Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+   
 }

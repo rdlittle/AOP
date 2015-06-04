@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./layout.xhtml">
+
+            <ui:define name="banner">
+                banner
+            </ui:define>
+
+            <ui:define name="content">
+                <span style="width: 99%; text-align: center; margin: 2em auto;">
+                    <h2>Affiliate Network Management</h2>
+                </span>
+                <h:form id="networkForm">
+                    <h:selectOneMenu id="network" value="#{affiliateNetworkBean.networkId}">
+                        <p:ajax listener="#{affiliateNetworkBean.onChangeNetwork(null)}" update="members"/>
+                        <f:selectItem itemValue="-1" itemLabel="Select network"/>
+                        <f:selectItems value="#{affiliateNetworkBean.networkList}" var="network" 
+                                       itemLabel="#{network.value}"
+                                       itemValue="#{network.key}">
+                        </f:selectItems>
+                    </h:selectOneMenu> 
+                    <p:dataTable id="members" 
+                                 value="#{affiliateNetworkBean.members}"
+                                 var="member"
+                                 style="width: 75%;"
+                                 rowKey="#{member.value}"
+                                 selectionMode="single"
+                                 selection="#{affiliateNetworkBean.selectedItem}">
+                        <p:ajax event="rowSelect" listener="#{affiliateNetworkBean.onRowSelect}" update="deleteVendor"/>
+                        <p:ajax event="rowUnselect" listener="#{affiliateNetworkBean.onRowUnselect}" update="deleteVendor"/>
+                        <p:column headerText="ID">
+                            <h:outputText value="#{member.key}"/>
+                        </p:column>
+                        <p:column headerText="Name">
+                            <h:outputText value="#{member.value}"/>
+                        </p:column>
+                        <f:facet name="footer">
+                            <p:commandButton id="deleteVendor" value="Delete" 
+                                             actionListener="#{affiliateNetworkBean.onDeleteMember()}"
+                                             update="members,deleteVendor"
+                                             disabled="#{!affiliateNetworkBean.selected}" 
+                                             style="margin-left: 1em; margin-right: 1em;"/>
+                            
+                            <p:selectOneMenu id="affiliateSelector" value="#{affiliateNetworkBean.masterId}">
+                                <p:ajax listener="#{affiliateNetworkBean.onChangeVendor}" update="members,addVendor"/>
+                                <f:selectItem itemLabel="Select affiliate" itemValue="-1"/>
+                                <f:selectItems value="#{affiliateNetworkBean.unassignedMembers}" var="affiliate"
+                                               itemLabel="#{affiliate.value}"
+                                               itemValue="#{affiliate.key}">
+                                </f:selectItems>
+                            </p:selectOneMenu>
+
+                            <p:commandButton id="addVendor" value="Add Affiliate" 
+                                             style="margin-left: auto; margin-right: auto;"
+                                             disabled='#{affiliateNetworkBean.masterId.equals("-1")}'>
+                                <p:ajax listener="#{affiliateNetworkBean.onAddMember}" update="members,deleteVendor"/>
+                            </p:commandButton>
+                        </f:facet>
+                    </p:dataTable>
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

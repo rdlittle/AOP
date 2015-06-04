@@ -5,6 +5,7 @@
  */
 package com.webfront.model;
 
+import asjava.uniclientlibs.UniDynArray;
 import com.webfront.controller.AffiliateMasterController;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public final class AffiliateMaster implements Serializable {
     protected boolean active;
     protected String nextDetailId;
     protected String field1;
+    protected String networkId;
     protected HashMap<Integer, AffiliateMapping> fieldMap;
     private ArrayList<SelectItem> fieldMapList;
     protected boolean newColumn;
@@ -51,6 +53,26 @@ public final class AffiliateMaster implements Serializable {
     
     public AffiliateMaster() {
 
+    }
+    
+    public AffiliateMaster(UniDynArray am) {
+        ID = am.extract(1, 1).toString();
+        name = am.extract(1,2).toString();
+        category = am.extract(1,3).toString();
+        type = am.extract(1,4).toString();
+        prefix = am.extract(1,5).toString();
+        country = am.extract(1,6).toString();
+        currency = am.extract(1,7).toString();
+        mappingId = am.extract(1,8).toString();
+        dataFeedAccessType = am.extract(1,9).toString();
+        dataFeedFormat = am.extract(1,10).toString();
+        dataFeedURL = am.extract(1,11).toString();
+        userName = am.extract(1,12).toString();
+        password = am.extract(1,13).toString();
+        createDate = am.extract(1,14).toString();
+        active = am.extract(1,15).toString().equals("1");
+        nextDetailId = am.extract(1,16).toString();
+        newColumn = false;
     }
 
     public void addNewColumn() {
@@ -82,6 +104,7 @@ public final class AffiliateMaster implements Serializable {
         AffiliateMaster rec=getController().getAffiliateMaster(ID);
         setName(rec.getName());
         setCategory(rec.getCategory());
+        setNetworkId(rec.getNetworkId());
         setType(rec.getType());
         setPrefix(rec.getPrefix());
         setCountry(rec.getCountry());
@@ -478,6 +501,20 @@ public final class AffiliateMaster implements Serializable {
      */
     public void setSelector(UIComponent selector) {
         this.selector = selector;
+    }
+
+    /**
+     * @return the networkId
+     */
+    public String getNetworkId() {
+        return networkId;
+    }
+
+    /**
+     * @param networkId the networkId to set
+     */
+    public void setNetworkId(String networkId) {
+        this.networkId = networkId;
     }
 
 }

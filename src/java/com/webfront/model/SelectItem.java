@@ -31,5 +31,9 @@ public class SelectItem implements Serializable {
     public void setValue(String v) {
         this.value=v;
     }
+    @Override
+    public String toString() {
+        return this.getValue();
+    }
     
 }

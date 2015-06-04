@@ -39,6 +39,18 @@ a:link:hover, a:visited:hover  {
     border-style: hidden !important;
 }
 
+.custom2 tr {
+    margin: 2em auto;
+}
+.custom2 td {
+    top: 0px;
+    left: auto;
+    margin: 0px;
+    vertical-align: top !important;
+    border-style: hidden !important;
+    background: skyblue;
+}
+
 .myStyle {
     color: white;
     background: blue;
