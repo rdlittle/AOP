@@ -15,8 +15,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 import org.primefaces.event.SelectEvent;
 
 /**
@@ -27,26 +29,37 @@ import org.primefaces.event.SelectEvent;
 @SessionScoped
 public class AopQueueBean implements Serializable {
 
-    private ArrayList<AopQueue> queueList;
-    private ArrayList<AopQueue> selectedItems = new ArrayList<>();
+    private final ArrayList<AopQueue> queueList;
+    private ArrayList<AopQueue> selectedItems;
     private String queueType;
     private boolean selected;
+    @ManagedProperty(value = "#{downloadBean}")
+    private DownloadBean downLoader;
 
-    public ArrayList<AopQueue> getPaymentQueueList() {
-        queueType = "payment";
-        return getQueueList();
+    public AopQueueBean() {
+        this.selectedItems = new ArrayList<>();
+        this.queueList = new ArrayList<>();
+        this.selectedItems = new ArrayList<>();
+        this.selected = false;
     }
 
     public void rePoll() {
-        System.out.println("AopQueBean.rePoll()");
-        getQueueList();
+//        System.out.println("AopQueBean.rePoll()");
+        setQueueList(null);
     }
 
     /**
      * @return the queueList
      */
     public ArrayList<AopQueue> getQueueList() {
-        this.queueList = new ArrayList<>();
+        return this.queueList;
+    }
+
+    /**
+     * @param queueList the queueList to set
+     */
+    public void setQueueList(ArrayList<AopQueue> queueList) {
+        this.queueList.clear();
         RedObject rb = new RedObject("WDE", "AOP:Queue");
         rb.setProperty("queueType", queueType);
         try {
@@ -61,7 +74,7 @@ public class AopQueueBean implements Serializable {
                 FacesContext ctx = FacesContext.getCurrentInstance();
                 ctx.addMessage("msg", fmsg);
             } else {
-                int vals = Integer.parseInt(rb.getProperty("itemCount"));
+                int vals = Integer.parseInt(rb.getProperty("queueCount"));
                 if (vals > 0) {
                     UniDynArray affiliateMasterList = rb.getPropertyToDynArray("affiliateMasterId");
                     UniDynArray fileNameList = rb.getPropertyToDynArray("fileName");
@@ -74,13 +87,15 @@ public class AopQueueBean implements Serializable {
                     UniDynArray lineCountList = rb.getPropertyToDynArray("lineCount");
                     UniDynArray orderCountList = rb.getPropertyToDynArray("orderCount");
                     UniDynArray uploadTimeList = rb.getPropertyToDynArray("uploadTime");
-                    UniDynArray runLevelList = rb.getPropertyToDynArray("runLevel");
+                    UniDynArray queueStatus = rb.getPropertyToDynArray("queueStatus");
                     UniDynArray checkAmountList = rb.getPropertyToDynArray("checkAmount");
                     UniDynArray networkIdList = rb.getPropertyToDynArray("networkId");
                     UniDynArray networkNameList = rb.getPropertyToDynArray("networkName");
                     UniDynArray networkCountryList = rb.getPropertyToDynArray("networkCountry");
                     UniDynArray checkIdList = rb.getPropertyToDynArray("checkId");
                     UniDynArray aoQueueIdList = rb.getPropertyToDynArray("aoQueueId");
+                    UniDynArray errorReportList = rb.getPropertyToDynArray("errorReport");
+                    UniDynArray successReportList = rb.getPropertyToDynArray("successReport");
 
                     for (int val = 1; val <= vals; val++) {
                         AopQueue aopQueue = new AopQueue();
@@ -95,13 +110,15 @@ public class AopQueueBean implements Serializable {
                         aopQueue.setLineCount(lineCountList.extract(1, val).toString());
                         aopQueue.setOrderCount(orderCountList.extract(1, val).toString());
                         aopQueue.setUploadTime(uploadTimeList.extract(1, val).toString());
-                        aopQueue.setRunLevel(runLevelList.extract(1, val).toString());
+                        aopQueue.setQueueStatus(queueStatus.extract(1, val).toString());
                         aopQueue.setCheckAmount(checkAmountList.extract(1, val).toString());
                         aopQueue.setNetworkdId(networkIdList.extract(1, val).toString());
                         aopQueue.setNetworkName(networkNameList.extract(1, val).toString());
                         aopQueue.setNetworkCountry(networkCountryList.extract(1, val).toString());
                         aopQueue.setCheckId(checkIdList.extract(1, val).toString());
                         aopQueue.setAoQueueId(aoQueueIdList.extract(1, val).toString());
+                        aopQueue.setErrorReport(errorReportList.extract(1, val).toString());
+                        aopQueue.setSuccessReport(successReportList.extract(1, val).toString());
                         this.queueList.add(aopQueue);
                     }
                 }
@@ -110,14 +127,6 @@ public class AopQueueBean implements Serializable {
             Logger.getLogger(AopQueueBean.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("AopQueBean.getQueList() exception: " + ex.toString());
         }
-        return this.queueList;
-    }
-
-    /**
-     * @param queueList the queueList to set
-     */
-    public void setQueueList(ArrayList<AopQueue> queueList) {
-        this.queueList = queueList;
     }
 
     public void deleteSelected() {
@@ -198,6 +207,9 @@ public class AopQueueBean implements Serializable {
         }
     }
 
+    public void onClick(ActionEvent evt) {
+        System.out.println("AopQueueBean.onClick");
+    }
     public void toggleSelect() {
         String summary = "Checkbox event";
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(summary));
@@ -234,10 +246,11 @@ public class AopQueueBean implements Serializable {
     }
 
     /**
-     * @param queueType the queueType to set
+     * @param qType the queueType to set 'C'heck or 'O'rder
      */
-    public void setQueueType(String queueType) {
-        this.queueType = queueType;
+    public void setQueueType(String qType) {
+        this.queueType = qType;
+        setQueueList(null);
     }
 
     /**
@@ -252,5 +265,19 @@ public class AopQueueBean implements Serializable {
      */
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    /**
+     * @return the downLoader
+     */
+    public DownloadBean getDownLoader() {
+        return downLoader;
+    }
+
+    /**
+     * @param downLoader the downLoader to set
+     */
+    public void setDownLoader(DownloadBean downLoader) {
+        this.downLoader = downLoader;
     }
 }

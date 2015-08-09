@@ -3,17 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.webfront.model;
 
 import java.util.HashMap;
-import javax.faces.event.ActionEvent;
 
 /**
  *
  * @author rlittle
  */
 public class AopQueue {
+
     private String aoQueueId;
     private String affiliateMasterId;
     private String path;
@@ -29,27 +28,50 @@ public class AopQueue {
     private boolean deleteFlag;
     private String lineCount;
     private String orderCount;
-    HashMap<String,String> statusNames;
-    HashMap<String,String> runStage;
+    HashMap<String, String> statusNames;
+    HashMap<String, String> runStage;
     private String runLevel;
     private String checkId;
     private String checkAmount;
     private String networkdId;
     private String networkName;
     private String networkCountry;
+    private String errorReport;
+    private String successReport;
+    private String queueStatus;
 
     public AopQueue() {
-        this.statusNames=new HashMap<>();
-        this.statusNames.put("0","Pending");
-        this.statusNames.put("1","Processing");
-        this.statusNames.put("2","Completed");
-        this.statusNames.put("4","Error");
-        this.runStage=new HashMap<>();
+        /*
+         equ QUEUE.STATUS.INIT           to 0
+         equ QUEUE.STATUS.VALIDATE       to 1
+         equ QUEUE.STATUS.AO.CREATE      to 2
+         equ QUEUE.STATUS.REFUND.PROCESS to 3
+         equ QUEUE.STATUS.ORDER.CREATE   to 4
+         equ QUEUE.STATUS.REPORT         to 5
+         equ QUEUE.STATUS.DELETE         to 6
+         equ QUEUE.STATUS.ERROR          to 7
+         equ QUEUE.STATUS.HOLD           to 9
+         */
+        this.statusNames = new HashMap<>();
+        this.statusNames.put("0", "Pending");
+        this.statusNames.put("1", "Validating");
+        this.statusNames.put("2", "Building AO");
+        this.statusNames.put("3", "Applying Refunds");
+        this.statusNames.put("4", "Creating Orders");
+        this.statusNames.put("5", "Reports Ready");        
+        this.statusNames.put("6", "Deleting");
+        this.statusNames.put("7", "Error");
+        this.statusNames.put("9", "On Hold");        
+        this.runStage = new HashMap<>();
         this.runStage.put("0", "Pre-Run");
         this.runStage.put("1", "Run");
         this.runStage.put("2", "Delete");
-        this.runLevel="0";
+        this.runLevel = "0";
+        this.queueStatus = "0";
+        this.errorReport = "";
+        this.successReport = "";
     }
+
     /**
      * @return the affiliateMasterId
      */
@@ -189,9 +211,9 @@ public class AopQueue {
     public void setPreRunFlag(boolean preRunFlag) {
         this.preRunFlag = preRunFlag;
     }
-    
+
     public String getStatusName() {
-        return this.statusNames.get(this.status);
+        return this.statusNames.get(this.queueStatus);
     }
 
     /**
@@ -249,7 +271,7 @@ public class AopQueue {
     public void setDeleteFlag(boolean deleteFlag) {
         this.deleteFlag = deleteFlag;
     }
-    
+
     public String getRunStage() {
         return runStage.get(this.getRunLevel());
     }
@@ -351,5 +373,47 @@ public class AopQueue {
     public void setAoQueueId(String aoQueId) {
         this.aoQueueId = aoQueId;
     }
-    
+
+    /**
+     * @return the errorReport
+     */
+    public String getErrorReport() {
+        return errorReport;
+    }
+
+    /**
+     * @param errorReport the errorReport to set
+     */
+    public void setErrorReport(String errorReport) {
+        this.errorReport = errorReport;
+    }
+
+    /**
+     * @return the successReport
+     */
+    public String getSuccessReport() {
+        return successReport;
+    }
+
+    /**
+     * @param successReport the successReport to set
+     */
+    public void setSuccessReport(String successReport) {
+        this.successReport = successReport;
+    }
+
+    /**
+     * @return the queueStatus
+     */
+    public String getQueueStatus() {
+        return queueStatus;
+    }
+
+    /**
+     * @param queueStatus the queueStatus to set
+     */
+    public void setQueueStatus(String queueStatus) {
+        this.queueStatus = queueStatus;
+    }
+
 }

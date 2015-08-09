@@ -156,14 +156,15 @@
                                     </p:row>
                                     <p:row>
                                         <p:column>
-                                            <h:outputText value="Order Number"/>
+                                            <h:outputText value="Search for order number"/>
                                         </p:column>                                            
                                         <p:column>
-                                            <h:inputText id="orderNumber" value="#{batchManagementBean.orderNumber}"/>
+                                            <h:inputText id="orderNumber" value="#{batchManagementBean.orderNumber}" style="width: 300px;"/>
                                         </p:column>
                                         <p:column>
                                             <h:commandButton value="Search" action="#{batchManagementBean.doSearch}">
-                                                <f:ajax execute="mgmtForm" render="mgmtForm"/>
+                                                <p:ajax listener="#{batchManagementBean.doSearch()}" 
+                                                        process="@this,vendorId,orderNumber" update="searchResults"/>
                                             </h:commandButton>
                                         </p:column>                                        
                                     </p:row>
@@ -186,7 +187,10 @@
                                 </f:facet>  
                             </p:ajaxStatus>
                             <p:dataTable id="searchResults" var="order" value="#{batchManagementBean.searchResults}">
-                                <p:column headerText="ID">
+                                <f:facet name="header">
+                                    <h:outputText value="Order Search Results"/>
+                                </f:facet>
+                                <p:column headerText="ID" width="15%">
                                     <h:commandLink action="#{affiliateOrderView.viewOrder(order.id)}">
                                         <h:outputText value="#{order.vendorOrderNum}"/>
                                     </h:commandLink>

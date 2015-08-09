@@ -28,7 +28,7 @@
                             <p:column>
                                 <p:selectOneMenu id ="userName" value='#{aopTestBean.userName}' editable="true">
                                     <p:ajax listener="#{aopTestBean.doLookup(event)}" update=":form:data,vendorId,vendorDiv,storeId"/>
-                                    <p:ajax event="blur" listener="#{aopTestBean.doLookup(event)}" update=":form:data,vendorId,vendorDiv,storeId"
+                                    <p:ajax event="blur" listener="#{aopTestBean.doLookup(event)}" update=":form:data,user,country,commssion,vendorId,vendorDiv,storeId"/>
                                     <f:selectItem itemValue = "-1" itemLabel="Select user"/>
                                     <f:selectItems value='#{webDEBean.getValues("PARAMS", "AOP.SOURCE.DESC.CONTROL","1")}'
                                                    var="user" itemLabel="#{user}"/>

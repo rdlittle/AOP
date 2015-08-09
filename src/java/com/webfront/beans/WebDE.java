@@ -6,23 +6,14 @@
 package com.webfront.beans;
 
 import asjava.uniclientlibs.UniDynArray;
-import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
-import com.webfront.model.AopSourceDesc;
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Vector;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.faces.event.AjaxBehaviorEvent;
 
 /**
  *
@@ -38,13 +29,9 @@ public class WebDE implements Serializable {
     private String methodName;
     private String className;
 
-    private HashMap<String, String> inProperties;
-    private HashMap<String, String> outProperties;
+    private HashMap<String, UniDynArray> inProperties;
 
-    private HashMap<String, Object> objMap;
-    private ArrayList<Object> objList;
-    private ArrayList<AopSourceDesc> sourceList;
-    private ArrayList<AopSourceDesc> selectedItems;
+    private HashMap<String, UniDynArray> objMap;
 
     String inProperty;
     String inValue;
@@ -53,19 +40,12 @@ public class WebDE implements Serializable {
     String errMessage;
     String errCode;
     
-    private AopSourceDesc item;
-
     public WebDE() {
         inProperties = new HashMap<>();
-        outProperties = new HashMap<>();
         accountName = null;
         methodName = null;
         moduleName = null;
         objMap = new HashMap<>();
-        objList = new ArrayList<>();
-        sourceList = new ArrayList<>();
-        selectedItems = new ArrayList<>();
-        item = new AopSourceDesc();
     }
 
     private void setRbo() {
@@ -115,103 +95,37 @@ public class WebDE implements Serializable {
         }
         setRbo();
         for (String key : this.inProperties.keySet()) {
-            String value = this.inProperties.get(key);
+            UniDynArray value = this.inProperties.get(key);
             getRbo().setProperty(key, value);
         }
         getRbo().callMethod(getMethodName());
 
-        Vector<String> propertyNames = getRbo().getPropertyNames();
-        Vector<String> propertyValues = getRbo().getPropertyValues();
-        objList.addAll(propertyValues);
-        for (String pName : propertyNames) {
-            String pValue = getRbo().getProperty(pName);
-            UniDynArray uniDynarray = getRbo().getPropertyToDynArray(pName);
-            outProperties.put(pName, pValue);
+        UniDynArray pNames = getRbo().getPnames();
+        UniDynArray pValues = getRbo().getPvalues();
+        int attrs = pNames.dcount();
+        for (int attr = 1; attr<=attrs; attr++) {
+            String pName = pNames.extract(attr).toString();
+            UniDynArray uniDynarray = pValues.extract(attr);
             getObjectMap().put(pName, uniDynarray);
-        }
-
-    }
-
-    public ArrayList<AopSourceDesc> getSourceList() {
-        return sourceList;
-    }
-
-    public void setSourceList(AjaxBehaviorEvent event) {
-        sourceList = getAopSourceDesc();
-    }
-
-    public void buttonHandler() {
-        sourceList = getAopSourceDesc();
-    }
-
-    public ArrayList<AopSourceDesc> getAopSourceDesc() {
-        ArrayList<AopSourceDesc> list = new ArrayList<>();
-        setAccountName("WDE");
-        setModuleName("AOP");
-        setClassName("Testing");
-        setMethodName("getAopSourceDesc");
-        setRbo();
-        try {
-            for (String key : this.inProperties.keySet()) {
-                String value = this.inProperties.get(key);
-                if (value != null) {
-                    getRbo().setProperty(key, value);
-                }
+            if(pName.equals("errStat")) {
+                errStatus = Integer.parseInt(uniDynarray.extract(1,1).toString());
             }
-            getRbo().callMethod(getMethodName());
-            errStatus = Integer.parseInt(getRbo().getProperty("errStat"));
-            errCode = getRbo().getProperty("errCode");
-            errMessage = getRbo().getProperty("errMsg");
-            UniDynArray pcIds = getRbo().getPropertyToDynArray("pcId");
-            UniDynArray sponsorIds = getRbo().getPropertyToDynArray("sponsor");
-            UniDynArray pcHomes = getRbo().getPropertyToDynArray("pcHome");
-            UniDynArray pcTypes = getRbo().getPropertyToDynArray("pcType");
-            UniDynArray orderTotals = getRbo().getPropertyToDynArray("orderTotal");
-            UniDynArray orderDates = getRbo().getPropertyToDynArray("orderDate");
-            int size = Integer.parseInt(getRbo().getProperty("itemCount"));
-            for (int i = 1; i <= size; i++) {
-                AopSourceDesc desc = new AopSourceDesc();
-                System.out.println(pcIds.count(1));
-                desc.setPcId(pcIds.extract(1, i).toString());
-                desc.setPcHome(pcHomes.extract(1, i).toString());
-                desc.setPcType(pcTypes.extract(1, i).toString());
-                desc.setSponsor(sponsorIds.extract(1, i).toString());
-                String d=orderDates.extract(1,i).toString();
-                LocalDate localDate = LocalDate.parse(d);
-                Calendar cal = Calendar.getInstance(Locale.getDefault());
-                Date date = cal.getTime();
-                date.setTime(localDate.toEpochDay());
-                desc.setOrderDate(date);
-                desc.setOrderTotal(orderTotals.extract(1, i).toString());
-                list.add(desc);
+            if(pName.equals("errCode")) {
+                errCode = uniDynarray.extract(1,1).toString();
             }
-        } catch (RbException ex) {
-            System.out.println(ex.toString());
+            if(pName.equals("errMsg")) {
+                errMessage = uniDynarray.extract(1,1).toString();
+            }
         }
-        return list;
-    }
-    
-    public void addItem() {
-        System.out.println("sourceList.length before add = "+sourceList.size());
-        sourceList.add(item);
-        item = new AopSourceDesc();
-        System.out.println("sourceList.length after add = "+sourceList.size());
+        
     }
 
-    public void setObjectMap(HashMap<String, Object> inList) {
+    public void setObjectMap(HashMap<String, UniDynArray> inList) {
         this.objMap = inList;
     }
 
-    public HashMap<String, Object> getObjectMap() {
+    public HashMap<String, UniDynArray> getObjectMap() {
         return this.objMap;
-    }
-
-    public void setObectMap(ArrayList<Object> obl) {
-        this.objList = obl;
-    }
-
-    public ArrayList<Object> getObjectList() {
-        return this.objList;
     }
 
     public void setAccountName(String arg) {
@@ -253,57 +167,15 @@ public class WebDE implements Serializable {
     /**
      * @return the inProperties
      */
-    public HashMap<String, String> getInProperties() {
+    public HashMap<String, UniDynArray> getInProperties() {
         return this.inProperties;
     }
 
     /**
      * @param map the inProperties to set
      */
-    public void setInProperties(HashMap<String, String> map) {
+    public void setInProperties(HashMap<String, UniDynArray> map) {
         this.inProperties = map;
-    }
-
-    /**
-     * @return the outProperties value associated with the key
-     */
-    public HashMap<String, String> getOutProperties() {
-        return this.outProperties;
-    }
-
-    /**
-     * @param outProps the outProperties to set
-     */
-    public void setOutProperties(HashMap<String, String> outProps) {
-        this.outProperties = outProps;
-    }
-
-    /**
-     * @return the selectedItems
-     */
-    public ArrayList<AopSourceDesc> getSelectedItems() {
-        return selectedItems;
-    }
-
-    /**
-     * @param selectedItems the selectedItems to set
-     */
-    public void setSelectedItems(ArrayList<AopSourceDesc> selectedItems) {
-        this.selectedItems = selectedItems;
-    }
-
-    /**
-     * @return the item
-     */
-    public AopSourceDesc getItem() {
-        return item;
-    }
-
-    /**
-     * @param item the item to set
-     */
-    public void setItem(AopSourceDesc item) {
-        this.item = item;
     }
 
 }

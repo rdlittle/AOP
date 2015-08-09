@@ -17,7 +17,7 @@
                         <h:inputHidden id="userId" value="#{webDEBean.userId}"/>
                         <h:outputText value = ""/>
                         <h:outputText value="Vendor"/>
-                        <p:selectOneMenu value="#{uploadBean.vendorCode}" style="width: 400px;">
+                        <p:selectOneMenu value="#{affiliateOrderBean.affiliateMasterId}" style="width: 400px;">
                             <f:selectItems id="vendorID" value="#{webDEBean.affiliateMasterList}" var="vendor" 
                                            itemLabel="#{vendor.value}"
                                            itemValue="#{vendor.key}">
@@ -25,9 +25,9 @@
                         </p:selectOneMenu>
                         
                         <h:outputText value="Select File"/>
-                        <p:fileUpload mode="simple" value="#{uploadBean.file}" />
+                        <p:fileUpload mode="simple" value="#{affiliateOrderBean.file}" />
                     
-                        <p:commandButton value="Submit" ajax="false" action="#{uploadBean.upload}" />
+                        <p:commandButton value="Submit" ajax="false" action="#{affiliateOrderBean.uploadReport}" />
                         <h:outputText value=""/>
                     </p:panelGrid>
                     

@@ -13,9 +13,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UISelectItems;
+import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 
 /**
@@ -35,6 +37,7 @@ public class AffiliateDetailBean implements Serializable {
     private ArrayList<SelectItem> maxPayList;
     
     private UISelectItems selItems;
+    private boolean ordersOnly;
 
     /**
      * @return the storeList
@@ -65,11 +68,20 @@ public class AffiliateDetailBean implements Serializable {
             }
         }
         rb.setProperty("masterId", affiliateMasterId);
+        if(isOrdersOnly()) {
+            rb.setProperty("ordersOnly", "1");
+        }        
         try {
             rb.callMethod("getAffiliateDetailList");
-            String errStat = rb.getProperty("errStat");
-            String errCode = rb.getProperty("errCode");
-            String errMsg = rb.getProperty("errMsg");
+            String errStat = rb.getProperty("svrStatus");
+            String errCode = rb.getProperty("svrCtrlCode");
+            String errMsg = rb.getProperty("svrMessage");
+            if(errStat.equals("-1")) {
+                FacesContext ctx = FacesContext.getCurrentInstance();
+                String msg = "Error code "+errCode+": "+errMsg;
+                ctx.addMessage("msg", new FacesMessage(msg));
+                return;
+            }
             UniDynArray keys = rb.getPropertyToDynArray("keyList");
             UniDynArray values = rb.getPropertyToDynArray("valueList");
             int vals = keys.dcount(1);
@@ -221,5 +233,19 @@ public class AffiliateDetailBean implements Serializable {
      */
     public void setSelItems(UISelectItems selItems) {
         this.selItems = selItems;
+    }
+
+    /**
+     * @return the ordersOnly
+     */
+    public boolean isOrdersOnly() {
+        return ordersOnly;
+    }
+
+    /**
+     * @param ordersOnly the ordersOnly to set
+     */
+    public void setOrdersOnly(boolean ordersOnly) {
+        this.ordersOnly = ordersOnly;
     }
 }

@@ -18,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
@@ -42,6 +43,7 @@ public class BatchManagementBean implements Serializable {
     private Float balance;
     private Float convertedAmount;
     private boolean errorsOnly;
+    private boolean ordersOnly;
     private Date batchMonth;
     private String currencyType;
     private String batchType;
@@ -73,6 +75,11 @@ public class BatchManagementBean implements Serializable {
         batchType = "NP";
         errorsOnly = false;
     }
+    
+    @PostConstruct
+    public void init() {
+        detail.setOrdersOnly(true);
+    }
 
     public String nextPage() {
         String nextPage = "/batchManager?faces-redirect=true";
@@ -92,7 +99,7 @@ public class BatchManagementBean implements Serializable {
     public void doSearch() {
         this.searchResults = new ArrayList<>();
         RedObject rb = new RedObject("WDE", "Affiliates:Orders");
-        rb.setProperty("vendorOrderNum", orderNumber);
+        rb.setProperty("affiliateOrderNum", orderNumber);
         if (this.getMasterId() != null) {
             rb.setProperty("masterId", this.getMasterId());
         }
@@ -114,7 +121,7 @@ public class BatchManagementBean implements Serializable {
                 UniDynArray orderIdList = rb.getPropertyToDynArray("orderId");
                 UniDynArray affiliateMasterIdList = rb.getPropertyToDynArray("masterId");
                 UniDynArray vendorDivList = rb.getPropertyToDynArray("divId");
-                UniDynArray vendorOrderNumList = rb.getPropertyToDynArray("vendorOrderNum");
+                UniDynArray vendorOrderNumList = rb.getPropertyToDynArray("affiliateOrderNum");
                 UniDynArray orderRefList = rb.getPropertyToDynArray("orderRef");
                 UniDynArray orderDateList = rb.getPropertyToDynArray("orderDate");
                 UniDynArray payingIdList = rb.getPropertyToDynArray("payingId");
@@ -416,6 +423,20 @@ public class BatchManagementBean implements Serializable {
      */
     public void setAffiliateDetail(AffiliateDetail affiliateDetail) {
         this.affiliateDetail = affiliateDetail;
+    }
+
+    /**
+     * @return the ordersOnly
+     */
+    public boolean isOrdersOnly() {
+        return ordersOnly;
+    }
+
+    /**
+     * @param ordersOnly the ordersOnly to set
+     */
+    public void setOrdersOnly(boolean ordersOnly) {
+        this.ordersOnly = ordersOnly;
     }
 
 }

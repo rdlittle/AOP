@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <body>
+
+        <ui:composition template="./layout.xhtml">
+
+            <ui:define name="banner">
+                banner
+            </ui:define>
+
+            <ui:define name="content">
+                <span style="width: 99%; text-align: center; margin: 2em auto 3em auto;">
+                    <h2>Test Unit Suite Entry &amp; Edit</h2>
+                </span> 
+                <p:messages showDetail="false"/>
+                <h:form id="suiteForm">
+                    <p:selectOneMenu id="suiteSelector" value="#{utSuiteBean.utSuiteId}"
+                                     style="margin-left: 1.75em;" >
+                        <f:selectItem itemLabel="Test Suite Id" itemValue=""/>
+                        <f:selectItems value="#{utSuiteBean.suiteIdList}" var="suite" 
+                                       itemLabel="#{suite.value}" itemValue="#{suite.key}">
+                        </f:selectItems>
+                        <p:ajax event="change" listener="#{utSuiteBean.setSuite()}" update="grid,table,@(.ui-button)" process="@this"/>
+                    </p:selectOneMenu>
+
+                    <p:panelGrid id="grid" style="margin-top: 1em; margin-bottom: 1em; margin-left: 1.8em;">
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel for="utDate" value="Date "/>
+                            </p:column>
+                            <p:column>
+                                <p:calendar id="utDate" value="#{utSuiteBean.testSuite.utDate}" disabled="true" readonly="true">
+                                    <f:convertDateTime pattern="MM/dd/yyyy"/>
+                                </p:calendar>
+                            </p:column>
+                            <p:column>
+                                <h:outputLabel for="utTime" value="Time"/>
+                            </p:column>
+                            <p:column style="text-align: right;">
+                                <p:inputText id="utTime" value="#{utSuiteBean.testSuite.utTime}" style="text-align: right;" readonly="true"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel for="utTitle" value="Title"/>
+                            </p:column>
+                            <p:column colspan="3">
+                                <p:inputText id="utTitle" value="#{utSuiteBean.testSuite.utTitle}" size="60"/>                                
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel for="utDesc" value="Description"/>
+                            </p:column>
+                            <p:column colspan="3">
+                                <p:inputTextarea id="utDesc" value="#{utSuiteBean.testSuite.utDesc}" cols="60"/>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+
+                    <p:commandButton value="New" actionListener="#{utSuiteBean.newSuite()}" update="@form" style="margin-left: 1.75em;"/>
+                    <p:commandButton value="Save" actionListener="#{utSuiteBean.save()}" 
+                                     disabled="#{!utSuiteBean.changed}"
+                                     update="suiteForm:suiteSelector" style="margin-left: 1.75em;"/>
+                    <p:commandButton value="Delete" actionListener="#{utSuiteBean.delete()}"
+                                     disabled='#{utSuiteBean.utSuiteId.equals("")}'
+                                     update="@form" style="margin-left: 1.75em;"/>
+                    
+                    <p:dataTable id="table" value="#{utSuiteBean.testSuite.utSegment}" var="utUnit"
+                                 style="margin-top: 1em; margin-bottom: 1em; margin-left: auto; margin-right: auto; width: 98%;">
+                        <f:facet name="header">
+                            <p:commandButton id="addButton" 
+                                             actionListener='#{utSuiteBean.newItem()}'
+                                             update="table" process="@this acct file prog"
+                                             style="margin-right: 30px;"
+                                             value='#{utSuiteBean.isNewItem ? "OK" : "Add"}'/>
+                            <p:commandButton id="cancelButton" value="Cancel" actionListener="#{utSuiteBean.setIsNewItem(false)}" 
+                                             update="@this"
+                                             disabled="#{!utSuiteBean.isNewItem}"
+                                             style="margin-right: 30px;"/>
+                            <h:outputLabel for="acct" value="Account: "/>
+                            <p:inputText id="acct" value='#{utSuiteBean.segment.utAcctName}' disabled="#{!utSuiteBean.isNewItem}"/>
+                            <h:outputLabel for="file" value="File: "/>
+                            <p:inputText id="file" value='#{utSuiteBean.segment.utFileName}' disabled="#{!utSuiteBean.isNewItem}"/>
+                            <h:outputLabel for="prog" value="Program: "/>
+                            <p:inputText id="prog" value='#{utSuiteBean.segment.utProgName}' disabled="#{!utSuiteBean.isNewItem}"/>                            
+                        </f:facet>
+                        <p:column headerText="Account">
+                            <h:outputText value="#{utUnit.utAcctName}"/>
+                        </p:column>
+                        <p:column headerText="File Name">
+                            <h:outputText value="#{utUnit.utFileName}"/>
+                        </p:column>                                 
+                        <p:column headerText="Program">
+                            <h:outputText value="#{utUnit.utProgName}"/>
+                        </p:column>                                    
+                    </p:dataTable>
+
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

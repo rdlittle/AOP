@@ -287,109 +287,6 @@ public final class DataController {
         return orderList;
     }
 
-    public AffiliateOrder getAffiliateOrder(String id) {
-        AffiliateOrder ao = new AffiliateOrder();
-        try {
-            setRbo(new RedObject("WDE", "AOP:AffiliateOrders"));
-            RedObject r = getRbo();
-            r.setProperty("orderId", id);
-            r.callMethod("getOrderDetail");
-            ao.setId(id);
-            ao.setCommissionTotal(Float.valueOf(r.getProperty("commissionTotal")));
-            ao.setErrorCount(r.getProperty("errorCount"));
-            ao.setFilingId(r.getProperty("filingId"));
-            ao.setPayingId(r.getProperty("payingId"));
-            ao.setPayingIdName(r.getProperty("payingIdName"));
-            ao.setIbvTotal(r.getProperty("ibvTotal"));
-            ao.setOrderDate(r.getProperty("orderDate"));
-            ao.setOrderRef(r.getProperty("orderRef"));
-            ao.setPlacementId(r.getProperty("placementId"));
-            ao.setBatchId(r.getProperty("batchId"));
-            ao.setPayingIdAddr1(r.getProperty("payingIdAddr1"));
-            ao.setPayingIdAddr2(r.getProperty("payingIdAddr2"));
-            ao.setPayingIdCityStZip(r.getProperty("payingIdCityStZip"));
-            ao.setStoreId(r.getProperty("storeId"));
-            ao.setStoreName(r.getProperty("storeName"));
-            ao.setErrorCount(r.getProperty("errorCount"));
-            ao.setErrorMessage(r.getProperty("errorMessage"));
-            ao.setEntryDate(r.getProperty("entryDate"));
-            ao.setVendorOrderNum(r.getProperty("vendorOrderNum"));
-            ao.setVendorOrderDate(r.getProperty("vendorOrderDate"));
-            ao.setVendorDiv(r.getProperty("vendorDiv"));
-            ao.setVendorId(r.getProperty("vendorId"));
-            int errCount=Integer.parseInt(ao.getErrorCount());
-            ao.setHasErrors(errCount > 0);
-            ao.setActualPlacementId1(r.getProperty("actualPlacmentId1"));
-            ao.setActualPlacementId2(r.getProperty("actualPlacmentId2"));
-            ao.setIbvPlacedAmt1(Float.valueOf(r.getProperty("ibvPlacedAmt1")));
-            ao.setIbvPlacedAmt2(Float.valueOf(r.getProperty("ibvPlacedAmt2")));
-            if(errCount>0) {
-                UniDynArray uda=r.getPropertyToDynArray("affiliateErrorsId");
-                for(int e=1; e<=errCount; e++) {
-                    String aeId = uda.extract(1, e).toString();
-                    AffiliateError aeRec = getAffiliateError(aeId);
-                    if(aeRec != null) {
-                        ao.getErrorList().add(aeRec);
-                    }
-                }
-            }
-        } catch (RbException ex) {
-            Logger.getLogger(DataController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return ao;
-    }
-    
-    public AffiliateError getAffiliateError(String id) throws RbException {
-        setRbo(new RedObject("WDE", "UTILS:Files"));
-        RedObject r = getRbo();
-        r.setProperty("fileName", "AFFILIATE.ERRORS");
-        r.setProperty("id", id);
-        r.setProperty("mustExist", "1");
-        r.callMethod("getFileRec");
-        String errStat=r.getProperty("errStat");
-        String errCode=r.getProperty("errCode");
-        String errMsg=r.getProperty("errMsg");
-        if(errStat.equals("-1")) {
-            throw new RbException(Integer.parseInt(errCode),errMsg);
-        } else {
-            UniDynArray uda;
-            UniDynArray udaRaised;
-            uda = r.getPropertyToDynArray("fileRec");
-            udaRaised=new UniDynArray(DynArray.raise(uda));
-            AffiliateError errObj = new AffiliateError(uda);
-            int vals=udaRaised.dcount(58);
-            vals = uda.dcount(1,58);
-            for(int val=1; val<=vals; val++) {
-                errCode=uda.extract(1, 59, val).toString();
-                errMsg =uda.extract(1, 58, val).toString();
-                errObj.getErrorMap().put(errCode, errMsg);
-            }
-            errObj.setId(id);
-            String ln = id.substring(0, id.indexOf("*"));
-            errObj.setLineNumber(ln);
-            return errObj;
-        }
-    }
-    public String setAffiliateOrder(String orderId, AffiliateOrder order) {
-       try {
-            setRbo(new RedObject("WDE", "AOP:AffiliateOrders"));
-            RedObject r=getRbo();
-            r.setProperty("orderId", orderId);
-            r.setProperty("payingId",order.getPayingId());
-            r.callMethod("setAffiliateOrder");
-            String errStat = r.getProperty("errStat");
-            String errCode = r.getProperty("errCode");
-            String errMsg = r.getProperty("errMsg");
-            if(!errStat.isEmpty() || errStat.equals("-1")) {
-                FacesMessage msg = new FacesMessage(errCode+" "+errMsg);
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                return "";
-            }
-        } catch (RbException ex) {
-            Logger.getLogger(DataController.class.getName()).log(Level.SEVERE, null, ex);
-        }        
-        return "";
-    }
     public String deferOrder(String orderId, String batchId) {
         try {
             setRbo(new RedObject("WDE", "AOP:AffiliateOrders"));
@@ -444,6 +341,66 @@ public final class DataController {
             Logger.getLogger(DataController.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "OK";
+    }
+    
+    public boolean isValidOrder(AffiliateOrder order) {
+        setRbo(new RedObject("WDE","Affiliates:Orders"));
+        
+        return true;
+    }
+    
+    public UniDynArray getFileItem(String fileName, String itemId, String fieldNum) throws RbException {
+        setRbo(new RedObject("WDE","UTILS:File"));
+        UniDynArray fileItem = new UniDynArray();
+        int score = 0;
+        if (fileName !=null) {
+            getRbo().setProperty("fileName",fileName);
+            score += 1;
+        }
+        if (itemId != null) {
+            getRbo().setProperty("itemId", itemId);
+            score += 1;
+        }
+        if (fieldNum == null) {
+            fieldNum = "";
+        }  
+        getRbo().setProperty("fieldNum",fieldNum);
+        if (score == 2) {
+            getRbo().callMethod("getUtilFileRec");
+            String errStatus = getRbo().getProperty("errStat").toString();
+            String errCode = getRbo().getProperty("errCode").toString();
+            String errMesg = getRbo().getProperty("errMesg").toString();
+            if(errStatus.equals("-1")) {
+                return null;
+            }
+            fileItem = getRbo().getPropertyToDynArray("fileItem");
+        }
+        return fileItem;
+    }
+    
+    public void setFileItem(String fileName, String itemId, String fieldNum, boolean retainLock, boolean mustExist, UniDynArray fileRec) throws RbException {
+        setRbo(new RedObject("WDE","UTILS:File"));
+        int score = 0;
+        if (fileName !=null) {
+            getRbo().setProperty("fileName",fileName);
+            score += 1;
+        }
+        if (itemId != null) {
+            getRbo().setProperty("itemId", itemId);
+            score += 1;
+        }
+        if (fieldNum == null) {
+            fieldNum = "";
+        }
+        getRbo().setProperty("fieldNum", fieldNum);
+        getRbo().setProperty("retainLock", retainLock ? "1" : "0" );
+        getRbo().setProperty("mustExist", mustExist ? "1" : "0");
+        if (fileRec==null) {
+            fileRec = new UniDynArray();
+        }
+        if(score==2) {
+            getRbo().callMethod("setUtilFileRec");
+        }
     }
     
     /**

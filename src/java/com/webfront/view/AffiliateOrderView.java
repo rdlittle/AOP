@@ -5,12 +5,13 @@
  */
 package com.webfront.view;
 
-import com.webfront.controller.DataController;
+import com.webfront.controller.AffiliateOrderController;
 import com.webfront.model.AffiliateOrder;
 import com.webfront.model.BatchItem;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -29,7 +30,8 @@ import org.primefaces.event.UnselectEvent;
 public final class AffiliateOrderView implements Serializable {
 
     private AffiliateOrder order;
-    private DataController controller;
+    
+    private AffiliateOrderController aoController;
     private List<BatchItem> batchList;
     private String newBatchId;
     private BatchItem newBatch;
@@ -51,8 +53,13 @@ public final class AffiliateOrderView implements Serializable {
 
     public AffiliateOrderView() {
         setIsSelected(false);
-        setController(new DataController());
         setBatchList(new LinkedList<BatchItem>());
+        init();
+    }
+    
+    @PostConstruct
+    public void init() {
+        aoController = new AffiliateOrderController();
     }
 
     public String viewOrder(String orderId) {
@@ -61,8 +68,12 @@ public final class AffiliateOrderView implements Serializable {
         setReferringPage(refPage);
         this.fromErrorListing = refPage.contains("affiliateErrorListing.xhtml");
         this.fromSearchScreen = refPage.contains("batchManagementInputForm.xhtml");
-        setOrder(getController().getAffiliateOrder(orderId));
+        setOrder(getAoController().getAffiliateOrder(orderId));
         return "affiliateOrder.xhtml?orderId=" + orderId + "&faces-redirect=true";
+    }
+    public String validateOrder() {
+        
+        return "";
     }
 
     public void onRowSelect(SelectEvent evt) {
@@ -82,7 +93,7 @@ public final class AffiliateOrderView implements Serializable {
             return getReferringPage()+"?faces-redirect=true";
         }
         setBatchList(new LinkedList<BatchItem>());
-        getController().setAffiliateOrder(order.getId(), order);
+        getAoController().setAffiliateOrder(order.getId(), order);
         return "batchManager?faces-redirect=true";
     }
 
@@ -100,16 +111,16 @@ public final class AffiliateOrderView implements Serializable {
     }
 
     public String prepareDefer() {
-        setBatchList(getController().getSelectBatchList(order.getVendorId(), order.getBatchId()));
+        setBatchList(getAoController().getDataController().getSelectBatchList(order.getVendorId(), order.getBatchId()));
         return "affiliateOrderDefer?faces-redirect=true";
     }
 
     public String doDefer() {
         String orderId = order.getId();
         String batchId = newBatch.getId();
-        String rmsg = getController().deferOrder(orderId, batchId);
+        String rmsg = getAoController().getDataController().deferOrder(orderId, batchId);
         if (rmsg.equals("ok")) {
-            getController().clearBatchTree();
+            getAoController().getDataController().clearBatchTree();
             this.batchList = null;
             String rtn = "batchManager";
             rtn += "?faces-redirect=true";
@@ -120,7 +131,7 @@ public final class AffiliateOrderView implements Serializable {
 
     public void getValidatePayId() {
         String id = order.getPayingId();
-        String rmsg = getController().validatePayId(id);
+        String rmsg = getAoController().getDataController().validatePayId(id);
         if ("OK".equalsIgnoreCase(rmsg)) {
             order.setHasErrors(false);
             order.setPayingId(id);
@@ -133,7 +144,7 @@ public final class AffiliateOrderView implements Serializable {
 
     public void setValidatePayId(javax.faces.event.AjaxBehaviorEvent evt) {
         String id = order.getPayingId();
-        String rmsg = getController().validatePayId(id);
+        String rmsg = getAoController().getDataController().validatePayId(id);
         FacesMessage msg = new FacesMessage(rmsg);
         FacesContext ctx = FacesContext.getCurrentInstance();
         String cid = component.getClientId();
@@ -157,15 +168,8 @@ public final class AffiliateOrderView implements Serializable {
     /**
      * @return the controller
      */
-    public DataController getController() {
-        return controller;
-    }
-
-    /**
-     * @param controller the controller to set
-     */
-    public void setController(DataController controller) {
-        this.controller = controller;
+    public AffiliateOrderController getAoController() {
+        return aoController;
     }
 
     /**

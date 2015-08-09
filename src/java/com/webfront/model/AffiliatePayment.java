@@ -10,14 +10,15 @@ package com.webfront.model;
  * @author rlittle
  */
 public class AffiliatePayment {
-    private final String checkId;
-    private final String networkId;
-    private final String checkDate;
-    private final String postDate;
-    private final String checkAmount;
-    private final String releasedAmount;
-    private final String userName;
-    private final String balance;
+    private String id;
+    private String checkId;
+    private String networkId;
+    private String checkDate;
+    private String postDate;
+    private String checkAmount;
+    private String releasedAmount;
+    private String userName;
+    private String balance;
     
     public AffiliatePayment() {
         checkId = "";
@@ -28,6 +29,7 @@ public class AffiliatePayment {
         releasedAmount = "";
         userName = "";
         balance = "";
+        id = "";
     }
 
     /**
@@ -84,6 +86,76 @@ public class AffiliatePayment {
      */
     public String getBalance() {
         return balance;
+    }
+
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    /**
+     * @param checkId the checkId to set
+     */
+    public void setCheckId(String checkId) {
+        this.checkId = checkId;
+    }
+
+    /**
+     * @param networkId the networkId to set
+     */
+    public void setNetworkId(String networkId) {
+        this.networkId = networkId;
+    }
+
+    /**
+     * @param checkDate the checkDate to set
+     */
+    public void setCheckDate(String checkDate) {
+        this.checkDate = checkDate;
+    }
+
+    /**
+     * @param postDate the postDate to set
+     */
+    public void setPostDate(String postDate) {
+        this.postDate = postDate;
+    }
+
+    /**
+     * @param checkAmount the checkAmount to set
+     */
+    public void setCheckAmount(String checkAmount) {
+        this.checkAmount = checkAmount;
+    }
+
+    /**
+     * @param releasedAmount the releasedAmount to set
+     */
+    public void setReleasedAmount(String releasedAmount) {
+        this.releasedAmount = releasedAmount;
+    }
+
+    /**
+     * @param userName the userName to set
+     */
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    /**
+     * @param balance the balance to set
+     */
+    public void setBalance(String balance) {
+        this.balance = balance;
     }
     
 }

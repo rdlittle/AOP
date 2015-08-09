@@ -36,7 +36,7 @@ import org.primefaces.model.TreeNode;
 @SessionScoped
 public final class BatchTree implements Serializable, ValueChangeListener {
 
-    private DataController controller;
+    private AffiliateOrderController controller;
     private TreeNode root;
     private TreeNode selectedNode;
     private List<AffiliateOrder> orderList;
@@ -51,11 +51,11 @@ public final class BatchTree implements Serializable, ValueChangeListener {
     BatchManagementBean mgmtBean;
 
     public BatchTree() {
-        setController(new DataController());
+        setController(new AffiliateOrderController());
         vendorId = "";
         setRoot(new DefaultTreeNode("root", null));
         setTotalAppliedAmount(Float.valueOf(0));
-        setBalance(getController().mgmtBean.getCheckAmt());
+        setBalance(getController().getDataController().mgmtBean.getCheckAmt());
     }
 
     public void onApprovalToggle(AjaxBehaviorEvent evt) {
@@ -74,13 +74,13 @@ public final class BatchTree implements Serializable, ValueChangeListener {
             TreeRow row = (TreeRow) getSelectedNode().getData();
             row.setPsApprovalName(psName);
             row.setPsApprovalDate(psDate);
-            getController().setApproval(item.getId(),"PS",item.getPsApprovalStatus());
+            getController().getDataController().setApproval(item.getId(),"PS",item.getPsApprovalStatus());
             root.getChildren().set(rowNum, new DefaultTreeNode(row));
         }
     }
 
     public void rowSelector(SelectEvent evt) {
-        String eDate = getController().wdeBean.getTodayExternal();
+        String eDate = getController().getDataController().wdeBean.getTodayExternal();
         BatchItem item = getSelectedBatch();
         if (!item.getPsApprovalStatus()) {
             item.appliedAmt = item.commission;
@@ -90,15 +90,15 @@ public final class BatchTree implements Serializable, ValueChangeListener {
             Float amt = getTotalAppliedAmount();
             amt += item.appliedAmt;
             setTotalAppliedAmount(amt);
-            amt = getController().mgmtBean.getCheckAmt();
+            amt = getController().getDataController().mgmtBean.getCheckAmt();
             amt -= item.appliedAmt;
-            getController().mgmtBean.setBalance(amt);
+            getController().getDataController().mgmtBean.setBalance(amt);
         } else {
             Float amt = getTotalAppliedAmount();
-            Float bal = getController().mgmtBean.getBalance();
+            Float bal = getController().getDataController().mgmtBean.getBalance();
             amt -= item.appliedAmt;
             bal += item.appliedAmt;
-            getController().mgmtBean.setBalance(bal);
+            getController().getDataController().mgmtBean.setBalance(bal);
             item.appliedAmt = Float.valueOf("0.00");
             item.setPsApprovalStatus(false);
             item.setPsApprovalName("");
@@ -131,7 +131,7 @@ public final class BatchTree implements Serializable, ValueChangeListener {
     }
 
     public Float getBalance() {
-        return getController().mgmtBean.getBalance();
+        return getController().getDataController().mgmtBean.getBalance();
     }
     
     public void setData(ArrayList<BatchItem> list) {
@@ -165,7 +165,7 @@ public final class BatchTree implements Serializable, ValueChangeListener {
                 Float bal=getBalance();
                 bal-=amt;
                 setBalance(bal);
-                getController().mgmtBean.setBalance(bal);
+                getController().getDataController().mgmtBean.setBalance(bal);
             }
         }
         RequestContext rc=RequestContext.getCurrentInstance();
@@ -176,7 +176,7 @@ public final class BatchTree implements Serializable, ValueChangeListener {
     public void getDetail(NodeSelectEvent evt) {
         TreeRow item = (TreeRow) getSelectedNode().getData();
         int idx = root.getChildren().indexOf(getSelectedNode());
-        orderList = getController().getOrderList(item.getId());
+        orderList = getController().getDataController().getOrderList(item.getId());
         TreeRow row;
         for (AffiliateOrder order : orderList) {
             row = new TreeRow();
@@ -233,7 +233,7 @@ public final class BatchTree implements Serializable, ValueChangeListener {
     public TreeNode getRoot() {
         if (root.getChildCount() == 0) {
             this.batchList= new ArrayList<>();
-            this.batchList = new ArrayList<>(getController().getBatchList());
+            this.batchList = new ArrayList<>(getController().getDataController().getBatchList());
             setData(batchList);
         }
         return root;
@@ -298,14 +298,14 @@ public final class BatchTree implements Serializable, ValueChangeListener {
     /**
      * @return the controller
      */
-    public DataController getController() {
+    public AffiliateOrderController getController() {
         return controller;
     }
 
     /**
      * @param controller the controller to set
      */
-    public void setController(DataController controller) {
+    public void setController(AffiliateOrderController controller) {
         this.controller = controller;
     }
 
@@ -320,6 +320,6 @@ public final class BatchTree implements Serializable, ValueChangeListener {
      */
     public void setBalance(Float balance) {
         this.balance = balance;
-        getController().mgmtBean.setBalance(balance);
+        getController().getDataController().mgmtBean.setBalance(balance);
     }
 }

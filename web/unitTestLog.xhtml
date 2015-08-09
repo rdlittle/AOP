@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./layout.xhtml">
+
+            <ui:define name="banner">
+                banner
+            </ui:define>
+
+            <ui:define name="content">
+                <span style="width: 99%; text-align: center; margin: 2em auto 3em auto;">
+                    <h2>Test Unit Log</h2>
+                </span>                
+                <p:messages showDetail="false"/>
+                <h:form id="utForm">
+                    <p:panelGrid styleClass="custom" 
+                                 style="margin-left: auto; margin-top: 2em; margin-right: auto; margin-left: auto;">
+                        <p:row>
+                            <p:column style="margin-right: 1em;">
+                                <p:outputLabel for="utName" value="Test name"/>
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="utName" value="#{aopTestBean.utLogName}">
+                                    <f:selectItem itemLabel="Select unit test name" itemValue="-1"/>
+                                    <f:selectItems value="#{aopTestBean.nameList}" var="selItem"
+                                                   itemLabel="#{selItem.value}" itemValue="#{selItem.key}">
+                                    </f:selectItems>
+                                    <p:ajax event="change" listener="#{aopTestBean.onChangeName()}" 
+                                            update="utDate,utTime,chart,resultPanel,resultPanel:passData,resultPanel:failData"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel for="utDate" value="Date" style="margin-right: 1em;"/>
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="utDate" value="#{aopTestBean.utLogDate}">
+                                    <f:selectItem itemLabel="Select date" itemValue="-1"/>
+                                    <f:selectItems value="#{aopTestBean.dateList}" var="date"
+                                                   itemLabel="#{date.value}"
+                                                   itemValue="${date.key}">
+                                    </f:selectItems>
+                                    <p:ajax listener="#{aopTestBean.onChangeName()}" update="utTime"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel for="utTime" value="Time" style="margin-right: 1em;"/>
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="utTime" value="#{aopTestBean.utLogTime}">
+                                    <f:selectItem itemLabel="Select time" itemValue="-1"/>
+                                    <f:selectItems value="#{aopTestBean.timeList}" var="time"
+                                                   itemLabel="#{time.value}"
+                                                   itemValue="${time.key}">
+                                    </f:selectItems>
+                                    <p:ajax listener="#{aopTestBean.onChangeTime()}" 
+                                            update="chart,resultPanel,resultPanel:passData,resultPanel:failData"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+
+                    <p:chart id="chart" type="bar" model="#{aopTestBean.chartModel}" transient="true"
+                             style="width: 800px; height: 100px; 
+                             margin-top: 2em; margin-right: auto; margin-bottom: 1em; margin-left: auto;"/>   
+
+                    <p:accordionPanel id="resultPanel" multiple="true" >
+                        <p:tab title="Failed: #{aopTestBean.log.failCount}%">
+                            <p:dataTable id="failData" value="#{aopTestBean.log.failList}" var="logEntry" 
+                                         style="margin: auto;">
+                                <p:column headerText="Test #" style="width: 3%;">
+                                    <h:outputText value="#{logEntry.num}"/>
+                                </p:column>
+                                <p:column headerText="Description" style="width: 90%;">
+                                    <h:outputText value="#{logEntry.desc}"/>
+                                </p:column>
+                                <p:column headerText="Expected" style="width: 4%;">
+                                    <h:outputText value="#{logEntry.expect}"/>
+                                </p:column>
+                                <p:column headerText="Actual" style="width: 3%;">
+                                    <h:outputText value="#{logEntry.result}"/>
+                                </p:column>                        
+                            </p:dataTable>                    
+                        </p:tab>
+                        <p:tab title="Passed: #{aopTestBean.log.passCount}%">
+                            <p:dataTable id="passData" value="#{aopTestBean.log.passList}" var="logEntry" 
+                                         style="margin: auto; margin-bottom: 2em;">
+                                <p:column headerText="Test #" style="width: 3%;">
+                                    <h:outputText value="#{logEntry.num}"/>
+                                </p:column>
+                                <p:column headerText="Description" style="width: 90%;">
+                                    <h:outputText value="#{logEntry.desc}"/>
+                                </p:column>
+                                <p:column headerText="Expected" style="width: 4%;">
+                                    <h:outputText value="#{logEntry.expect}"/>
+                                </p:column>
+                                <p:column headerText="Actual" style="width: 3%;">
+                                    <h:outputText value="#{logEntry.result}"/>
+                                </p:column>                        
+                            </p:dataTable>
+                        </p:tab>
+                    </p:accordionPanel>
+
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>
