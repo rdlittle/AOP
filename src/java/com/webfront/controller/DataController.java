@@ -327,10 +327,10 @@ public final class DataController {
         getRbo().setProperty("id", id);
         try {
             getRbo().callMethod("getValidatePayId");
-            boolean isCust = "1".equals(getRbo().getProperty("isCust").toString());
-            boolean isEzCust = "1".equals(getRbo().getProperty("isEzCust").toString());
-            boolean isRep = "1".equals(getRbo().getProperty("isRep").toString());
-            boolean isDist = "1".equals(getRbo().getProperty("isDist").toString());
+            boolean isCust = "1".equals(getRbo().getProperty("isCust"));
+            boolean isEzCust = "1".equals(getRbo().getProperty("isEzCust"));
+            boolean isRep = "1".equals(getRbo().getProperty("isRep"));
+            boolean isDist = "1".equals(getRbo().getProperty("isDist"));
             String errStat = getRbo().getProperty("errStat");
             String errCode = getRbo().getProperty("errCode");
             String errMsg = getRbo().getProperty("errMsg");
@@ -366,10 +366,14 @@ public final class DataController {
         }  
         getRbo().setProperty("fieldNum",fieldNum);
         if (score == 2) {
-            getRbo().callMethod("getUtilFileRec");
-            String errStatus = getRbo().getProperty("errStat").toString();
-            String errCode = getRbo().getProperty("errCode").toString();
-            String errMesg = getRbo().getProperty("errMesg").toString();
+            getRbo().callMethod("getFileItem");
+            UniDynArray pNames = getRbo().getPnames();
+            System.out.println(pNames.toString());
+            UniDynArray pValues = getRbo().getPvalues();
+            System.out.println(pValues.toString());
+            String errStatus = getRbo().getProperty("errStat");
+            String errCode = getRbo().getProperty("errCode");
+            String errMesg = getRbo().getProperty("errMesg");
             if(errStatus.equals("-1")) {
                 return null;
             }
