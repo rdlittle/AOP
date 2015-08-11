@@ -350,7 +350,7 @@ public final class DataController {
     }
     
     public UniDynArray getFileItem(String fileName, String itemId, String fieldNum) throws RbException {
-        setRbo(new RedObject("WDE","UTILS:File"));
+        setRbo(new RedObject("WDE","UTILS:Files"));
         UniDynArray fileItem = new UniDynArray();
         int score = 0;
         if (fileName !=null) {
@@ -371,9 +371,9 @@ public final class DataController {
             System.out.println(pNames.toString());
             UniDynArray pValues = getRbo().getPvalues();
             System.out.println(pValues.toString());
-            String errStatus = getRbo().getProperty("errStat");
-            String errCode = getRbo().getProperty("errCode");
-            String errMesg = getRbo().getProperty("errMesg");
+            String errStatus = getRbo().getProperty("svrStatus");
+            String errCode = getRbo().getProperty("svrCtrlCode");
+            String errMesg = getRbo().getProperty("svrMessage");
             if(errStatus.equals("-1")) {
                 return null;
             }
@@ -383,7 +383,7 @@ public final class DataController {
     }
     
     public void setFileItem(String fileName, String itemId, String fieldNum, boolean retainLock, boolean mustExist, UniDynArray fileRec) throws RbException {
-        setRbo(new RedObject("WDE","UTILS:File"));
+        setRbo(new RedObject("WDE","UTILS:Files"));
         int score = 0;
         if (fileName !=null) {
             getRbo().setProperty("fileName",fileName);
