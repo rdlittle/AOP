@@ -103,7 +103,7 @@ public class BatchManagementBean implements Serializable {
         if (this.getMasterId() != null) {
             rb.setProperty("masterId", this.getMasterId());
         }
-        if (this.affiliateDetail != null) {
+        if (this.affiliateDetail != null && !this.affiliateDetail.getId().isEmpty()) {
             rb.setProperty("divId", this.affiliateDetail.getId());
         }
         try {

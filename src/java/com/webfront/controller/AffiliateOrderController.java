@@ -11,6 +11,7 @@ import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.model.AffiliateError;
 import com.webfront.model.AffiliateOrder;
 import com.webfront.model.ErrorControl;
+import com.webfront.model.UVException;
 import com.webfront.u2.DynArray;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,6 +39,10 @@ public class AffiliateOrderController {
         try {
             UniDynArray uda = controller.getFileItem("PARAMS", "AOP.ERROR.CONTROL", "");
             errorMsgs.setControl(uda);
+        } catch (UVException uve) {
+            FacesContext ctx = FacesContext.getCurrentInstance();
+            FacesMessage msg = new FacesMessage(uve.toString());
+            ctx.addMessage(null, msg);
         } catch (RbException ex) {
             Logger.getLogger(AffiliateOrderController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -101,14 +106,15 @@ public class AffiliateOrderController {
 
     public String setAffiliateOrder(String orderId, AffiliateOrder order) {
         try {
-            getDataController().setRbo(new RedObject("WDE", "AOP:AffiliateOrders"));
+            getDataController().setRbo(new RedObject("WDE", "Affiliates:Orders"));
             RedObject r = getDataController().getRbo();
             r.setProperty("orderId", orderId);
-            r.setProperty("payingId", order.getPayingId());
-            r.callMethod("setAffiliateOrder");
-            String errStat = r.getProperty("errStat");
-            String errCode = r.getProperty("errCode");
-            String errMsg = r.getProperty("errMsg");
+            r.setProperty("affiliateOrdersRec", order.toDynArray());
+            r.callMethod("putAffiliateOrder");
+            String errStat = r.getProperty("svrStatus");
+            String errCode = r.getProperty("svrCtrlCode");
+            String errName = r.getProperty("svrCtrlName");
+            String errMsg = r.getProperty("svrMessage");
             if (!errStat.isEmpty() || errStat.equals("-1")) {
                 FacesMessage msg = new FacesMessage(errCode + " " + errMsg);
                 FacesContext.getCurrentInstance().addMessage(null, msg);

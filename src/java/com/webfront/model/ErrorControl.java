@@ -23,10 +23,10 @@ public class ErrorControl {
     
     public void setControl(UniDynArray uda) {
         this.control=uda;
-        int values = uda.count(1);
+        int values = uda.count(1,1);
         for (int value = 1; value <= values; value++) {
-            String errNum = uda.extract(1, value).toString();
-            String errMsg = uda.extract(2, value).toString();
+            String errNum = uda.extract(1, 1, value).toString();
+            String errMsg = uda.extract(1, 2, value).toString();
             message.put(errNum,errMsg);
         }
     }

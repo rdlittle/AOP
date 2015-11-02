@@ -71,6 +71,9 @@ public final class WebDEBean implements Serializable {
      * @return the vendorNames
      */
     public LinkedList<SelectItem> getAffiliateMasterList() {
+        if (affiliateMasterList.isEmpty()) {
+            setAffiliateMasterList(this.affiliateMasterList);
+        }
         return affiliateMasterList;
     }
 

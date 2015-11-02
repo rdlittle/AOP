@@ -118,6 +118,9 @@ public class AopTesting implements Serializable {
             rbo.setProperty("userName", getUserName());
             rbo.setProperty("countryCode", getCountryCode());
             rbo.setProperty("commissionType", getCommissionType());
+//            System.out.print("doLookup: userName="+getUserName()+" ");
+//            System.out.print("doLookup: countryCode="+getCountryCode()+" ");
+//            System.out.print("doLookup: commissiontype="+getCommissionType()+" ");
             rbo.callMethod("getAopSourceDesc");
             errStatus = Integer.parseInt(rbo.getProperty("errStat"));
             errCode = rbo.getProperty("errCode");
@@ -144,14 +147,16 @@ public class AopTesting implements Serializable {
                 cust.setPcType(pcTypes.extract(1, i).toString());
                 cust.setSponsor(sponsorIds.extract(1, i).toString());
                 String d = orderDates.extract(1, i).toString();
-                String[] dateSeg = d.split("/");
-                int mm = Integer.parseInt(dateSeg[0]);
-                int dd = Integer.parseInt(dateSeg[1]);
-                int yy = Integer.parseInt(dateSeg[2]);
                 Calendar cal = Calendar.getInstance(Locale.getDefault());
-                cal.set(Calendar.MONTH, mm);
-                cal.set(Calendar.DAY_OF_MONTH, dd);
-                cal.set(Calendar.YEAR, yy + 2000);
+                if (d != null && !d.isEmpty()) {
+                    String[] dateSeg = d.split("/");
+                    int mm = Integer.parseInt(dateSeg[0]);
+                    int dd = Integer.parseInt(dateSeg[1]);
+                    int yy = Integer.parseInt(dateSeg[2]);
+                    cal.set(Calendar.MONTH, mm);
+                    cal.set(Calendar.DAY_OF_MONTH, dd);
+                    cal.set(Calendar.YEAR, yy + 2000);
+                }
                 cust.setOrderDate(cal.getTime());
                 cust.setOrderTotal(orderTotals.extract(1, i).toString());
                 sourceDesc.getCustList().add(cust);
@@ -170,18 +175,25 @@ public class AopTesting implements Serializable {
         rbo.setProperty("pcId", sourceDesc.getPcId());
         rbo.setProperty("orderTotal", sourceDesc.getOrderTotal());
         rbo.setProperty("orderDate", sourceDesc.dateAsString());
-        rbo.setProperty("vendorId", getVendorId());
-        rbo.setProperty("vendorDiv", getVendorDiv());
         rbo.setProperty("storeId", getStoreId());
+//        System.out.print("userName="+getUserName()+" ");
+//        System.out.print("countryCode="+getCountryCode()+" ");
+//        System.out.print("commissiontype="+getCommissionType()+" ");
+//        System.out.print("vendorId="+getVendorId()+" ");
+//        System.out.print("vendorDiv="+getVendorDiv()+" ");
+//        System.out.print("pcId="+sourceDesc.getPcId()+" ");
+//        System.out.print("orderTotal="+sourceDesc.getOrderTotal()+" ");
+//        System.out.print("orderDate="+sourceDesc.dateAsString()+" ");
+//        System.out.print("storeId="+getStoreId()+" ");
         try {
             rbo.callMethod("setAopSourceDesc");
             errStatus = Integer.parseInt(rbo.getProperty("errStat"));
             errCode = rbo.getProperty("errCode");
             errMessage = rbo.getProperty("errMsg");
             if (errStatus != -1) {
-                Customer cust = new Customer();
-                cust.setPcId(sourceDesc.getPcId());
-                sourceDesc.getCustList().add(cust);
+                sourceDesc.setPcId("");
+                sourceDesc.setOrderTotal("");
+                doLookup(null);
             }
         } catch (RbException ex) {
             System.out.println(ex.toString());
@@ -193,7 +205,7 @@ public class AopTesting implements Serializable {
         rbo.setProperty("countryCode", getCountryCode());
         rbo.setProperty("commissionType", getCommissionType());
         UniDynArray pcArray = new UniDynArray();
-        for (Customer cust : sourceDesc.getCustList()) {
+        for (Customer cust : selectedItems) {
             pcArray.insert(1, -1, cust.getPcId());
         }
         rbo.setProperty("pcId", pcArray);
@@ -203,6 +215,13 @@ public class AopTesting implements Serializable {
             errStatus = Integer.parseInt(rbo.getProperty("errStat"));
             errCode = rbo.getProperty("errCode");
             errMessage = rbo.getProperty("errMsg");
+            if (errStatus == -1) {
+                FacesContext ctx = FacesContext.getCurrentInstance();
+                FacesMessage msg = new FacesMessage(errCode + ": " + errMessage);
+                ctx.addMessage(null, msg);
+            } else {
+                selectedItems.clear();
+            }
         } catch (RbException ex) {
             System.out.println(ex.toString());
         }
@@ -442,9 +461,11 @@ public class AopTesting implements Serializable {
     }
 
     public void onRowSelect(SelectEvent event) {
+//        System.out.println(selectedItems.size());
     }
 
     public void onRowUnselect(UnselectEvent event) {
+//        System.out.println(selectedItems.size());
     }
 
     /**
@@ -820,10 +841,10 @@ public class AopTesting implements Serializable {
                 UniDynArray utSuiteIdList = rb.getPropertyToDynArray("suiteId");
                 UniDynArray utDescList = rb.getPropertyToDynArray("utDate");
                 int utCount = Integer.parseInt(rb.getProperty("utCount"));
-                for(int ut=1; ut<=utCount; ut++) {
+                for (int ut = 1; ut <= utCount; ut++) {
                     String id = utSuiteIdList.extract(1, ut).toString();
-                    String desc = utDescList.extract(1,ut).toString();
-                    SelectItem se = new SelectItem(id,desc);
+                    String desc = utDescList.extract(1, ut).toString();
+                    SelectItem se = new SelectItem(id, desc);
                     suiteIdList.add(se);
                 }
             }

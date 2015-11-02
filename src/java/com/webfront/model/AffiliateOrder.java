@@ -50,13 +50,73 @@ public class AffiliateOrder {
     private boolean isHistory;
 
     public AffiliateOrder() {
-        this.orderTotal="0.00";
-        this.ibvTotal="0.00";
-        this.ibv=Float.valueOf("0.00");
-        this.commissionTotal=Float.valueOf("0.00");
-        this.isDeferrable=true;
-        this.errorList=new ArrayList<>();
+        orderDate = "";
+        vendorOrderNum = "";
+        entryDate = "";
+        errorCount = "";
+
+        orderRef = "";
+        filingId = "";
+        payingId = "";
+
+        orderTotal = "0.00";
+        ibvTotal = "0.00";
+        payingIdAddr1 = "";
+        payingIdAddr2 = "";
+        payingIdCityStZip = "";
+
+        ibv = Float.valueOf("0.00");
+        commissionTotal = Float.valueOf("0.00");
+        isDeferrable = true;
+        errorList = new ArrayList<>();
+        actualPlacementId1 = "";
+        actualPlacementId2 = "";
+        ibvPlacedAmt1 = new Float(0);
+        ibvPlacedAmt2 = new Float(0);
+        storeId = "";
+        storeName = "";
+        vendorDiv = "";
+        vendorId = "";
+        vendorOrderDate = "";
+        batchId = "";
     }
+
+    public UniDynArray toDynArray() {
+        UniDynArray uda = new UniDynArray();
+        uda.insert(1, 1, orderDate);
+        uda.insert(1, 2, "IBV" + orderRef);
+        uda.insert(1, 3, entryDate);
+        uda.insert(1, 4, filingId);
+        uda.insert(1, 8, payingId);
+        uda.insert(1, 24, orderTotal);
+        uda.insert(1, 26, orderTotal);
+        int subVal = 1;
+        for (AffiliateError ae : errorList) {
+            uda.insert(1, 29, subVal, ae.getId());
+            uda.insert(1, 56, subVal, ae.getLineNumber());
+            subVal += 1;
+        }
+        uda.insert(1, 149, ibvTotal);
+        if (actualPlacementId1 != null) {
+            uda.insert(1, 151, 1, actualPlacementId1);
+        }
+        if (actualPlacementId2 != null) {
+            uda.insert(1, 151, 1, actualPlacementId2);
+        }
+        uda.insert(1, 152, 1, ibvPlacedAmt1.toString());
+        uda.insert(1, 152, 2, ibvPlacedAmt2.toString());
+        uda.insert(1, 157, storeId);
+        uda.insert(1, 160, payingId);
+        uda.insert(1, 161, vendorOrderDate);
+        uda.insert(1, 165, vendorOrderNum);
+        uda.insert(1, 173, commissionTotal.toString());
+        uda.insert(1, 179, storeName);
+        uda.insert(1, 158, vendorDiv);
+        uda.insert(1, 181, vendorId);
+        uda.insert(1, 197, batchId);
+        return uda;
+    }
+
     /**
      * @return the id
      */
@@ -215,14 +275,14 @@ public class AffiliateOrder {
      * @return the commissionTotal
      */
     public Float getCommissionTotal() {
-       return commissionTotal;
+        return commissionTotal;
     }
-    
+
     public String getCommissionAsString() {
-        NumberFormat nf=NumberFormat.getCurrencyInstance();
-        
-        String comm=nf.format(commissionTotal/100);
-        return comm;        
+        NumberFormat nf = NumberFormat.getCurrencyInstance();
+
+        String comm = nf.format(commissionTotal / 100);
+        return comm;
     }
 
     /**
@@ -475,8 +535,8 @@ public class AffiliateOrder {
      */
     public boolean isIsDeferrable() {
         String[] temp = this.getBatchId().split("\\*");
-        if(temp.length<4) {
-            isDeferrable=false;
+        if (temp.length < 4) {
+            isDeferrable = false;
         } else {
             int batchSeq = Integer.parseInt(temp[3]);
             if (batchSeq == 3) {
@@ -487,14 +547,16 @@ public class AffiliateOrder {
     }
 
     public String lower() {
-        String str=this.toString();
-        UniDynArray da=DynArray.lower(new UniDynArray(str));
+        String str = this.toString();
+        UniDynArray da = DynArray.lower(new UniDynArray(str));
         return da.toString();
     }
+
     public String raise() {
-        UniDynArray da=DynArray.raise(new UniDynArray(this.toString()));
+        UniDynArray da = DynArray.raise(new UniDynArray(this.toString()));
         return da.toString();
     }
+
     /**
      * @param isDeferrable the isDeferrable to set
      */

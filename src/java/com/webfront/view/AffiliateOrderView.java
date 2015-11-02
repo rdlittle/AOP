@@ -30,13 +30,13 @@ import org.primefaces.event.UnselectEvent;
 public final class AffiliateOrderView implements Serializable {
 
     private AffiliateOrder order;
-    
+
     private AffiliateOrderController aoController;
     private List<BatchItem> batchList;
     private String newBatchId;
     private BatchItem newBatch;
     private boolean isSelected;
-    
+
     private boolean fromErrorListing;
     private boolean fromSearchScreen;
     private String referringPage;
@@ -56,23 +56,25 @@ public final class AffiliateOrderView implements Serializable {
         setBatchList(new LinkedList<BatchItem>());
         init();
     }
-    
+
     @PostConstruct
     public void init() {
+        order = new AffiliateOrder();
         aoController = new AffiliateOrderController();
     }
 
     public String viewOrder(String orderId) {
         FacesContext facesContext = FacesContext.getCurrentInstance();
-        String refPage=facesContext.getViewRoot().getViewId();
+        String refPage = facesContext.getViewRoot().getViewId();
         setReferringPage(refPage);
         this.fromErrorListing = refPage.contains("affiliateErrorListing.xhtml");
         this.fromSearchScreen = refPage.contains("batchManagementInputForm.xhtml");
         setOrder(getAoController().getAffiliateOrder(orderId));
         return "affiliateOrder.xhtml?orderId=" + orderId + "&faces-redirect=true";
     }
+
     public String validateOrder() {
-        
+
         return "";
     }
 
@@ -89,8 +91,10 @@ public final class AffiliateOrderView implements Serializable {
     }
 
     public String prepareUpdate() {
-        if(fromErrorListing || fromSearchScreen) {
-            return getReferringPage()+"?faces-redirect=true";
+        if (order.isHasErrors()) {
+            if (fromErrorListing || fromSearchScreen) {
+                return getReferringPage() + "?faces-redirect=true";
+            }
         }
         setBatchList(new LinkedList<BatchItem>());
         getAoController().setAffiliateOrder(order.getId(), order);
@@ -99,7 +103,7 @@ public final class AffiliateOrderView implements Serializable {
 
     public String cancel() {
         if (fromErrorListing || fromSearchScreen) {
-            return getReferringPage()+"?faces-redirect=true";
+            return getReferringPage() + "?faces-redirect=true";
         }
         setBatchList(new LinkedList<BatchItem>());
         return "batchManager?faces-redirect=true";

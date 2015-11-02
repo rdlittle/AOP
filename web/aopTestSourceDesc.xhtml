@@ -115,6 +115,10 @@
                             editable="true"
                             editMode="cell">
                             <p:ajax event="cellEdit" listener="#{aopTestBean.onCellEdit}" update="data" />
+                            <p:ajax event="rowSelect" listener="#{aopTestBean.onRowSelect(event)}" update="deleteButton"/>
+                            <p:ajax event="rowSelectCheckbox" listener="#{aopTestBean.onRowSelect(event)}" update="deleteButton"/>
+                            <p:ajax event="rowUnselect" listener="#{aopTestBean.onRowUnselect(event)}" update="deleteButton"/>
+                            <p:ajax event="rowUnselectCheckbox" listener="#{aopTestBean.onRowUnselect(event)}" update="deleteButton"/>                            
                             <p:column selectionMode="multiple" style="width:16px;text-align:center">
                             </p:column>
                             <p:column id='pcId' headerText="Paying ID" >
@@ -145,7 +149,7 @@
                                 </h:outputText>
                             </p:column>  
                             <f:facet name="footer">
-                                <p:commandButton value="Delete selected" action="#{aopTestBean.deleteItem}" 
+                                <p:commandButton id="deleteButton" value="Delete selected" action="#{aopTestBean.deleteItem}" 
                                                  disabled = "#{aopTestBean.selectedItems.size()==0}"
                                                  update=":form:data"/>
                                 <h:outputText value="PC ID" style="margin-right: 2em;"/>

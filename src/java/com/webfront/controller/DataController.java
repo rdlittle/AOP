@@ -11,10 +11,9 @@ import com.webfront.beans.BatchManagementBean;
 import com.webfront.beans.BatchSummaryBean;
 import com.webfront.beans.Config;
 import com.webfront.beans.WebDEBean;
-import com.webfront.model.AffiliateError;
 import com.webfront.model.AffiliateOrder;
 import com.webfront.model.BatchItem;
-import com.webfront.u2.DynArray;
+import com.webfront.model.UVException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,17 +59,17 @@ public final class DataController {
     public List<BatchItem> getBatchList() {
         String newVendorId = mgmtBean.getMasterId();
         String vendorDiv = mgmtBean.getDetail().getAffiliateDetailId();
-        if(vendorDiv.equals("0")) {
-            vendorDiv="";
+        if (vendorDiv.equals("0")) {
+            vendorDiv = "";
         } else {
-            String divNum=vendorDiv.substring(vendorDiv.indexOf("*")+1,vendorDiv.length());
-            vendorDiv=divNum;
+            String divNum = vendorDiv.substring(vendorDiv.indexOf("*") + 1, vendorDiv.length());
+            vendorDiv = divNum;
         }
-        if(this.batchTree==null) {
-            this.batchList=null;
-            this.orderList=null;
+        if (this.batchTree == null) {
+            this.batchList = null;
+            this.orderList = null;
         }
-        if (!newVendorId.equals(this.vendorId) ||this.batchList == null || this.batchList.isEmpty()) {
+        if (!newVendorId.equals(this.vendorId) || this.batchList == null || this.batchList.isEmpty()) {
             setRbo(new RedObject("WDE", "Affiliates:Headers"));
             try {
                 vendorId = newVendorId;
@@ -129,7 +128,7 @@ public final class DataController {
                     batchItem.setOrderCount(orderCounts.extract(1, val).toString());
                     batchItem.setErrorCount(errorCounts.extract(1, val).toString());
                     batchItem.setLinkedKey(linkedKeys.extract(1, val).toString());
-                    batchItem.setBatchSeq(batchSequences.extract(1,val).toString());
+                    batchItem.setBatchSeq(batchSequences.extract(1, val).toString());
                     setTotalAppliedAmt((Float) (getTotalAppliedAmt() + batchItem.getAppliedAmt()));
                     tempList.add(batchItem);
                 }
@@ -145,9 +144,9 @@ public final class DataController {
     public void setBatchList(ArrayList<BatchItem> list) {
         this.batchList = list;
     }
-    
+
     public void clearBatchTree() {
-        if(this.batchList != null) {
+        if (this.batchList != null) {
             this.batchList.clear();
         }
         this.batchTree.setBatchList(null);
@@ -211,7 +210,7 @@ public final class DataController {
                 batchItem.setOrderCount(orderCounts.extract(1, val).toString());
                 batchItem.setErrorCount(errorCounts.extract(1, val).toString());
                 batchItem.setLinkedKey(linkedKeys.extract(1, val).toString());
-                batchItem.setBatchSeq(batchSequences.extract(1,val).toString());
+                batchItem.setBatchSeq(batchSequences.extract(1, val).toString());
                 list.add(batchItem);
             }
         } catch (RbException ex) {
@@ -290,15 +289,15 @@ public final class DataController {
     public String deferOrder(String orderId, String batchId) {
         try {
             setRbo(new RedObject("WDE", "AOP:AffiliateOrders"));
-            RedObject r=getRbo();
+            RedObject r = getRbo();
             r.setProperty("orderId", orderId);
             r.setProperty("batchId", batchId);
             r.callMethod("setOrderDefer");
             String errStat = r.getProperty("errStat");
             String errCode = r.getProperty("errCode");
             String errMsg = r.getProperty("errMsg");
-            if(!errStat.isEmpty() || errStat.equals("-1")) {
-                FacesMessage msg = new FacesMessage(errCode+" "+errMsg);
+            if (!errStat.isEmpty() || errStat.equals("-1")) {
+                FacesMessage msg = new FacesMessage(errCode + " " + errMsg);
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return "";
             }
@@ -312,7 +311,7 @@ public final class DataController {
         String approvalFlag = tf ? "1" : "0";
         setRbo(new RedObject("WDE", "AOP:Batch"));
         getRbo().setProperty("batchID", batchID);
-        getRbo().setProperty("userID",mgmtBean.getUserId());
+        getRbo().setProperty("userID", mgmtBean.getUserId());
         getRbo().setProperty("processStatus", approvalFlag);
         getRbo().setProperty("approvalRole", role);
         try {
@@ -321,72 +320,36 @@ public final class DataController {
             Logger.getLogger(DataController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public String validatePayId(String id) {
-        setRbo(new RedObject("WDE","Orders:Validation"));
+        setRbo(new RedObject("WDE", "Orders:Validation"));
         getRbo().setProperty("id", id);
         try {
             getRbo().callMethod("getValidatePayId");
-            boolean isCust = "1".equals(getRbo().getProperty("isCust"));
-            boolean isEzCust = "1".equals(getRbo().getProperty("isEzCust"));
-            boolean isRep = "1".equals(getRbo().getProperty("isRep"));
-            boolean isDist = "1".equals(getRbo().getProperty("isDist"));
             String errStat = getRbo().getProperty("errStat");
             String errCode = getRbo().getProperty("errCode");
             String errMsg = getRbo().getProperty("errMsg");
-            if(errStat.equals("-1")) {
-                return "Error: "+errCode+" "+errMsg;
+            if (errStat.equals("-1")) {
+                return "Error: " + errCode + " " + errMsg;
             }
         } catch (RbException ex) {
             Logger.getLogger(DataController.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "OK";
     }
-    
+
     public boolean isValidOrder(AffiliateOrder order) {
-        setRbo(new RedObject("WDE","Affiliates:Orders"));
-        
+        setRbo(new RedObject("WDE", "Affiliates:Orders"));
+
         return true;
     }
-    
-    public UniDynArray getFileItem(String fileName, String itemId, String fieldNum) throws RbException {
-        setRbo(new RedObject("WDE","UTILS:Files"));
+
+    public UniDynArray getFileItem(String fileName, String itemId, String fieldNum) throws RbException, UVException {
+        setRbo(new RedObject("WDE", "UTILS:Files"));
         UniDynArray fileItem = new UniDynArray();
         int score = 0;
-        if (fileName !=null) {
-            getRbo().setProperty("fileName",fileName);
-            score += 1;
-        }
-        if (itemId != null) {
-            getRbo().setProperty("itemId", itemId);
-            score += 1;
-        }
-        if (fieldNum == null) {
-            fieldNum = "";
-        }  
-        getRbo().setProperty("fieldNum",fieldNum);
-        if (score == 2) {
-            getRbo().callMethod("getFileItem");
-            UniDynArray pNames = getRbo().getPnames();
-            System.out.println(pNames.toString());
-            UniDynArray pValues = getRbo().getPvalues();
-            System.out.println(pValues.toString());
-            String errStatus = getRbo().getProperty("svrStatus");
-            String errCode = getRbo().getProperty("svrCtrlCode");
-            String errMesg = getRbo().getProperty("svrMessage");
-            if(errStatus.equals("-1")) {
-                return null;
-            }
-            fileItem = getRbo().getPropertyToDynArray("fileItem");
-        }
-        return fileItem;
-    }
-    
-    public void setFileItem(String fileName, String itemId, String fieldNum, boolean retainLock, boolean mustExist, UniDynArray fileRec) throws RbException {
-        setRbo(new RedObject("WDE","UTILS:Files"));
-        int score = 0;
-        if (fileName !=null) {
-            getRbo().setProperty("fileName",fileName);
+        if (fileName != null) {
+            getRbo().setProperty("fileName", fileName);
             score += 1;
         }
         if (itemId != null) {
@@ -397,16 +360,52 @@ public final class DataController {
             fieldNum = "";
         }
         getRbo().setProperty("fieldNum", fieldNum);
-        getRbo().setProperty("retainLock", retainLock ? "1" : "0" );
+        if (score == 2) {
+            getRbo().callMethod("getFileItem");
+            String errStatus = getRbo().getProperty("svrStatus");
+            String errCode = getRbo().getProperty("svrCtrlCode");
+            String errMesg = getRbo().getProperty("svrMessage");
+            if (errStatus.equals("-1")) {
+                throw new UVException(errStatus, errCode, "", errMesg);
+            }
+            fileItem = getRbo().getPropertyToDynArray("fileItem");
+        }
+        return fileItem;
+    }
+
+    public void setFileItem(String fileName, String itemId, String fieldNum, boolean retainLock, boolean mustExist, UniDynArray fileRec)
+            throws RbException, UVException {
+        setRbo(new RedObject("WDE", "UTILS:Files"));
+        int score = 0;
+        if (fileName != null) {
+            getRbo().setProperty("fileName", fileName);
+            score += 1;
+        }
+        if (itemId != null) {
+            getRbo().setProperty("itemId", itemId);
+            score += 1;
+        }
+        if (fieldNum == null) {
+            fieldNum = "";
+        }
+        getRbo().setProperty("fieldNum", fieldNum);
+        getRbo().setProperty("retainLock", retainLock ? "1" : "0");
         getRbo().setProperty("mustExist", mustExist ? "1" : "0");
-        if (fileRec==null) {
+        if (fileRec == null) {
             fileRec = new UniDynArray();
         }
-        if(score==2) {
+        getRbo().setProperty("fileRec", fileRec);
+        if (score == 2) {
             getRbo().callMethod("setUtilFileRec");
         }
+        String errStatus = getRbo().getProperty("svrStatus");
+        String errCode = getRbo().getProperty("svrCtrlCode");
+        String errMesg = getRbo().getProperty("svrMessage");
+        if (errStatus.equals("-1")) {
+            throw new UVException(errStatus, errCode, "", errMesg);
+        }
     }
-    
+
     /**
      * @return the rbo
      */
