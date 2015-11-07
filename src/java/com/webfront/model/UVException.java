@@ -5,6 +5,8 @@
  */
 package com.webfront.model;
 
+import javax.faces.application.FacesMessage;
+
 /**
  *
  * @author rlittle
@@ -14,12 +16,22 @@ public class UVException extends Exception {
     private String svrCtrlCode;
     private String svrCtrlName;
     private String svrMessage;
+    private ErrorObject errorObject;
 
     public UVException() {
         svrStatus = 0;
         svrCtrlCode = "";
         svrCtrlName = "";
         svrMessage = "";
+        errorObject=new ErrorObject();
+    }
+
+    public UVException(ErrorObject errObj) {
+        svrStatus = errObj.getSvrStatus();
+        svrCtrlCode = errObj.getSvrCtrlCode();
+        svrMessage = errObj.getSvrMessage();
+        errorObject = errObj;
+        svrCtrlName = "";
     }
     
     public UVException(String errStat, String errCode, String errName, String errMesg) {
@@ -28,6 +40,7 @@ public class UVException extends Exception {
         svrCtrlCode = errCode;
         svrCtrlName = errName;
         svrMessage = errMesg;
+        errorObject=new ErrorObject(errStat,errCode,errMesg);
     }
     
     /**
@@ -96,6 +109,12 @@ public class UVException extends Exception {
     @Override
     public String toString() {
         return Integer.toString(svrStatus)+" "+svrMessage;
+    }
+    
+    public FacesMessage toFacesMessage() {
+        FacesMessage fmsg = new FacesMessage(toString());
+        fmsg.setSeverity(FacesMessage.SEVERITY_ERROR);
+        return fmsg;
     }
     
 }

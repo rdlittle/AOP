@@ -7,7 +7,10 @@ package com.webfront.beans;
 
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
+import com.webfront.controller.AopQueueController;
 import com.webfront.model.AffiliatePayment;
+import com.webfront.model.AopQueue;
+import com.webfront.model.UVException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -44,9 +47,10 @@ public class AffiliatePaymentBean {
     private UploadedFile fileName;
     private AffiliatePayment selectedItem;
     private final ArrayList<AffiliatePayment> paymentList;
-    RedObject rbo;
     @ManagedProperty(value = "#{uploadBean}")
     UploadBean uploader;
+    public final RedObject rbo = new RedObject("WDE", "Affiliates:Payment");
+    private final AopQueueController controller = new AopQueueController();
 
     public AffiliatePaymentBean() {
         selectedItem = new AffiliatePayment();
@@ -74,35 +78,21 @@ public class AffiliatePaymentBean {
         if (!result) {
             return "";
         }
-        RedObject rb = new RedObject("WDE", "AOP:Queue");
-        
-        rb.setProperty("fileName", fileName.getFileName());
-        rb.setProperty("vendorId", this.networkId);
-        rb.setProperty("queueType", "C");
-        rb.setProperty("checkId", this.checkId);
-        rb.setProperty("checkDate", checkDateToString());
-        rb.setProperty("checkAmount", this.checkAmount);
-        rb.setProperty("queueId", "");
+        AopQueue queueItem = new AopQueue();
+        queueItem.setAffiliateMasterId(this.networkId);
+        queueItem.setCheckAmount(this.checkAmount);
+        queueItem.setFileName(fileName.getFileName());
+        queueItem.setQueueType("C");
+        queueItem.setCheckId(this.checkId);
+        queueItem.setCheckAmount(this.checkAmount);
+        queueItem.setCheckDate(checkDateToString());
+        controller.setQueueItem(queueItem);
         try {
-            rb.callMethod("setQueue");
-            String errStat = rb.getProperty("errStat");
-            String errCode = rb.getProperty("errCode");
-            String errMsg = rb.getProperty("errMsg");
-            if (errStat.equals("-1")) {
-                errMsg = "Error: " + errCode + " " + errMsg;
-                FacesMessage fmsg = new FacesMessage(errMsg);
-                fmsg.setSeverity(FacesMessage.SEVERITY_ERROR);
-                FacesContext ctx = FacesContext.getCurrentInstance();
-                ctx.addMessage("msg", fmsg);
-                return "";
-            }
-        } catch (RbException ex) {
-            Logger.getLogger(UploadBean.class.getName()).log(Level.SEVERE, null, ex);
-            FacesMessage fmsg = new FacesMessage(ex.getMessage());
-            fmsg.setSeverity(FacesMessage.SEVERITY_FATAL);
+            controller.createQueue();
+        } catch (UVException ex) {
             FacesContext ctx = FacesContext.getCurrentInstance();
-            ctx.addMessage("msg", fmsg);
-            return "";
+            ctx.addMessage("msg", ex.toFacesMessage());
+            Logger.getLogger(AffiliatePaymentBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "/aopQueue?faces-redirect=true";
     }
@@ -135,7 +125,6 @@ public class AffiliatePaymentBean {
     public void setPaymentList(ArrayList<AffiliatePayment> paymentList) {
         try {
             this.paymentList.clear();
-            rbo = new RedObject("WDE", "Affiliates:Payment");
             rbo.setProperty("networkId", selectedItem.getNetworkId());
             rbo.setProperty("checkId", checkId);
             rbo.setProperty("paymentId", getId());
@@ -147,7 +136,6 @@ public class AffiliatePaymentBean {
 
     public void getPayment() {
         try {
-            rbo = new RedObject("WDE", "Affiliates:Payment");
             rbo.setProperty("networkId", networkId);
             rbo.setProperty("checkId", checkId);
             rbo.setProperty("paymentId", getId());

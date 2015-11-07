@@ -33,7 +33,7 @@ public class SelectItem implements Serializable {
     }
     @Override
     public String toString() {
-        return this.getValue();
+        return this.getKey()+","+this.getValue();
     }
     
 }

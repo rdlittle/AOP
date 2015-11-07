@@ -12,19 +12,21 @@
 
             <ui:define name="content">
                 <f:metadata>
-                    <f:event type="preRenderView" listener='#{aopQueueBean.setQueueType("O")}'/>
+                    <f:event type="preRenderView" listener='#{aopQueueBean.setQueueType("AO")}'/>
                 </f:metadata>
                 <span style="width: 99%; text-align: center; margin: 2em auto;">
                     <h2>Affiliate Order Processing Queue</h2>
                 </span>
                 <h:form id="form">
                     <p:growl id="msg" />
-                    <h:inputHidden id="queueType" value = "O" immediate="true" />
+                    <h:inputHidden id="queueType" value = "AO" immediate="true" />
                     <p:dataTable id="aopQueue" var="queueItem" value="#{aopQueueBean.queueList}" 
+                                 editable="true"
+                                 editMode="cell"
                                  selection="#{aopQueueBean.selectedItems}" 
                                  selectionMode="checkbox"
                                  rowKey="#{queueItem.fileName}" style="width: 98%; margin: auto;">
-                        <p:column selectionMode="multiple" width="1%" style="text-align: center;"/>
+                        <p:ajax event="cellEdit" listener="#{aopQueueBean.onCellEdit}"/>
                         <p:column headerText="Vendor Master" width="8%">
                             <h:outputText value="#{queueItem.affiliateMasterId}"/>
                         </p:column>                    
@@ -37,8 +39,19 @@
                         <p:column headerText="User">
                             <h:outputText value="#{queueItem.userName}"/>
                         </p:column>
-                        <p:column headerText="Status" width="5%">
-                            <h:outputText value="#{queueItem.statusName}"/>
+                        <p:column headerText="Status" width="5%" >
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{queueItem.statusName}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:selectOneMenu value="#{queueItem.status}" id="statusSelector">
+                                        <f:selectItem itemValue="0" itemLabel="Requeued"/>
+                                        <f:selectItem itemValue="6" itemLabel="Deleting"/>
+                                        <f:selectItem itemValue="9" itemLabel="Hold"/>
+                                    </p:selectOneMenu>
+                                </f:facet>
+                            </p:cellEditor>
                         </p:column>
                         <p:column headerText="Lines" width="5%">
                             <h:outputText value="#{queueItem.lineCount}"/>
@@ -54,9 +67,8 @@
                             <h:outputText value="#{queueItem.fileName}"/>
                         </p:column>                        
                     </p:dataTable>
-                    <p:poll id="poll" interval="15" listener="#{aopQueueBean.rePoll}" update="aopQueue" autoStart="true" process="@this"/>
-                    <p:commandButton actionListener="#{aopQueueBean.processSelected}" 
-                                     process=":form:aopQueue" value="Process"/>
+                    <p:poll id="poll" interval="30" listener="#{aopQueueBean.rePoll}" update="aopQueue" autoStart="false" process="@this"/>
+                    
                 </h:form>
             </ui:define>
         </ui:composition>

@@ -17,6 +17,7 @@ import com.webfront.model.UnitTestSuite;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,7 +25,6 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.component.UISelectOne;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import org.primefaces.event.CellEditEvent;
@@ -45,6 +45,7 @@ public class AopTesting implements Serializable {
 
     private final RedObject rbo;
     private AopSourceDesc sourceDesc;
+    
     private ArrayList<Customer> selectedItems;
     private UnitTestSuite testSuite;
     private String userName;
@@ -59,13 +60,12 @@ public class AopTesting implements Serializable {
     private String utLogDate;
     private String utLogTime;
     private int utLogCount;
+    private String groupId;
 
     @ManagedProperty(value = "#{affiliateMasterBean}")
     private AffiliateMasterBean masterBean;
     @ManagedProperty(value = "#{affiliateDetailBean}")
     private AffiliateDetailBean detailBean;
-    private UISelectOne uiSelectVendor;
-    private UISelectOne uiSelectStore;
 
     private ArrayList<SelectItem> storeList;
     private ArrayList<SelectItem> idList;
@@ -73,6 +73,7 @@ public class AopTesting implements Serializable {
     private ArrayList<SelectItem> dateList;
     private ArrayList<SelectItem> timeList;
     private ArrayList<SelectItem> suiteIdList;
+    private HashMap<String,String> groupList;
 
     private UnitTestLog log;
     int errStatus;
@@ -81,9 +82,12 @@ public class AopTesting implements Serializable {
     private HorizontalBarChartModel chartModel;
     private ChartSeries passSeries;
     private ChartSeries failSeries;
+    private ArrayList<String> batchList;
 
     public AopTesting() {
         sourceDesc = new AopSourceDesc();
+        batchList = new ArrayList<>();
+        groupList = new HashMap<>();
         selectedItems = new ArrayList<>();
         storeList = new ArrayList<>();
         idList = new ArrayList<>();
@@ -118,9 +122,6 @@ public class AopTesting implements Serializable {
             rbo.setProperty("userName", getUserName());
             rbo.setProperty("countryCode", getCountryCode());
             rbo.setProperty("commissionType", getCommissionType());
-//            System.out.print("doLookup: userName="+getUserName()+" ");
-//            System.out.print("doLookup: countryCode="+getCountryCode()+" ");
-//            System.out.print("doLookup: commissiontype="+getCommissionType()+" ");
             rbo.callMethod("getAopSourceDesc");
             errStatus = Integer.parseInt(rbo.getProperty("errStat"));
             errCode = rbo.getProperty("errCode");
@@ -166,6 +167,9 @@ public class AopTesting implements Serializable {
         }
     }
 
+    /**
+     * Adds a customer to a source descriptor record
+     */
     public void addItem() {
         rbo.setProperty("userName", getUserName());
         rbo.setProperty("countryCode", getCountryCode());
@@ -176,15 +180,6 @@ public class AopTesting implements Serializable {
         rbo.setProperty("orderTotal", sourceDesc.getOrderTotal());
         rbo.setProperty("orderDate", sourceDesc.dateAsString());
         rbo.setProperty("storeId", getStoreId());
-//        System.out.print("userName="+getUserName()+" ");
-//        System.out.print("countryCode="+getCountryCode()+" ");
-//        System.out.print("commissiontype="+getCommissionType()+" ");
-//        System.out.print("vendorId="+getVendorId()+" ");
-//        System.out.print("vendorDiv="+getVendorDiv()+" ");
-//        System.out.print("pcId="+sourceDesc.getPcId()+" ");
-//        System.out.print("orderTotal="+sourceDesc.getOrderTotal()+" ");
-//        System.out.print("orderDate="+sourceDesc.dateAsString()+" ");
-//        System.out.print("storeId="+getStoreId()+" ");
         try {
             rbo.callMethod("setAopSourceDesc");
             errStatus = Integer.parseInt(rbo.getProperty("errStat"));
@@ -200,6 +195,9 @@ public class AopTesting implements Serializable {
         }
     }
 
+    /**
+     * Deletes a customer from a source descriptor record
+     */
     public void deleteItem() {
         rbo.setProperty("userName", getUserName());
         rbo.setProperty("countryCode", getCountryCode());
@@ -221,6 +219,7 @@ public class AopTesting implements Serializable {
                 ctx.addMessage(null, msg);
             } else {
                 selectedItems.clear();
+                doLookup(null);
             }
         } catch (RbException ex) {
             System.out.println(ex.toString());
@@ -276,211 +275,24 @@ public class AopTesting implements Serializable {
             updateItem(cust);
         }
     }
-
-    /**
-     * @return the sourceDesc
-     */
-    public AopSourceDesc getSourceDesc() {
-        return sourceDesc;
-    }
-
-    /**
-     * @param sourceDesc the sourceDesc to set
-     */
-    public void setSourceDesc(AopSourceDesc sourceDesc) {
-        this.sourceDesc = sourceDesc;
-    }
-
-    /**
-     * @return the userName
-     */
-    public String getUserName() {
-        return userName;
-    }
-
-    /**
-     * @param userName the userName to set
-     */
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    /**
-     * @return the country
-     */
-    public String getCountryCode() {
-        return countryCode;
-    }
-
-    /**
-     * @param country the country to set
-     */
-    public void setCountryCode(String country) {
-        this.countryCode = country;
-    }
-
-    /**
-     * @return the commType
-     */
-    public String getCommissionType() {
-        return commissionType;
-    }
-
-    /**
-     * @param commType the commType to set
-     */
-    public void setCommissionType(String commType) {
-        this.commissionType = commType;
-    }
-
-    /**
-     * @return the vendorId
-     */
-    public String getVendorId() {
-        return vendorId;
-    }
-
-    /**
-     * @param vendorId the vendorId to set
-     */
-    public void setVendorId(String vendorId) {
-        this.vendorId = vendorId;
-    }
-
-    /**
-     * @return the vendorDiv
-     */
-    public String getVendorDiv() {
-        return vendorDiv;
-    }
-
-    /**
-     * @param vendorDiv the vendorDiv to set
-     */
-    public void setVendorDiv(String vendorDiv) {
-        this.vendorDiv = vendorDiv;
-    }
-
-    /**
-     * @return the storeId
-     */
-    public String getStoreId() {
-        return storeId;
-    }
-
-    /**
-     * @param storeId the storeId to set
-     */
-    public void setStoreId(String storeId) {
-        this.storeId = storeId;
-    }
-
-    /**
-     * @return the uiSelectOne
-     */
-    public UISelectOne getUiSelectVendor() {
-        System.out.println("aopTestBean.getUISelectVendor()");
-        return uiSelectVendor;
-    }
-
-    /**
-     * @param uiSelectOne the uiSelectOne to set
-     */
-    public void setUiSelectVendor(UISelectOne uiSelectOne) {
-        this.uiSelectVendor = uiSelectOne;
-    }
-
-    /**
-     * @return the uiSelectStore
-     */
-    public UISelectOne getUiSelectStore() {
-        return uiSelectStore;
-    }
-
-    /**
-     * @param uiSelectStore the uiSelectStore to set
-     */
-    public void setUiSelectStore(UISelectOne uiSelectStore) {
-        this.uiSelectStore = uiSelectStore;
-    }
-
-    /**
-     * @return the masterBean
-     */
-    public AffiliateMasterBean getMasterBean() {
-        return masterBean;
-    }
-
-    /**
-     * @param masterBean the masterBean to set
-     */
-    public void setMasterBean(AffiliateMasterBean masterBean) {
-        this.masterBean = masterBean;
-    }
-
-    /**
-     * @return the detailBean
-     */
-    public AffiliateDetailBean getDetailBean() {
-        return detailBean;
-    }
-
-    /**
-     * @param detailBean the detailBean to set
-     */
-    public void setDetailBean(AffiliateDetailBean detailBean) {
-        this.detailBean = detailBean;
-    }
-
-    /**
-     * @return the storeList
-     */
-    public ArrayList<SelectItem> getStoreList() {
-        return storeList;
-    }
-
-    /**
-     * @param storeList the storeList to set
-     */
-    public void setStoreList(ArrayList<SelectItem> storeList) {
-        this.storeList = storeList;
-    }
-
-    /**
-     * @return the selectedItems
-     */
-    public ArrayList<Customer> getSelectedItems() {
-        return selectedItems;
-    }
-
-    /**
-     * @param selectedItems the selectedItems to set
-     */
-    public void setSelectedItems(ArrayList<Customer> selectedItems) {
-        this.selectedItems = selectedItems;
-    }
-
-    public void onRowSelect(SelectEvent event) {
-//        System.out.println(selectedItems.size());
-    }
-
-    public void onRowUnselect(UnselectEvent event) {
-//        System.out.println(selectedItems.size());
-    }
-
-    /**
-     * @return the idList
-     */
-    public ArrayList<SelectItem> getIdList() {
-        return idList;
-    }
-
-    /**
-     * @param idList the idList to set
-     */
-    public void setIdList(ArrayList<SelectItem> idList) {
-
-        this.idList = idList;
+    
+    public void getTestDataGroups() {
+        rbo.setProperty("groupId", "");
+        try {
+            rbo.callMethod("getAopTestGroup");
+            int errNum = Integer.parseInt(rbo.getProperty("svrStatus"));
+            if(errNum==-1) {
+                return;
+            }
+            UniDynArray keys = rbo.getPropertyToDynArray("groupId");
+            UniDynArray values = rbo.getPropertyToDynArray("groupDesc");
+            int valueCount = keys.dcount(1);
+            for(int val=1 ; val<valueCount; val++) {
+                groupList.put(values.extract(1,val).toString(), keys.extract(1,val).toString());
+            }
+        } catch (RbException ex) {
+            Logger.getLogger(AopTesting.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void onChangeName() {
@@ -605,18 +417,6 @@ public class AopTesting implements Serializable {
         }
     }
 
-    public void setLogIds() {
-
-    }
-
-    /**
-     * @return the nameList
-     */
-    public ArrayList<SelectItem> getNameList() {
-        setNameList(null);
-        return nameList;
-    }
-
     /**
      * @param list the nameList to set
      */
@@ -645,6 +445,262 @@ public class AopTesting implements Serializable {
             Logger.getLogger(AopTesting.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    /**
+     * @param sl - ignored
+     */
+    public void setSuiteIdList(ArrayList<SelectItem> sl) {
+        try {
+            suiteIdList.clear();
+            RedObject rb = new RedObject("WDE", "Test:Unit");
+            rb.setProperty("utSuiteId", "");
+            rb.callMethod("getTestSuite");
+            errStatus = Integer.parseInt(rb.getProperty("errStat"));
+            errCode = rb.getProperty("errCode");
+            errMessage = rb.getProperty("errMsg");
+            if (errStatus == -1) {
+                String msg = "Error: [" + errCode + "] " + errMessage;
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", msg));
+            } else {
+                UniDynArray utSuiteIdList = rb.getPropertyToDynArray("suiteId");
+                UniDynArray utDescList = rb.getPropertyToDynArray("utDate");
+                int utCount = Integer.parseInt(rb.getProperty("utCount"));
+                for (int ut = 1; ut <= utCount; ut++) {
+                    String id = utSuiteIdList.extract(1, ut).toString();
+                    String desc = utDescList.extract(1, ut).toString();
+                    SelectItem se = new SelectItem(id, desc);
+                    suiteIdList.add(se);
+                }
+            }
+        } catch (RbException ex) {
+            Logger.getLogger(AopTesting.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void createOrders() {
+        idList.clear();
+        rbo.setProperty("siteCountry", countryCode);
+        rbo.setProperty("siteType", "");
+        rbo.setProperty("langCode", "");
+        rbo.setProperty("groupId", groupId);
+        rbo.setProperty("commissionType", commissionType);
+        rbo.setProperty("userName", userName);
+        try {
+            rbo.callMethod("setAopSourceData");
+            errStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
+            if (errStatus == -1) {
+                errCode = rbo.getProperty("svrCtrlCode");
+                errMessage = rbo.getProperty("svrmessage");
+                String msg = "Error: [" + errCode + "] " + errMessage;
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", msg));                
+            } else {
+                UniDynArray oList1 = rbo.getPropertyToDynArray("batchId");
+                UniDynArray oList2 = rbo.getPropertyToDynArray("queueId");
+                int vals=oList1.dcount(1);
+                for (int val=1; val<=vals; val++) {
+                    String key = oList2.extract(1, val).toString();
+                    String value = oList1.extract(1, val).toString();
+                    idList.add(new SelectItem(key,value));
+                }
+                countryCode="";
+                groupId = "";
+                commissionType = "";
+                userName = "";
+            }
+        } catch (RbException ex) {
+            Logger.getLogger(AopTesting.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
+     * @return the sourceDesc
+     */
+    public AopSourceDesc getSourceDesc() {
+        return sourceDesc;
+    }
+
+    /**
+     * @param sourceDesc the sourceDesc to set
+     */
+    public void setSourceDesc(AopSourceDesc sourceDesc) {
+        this.sourceDesc = sourceDesc;
+    }
+
+    /**
+     * @return the userName
+     */
+    public String getUserName() {
+        return userName;
+    }
+
+    /**
+     * @param userName the userName to set
+     */
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    /**
+     * @return the country
+     */
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    /**
+     * @param country the country to set
+     */
+    public void setCountryCode(String country) {
+        this.countryCode = country;
+    }
+
+    /**
+     * @return the commType
+     */
+    public String getCommissionType() {
+        return commissionType;
+    }
+
+    /**
+     * @param commType the commType to set
+     */
+    public void setCommissionType(String commType) {
+        this.commissionType = commType;
+    }
+
+    /**
+     * @return the vendorId
+     */
+    public String getVendorId() {
+        return vendorId;
+    }
+
+    /**
+     * @param vendorId the vendorId to set
+     */
+    public void setVendorId(String vendorId) {
+        this.vendorId = vendorId;
+    }
+
+    /**
+     * @return the vendorDiv
+     */
+    public String getVendorDiv() {
+        return vendorDiv;
+    }
+
+    /**
+     * @param vendorDiv the vendorDiv to set
+     */
+    public void setVendorDiv(String vendorDiv) {
+        this.vendorDiv = vendorDiv;
+    }
+
+    /**
+     * @return the storeId
+     */
+    public String getStoreId() {
+        return storeId;
+    }
+
+    /**
+     * @param storeId the storeId to set
+     */
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
+    }
+
+    /**
+     * @return the masterBean
+     */
+    public AffiliateMasterBean getMasterBean() {
+        return masterBean;
+    }
+
+    /**
+     * @param masterBean the masterBean to set
+     */
+    public void setMasterBean(AffiliateMasterBean masterBean) {
+        this.masterBean = masterBean;
+    }
+
+    /**
+     * @return the detailBean
+     */
+    public AffiliateDetailBean getDetailBean() {
+        return detailBean;
+    }
+
+    /**
+     * @param detailBean the detailBean to set
+     */
+    public void setDetailBean(AffiliateDetailBean detailBean) {
+        this.detailBean = detailBean;
+    }
+
+    /**
+     * @return the storeList
+     */
+    public ArrayList<SelectItem> getStoreList() {
+        return storeList;
+    }
+
+    /**
+     * @param storeList the storeList to set
+     */
+    public void setStoreList(ArrayList<SelectItem> storeList) {
+        this.storeList = storeList;
+    }
+
+    /**
+     * @return the selectedItems
+     */
+    public ArrayList<Customer> getSelectedItems() {
+        return selectedItems;
+    }
+
+    /**
+     * @param selectedItems the selectedItems to set
+     */
+    public void setSelectedItems(ArrayList<Customer> selectedItems) {
+        this.selectedItems = selectedItems;
+    }
+
+    public void onRowSelect(SelectEvent event) {
+//        System.out.println(selectedItems.size());
+    }
+
+    public void onRowUnselect(UnselectEvent event) {
+//        System.out.println(selectedItems.size());
+    }
+
+    /**
+     * @return the idList
+     */
+    public ArrayList<SelectItem> getIdList() {
+        return idList;
+    }
+
+    /**
+     * @param idList the idList to set
+     */
+    public void setIdList(ArrayList<SelectItem> idList) {
+
+        this.idList = idList;
+    }
+    
+    public void setLogIds() {
+
+    }
+
+    /**
+     * @return the nameList
+     */
+    public ArrayList<SelectItem> getNameList() {
+        setNameList(null);
+        return nameList;
+    }
+    
 
     /**
      * @return the dateList
@@ -823,37 +879,6 @@ public class AopTesting implements Serializable {
     }
 
     /**
-     * @param sl - ignored
-     */
-    public void setSuiteIdList(ArrayList<SelectItem> sl) {
-        try {
-            suiteIdList.clear();
-            RedObject rb = new RedObject("WDE", "Test:Unit");
-            rb.setProperty("utSuiteId", "");
-            rb.callMethod("getTestSuite");
-            errStatus = Integer.parseInt(rb.getProperty("errStat"));
-            errCode = rb.getProperty("errCode");
-            errMessage = rb.getProperty("errMsg");
-            if (errStatus == -1) {
-                String msg = "Error: [" + errCode + "] " + errMessage;
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", msg));
-            } else {
-                UniDynArray utSuiteIdList = rb.getPropertyToDynArray("suiteId");
-                UniDynArray utDescList = rb.getPropertyToDynArray("utDate");
-                int utCount = Integer.parseInt(rb.getProperty("utCount"));
-                for (int ut = 1; ut <= utCount; ut++) {
-                    String id = utSuiteIdList.extract(1, ut).toString();
-                    String desc = utDescList.extract(1, ut).toString();
-                    SelectItem se = new SelectItem(id, desc);
-                    suiteIdList.add(se);
-                }
-            }
-        } catch (RbException ex) {
-            Logger.getLogger(AopTesting.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    /**
      * @return the testSuite
      */
     public UnitTestSuite getTestSuite() {
@@ -865,5 +890,48 @@ public class AopTesting implements Serializable {
      */
     public void setTestSuite(UnitTestSuite testSuite) {
         this.testSuite = testSuite;
+    }
+
+    /**
+     * @return the groupList
+     */
+    public HashMap<String,String> getGroupList() {
+        getTestDataGroups();
+        return groupList;
+    }
+
+    /**
+     * @param groupList the groupList to set
+     */
+    public void setGroupList(HashMap<String,String> groupList) {
+        this.groupList = groupList;
+    }
+
+    /**
+     * @return the groupId
+     */
+    public String getGroupId() {
+        return groupId;
+    }
+
+    /**
+     * @param groupId the groupId to set
+     */
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
+    /**
+     * @return the batchList
+     */
+    public ArrayList<String> getBatchList() {
+        return batchList;
+    }
+
+    /**
+     * @param batchList the batchList to set
+     */
+    public void setBatchList(ArrayList<String> batchList) {
+        this.batchList = batchList;
     }
 }

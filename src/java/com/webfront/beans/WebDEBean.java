@@ -349,6 +349,15 @@ public final class WebDEBean implements Serializable {
         return networkList;
     }
 
+    /**
+     * Retrieves list of keys/values from one item in a given file.
+     * Uses attribute 1 for the keys and 2 for the values
+     * Invokes UTILSLIB getKeyValuePair.rbm which calls SR GET.VALUE.LIST
+     *
+     * @param fileName: The name of file where the item is stored
+     * @param itemId: The item to read
+     * @return ArrayList of SelectItemS
+     */    
     public ArrayList<SelectItem> getKeyValues(String fileName, String itemId) {
         ArrayList<SelectItem> list = new ArrayList<>();
         try {
@@ -378,7 +387,20 @@ public final class WebDEBean implements Serializable {
         }
         return list;
     }
-    
+
+    /**
+     * Retrieves an ArrayList of SelectItemS suitable for use in a drop-down menu.
+     * Invokes UTILSLIB getKeyValuePair.rbm which calls SR GET.VALUE.LIST
+     *
+     * @param fileName: The name of file where the item is stored
+     * @param itemId: Optional item id to read.<br>
+     * If empty string is passed, method will select all items in the file.  
+     * <br><b>Use empty itemId with caution since fileName can contain thousands of items</b>
+     * <br>
+     * @param keyField: The field name of the field to use for the keys
+     * @param valueField: The field name that holds the values that are associated with keyField
+     * @return ArrayList of StringS
+     */
     public ArrayList<SelectItem> getKeyValues(String fileName, String itemId, String keyField, String valueField) {
         ArrayList<SelectItem> list = new ArrayList<>();
         try {
@@ -407,8 +429,17 @@ public final class WebDEBean implements Serializable {
             Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, rbe);
         }
         return list;
-    }    
+    }
 
+    /**
+     * Retrieves a list of values from one field of one item in a given file
+     * Invokes UTILSLIB getKeyValuePair.rbm which calls SR GET.VALUE.LIST
+     *
+     * @param fileName: The name of file where the item is stored
+     * @param itemId: The item to read
+     * @param keyField: The field name of the field to parse
+     * @return ArrayList of StringS
+     */
     public ArrayList<String> getValues(String fileName, String itemId, String keyField) {
         ArrayList<String> list = new ArrayList<>();
         try {
@@ -455,6 +486,5 @@ public final class WebDEBean implements Serializable {
             Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-   
+
 }

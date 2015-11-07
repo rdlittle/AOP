@@ -5,20 +5,19 @@
  */
 package com.webfront.beans;
 
-import asjava.uniclientlibs.UniDynArray;
-import com.rs.u2.wde.redbeans.RbException;
-import com.rs.u2.wde.redbeans.RedObject;
+import com.webfront.controller.AopQueueController;
 import com.webfront.model.AopQueue;
+import com.webfront.model.UVException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+import org.primefaces.component.datatable.DataTable;
+import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
 
 /**
@@ -29,12 +28,14 @@ import org.primefaces.event.SelectEvent;
 @SessionScoped
 public class AopQueueBean implements Serializable {
 
-    private final ArrayList<AopQueue> queueList;
+    private final AopQueueController controller = new AopQueueController();
+    private ArrayList<AopQueue> queueList;
     private ArrayList<AopQueue> selectedItems;
     private String queueType;
     private boolean selected;
     @ManagedProperty(value = "#{downloadBean}")
     private DownloadBean downLoader;
+    private Integer statusLevel;
 
     public AopQueueBean() {
         this.selectedItems = new ArrayList<>();
@@ -44,176 +45,36 @@ public class AopQueueBean implements Serializable {
     }
 
     public void rePoll() {
-//        System.out.println("AopQueBean.rePoll()");
-        setQueueList(null);
+        setQueueList();
     }
 
     /**
      * @return the queueList
      */
     public ArrayList<AopQueue> getQueueList() {
+        if (this.queueList.isEmpty()) {
+            setQueueList();
+        }
         return this.queueList;
     }
 
-    /**
-     * @param queueList the queueList to set
-     */
-    public void setQueueList(ArrayList<AopQueue> queueList) {
+    public void setQueueList() {
         this.queueList.clear();
-        RedObject rb = new RedObject("WDE", "AOP:Queue");
-        rb.setProperty("queueType", queueType);
+        this.queueList = controller.getQueueList(queueType);
+    }
+
+    public void onCellEdit(CellEditEvent evt) {
+        DataTable t = (DataTable) evt.getSource();
+        AopQueue qi = (AopQueue) t.getRowData();
+        qi.setQueueStatus(evt.getNewValue().toString());
+        controller.setQueueItem(qi);
         try {
-            rb.callMethod("getQueue");
-            String errStat = rb.getProperty("errStat");
-            String errCode = rb.getProperty("errCode");
-            String errMsg = rb.getProperty("errMsg");
-            if (errStat.equals("-1")) {
-                errMsg = "Error: " + errCode + " " + errMsg;
-                FacesMessage fmsg = new FacesMessage(errMsg);
-                fmsg.setSeverity(FacesMessage.SEVERITY_ERROR);
-                FacesContext ctx = FacesContext.getCurrentInstance();
-                ctx.addMessage("msg", fmsg);
-            } else {
-                int vals = Integer.parseInt(rb.getProperty("queueCount"));
-                if (vals > 0) {
-                    UniDynArray affiliateMasterList = rb.getPropertyToDynArray("affiliateMasterId");
-                    UniDynArray fileNameList = rb.getPropertyToDynArray("fileName");
-                    UniDynArray pathList = rb.getPropertyToDynArray("path");
-                    UniDynArray errorCountList = rb.getPropertyToDynArray("errorCount");
-                    UniDynArray processStatusList = rb.getPropertyToDynArray("processStatus");
-                    UniDynArray excludeFlagList = rb.getPropertyToDynArray("excludeFlag");
-                    UniDynArray uploadDateList = rb.getPropertyToDynArray("uploadDate");
-                    UniDynArray userNameList = rb.getPropertyToDynArray("userName");
-                    UniDynArray lineCountList = rb.getPropertyToDynArray("lineCount");
-                    UniDynArray orderCountList = rb.getPropertyToDynArray("orderCount");
-                    UniDynArray uploadTimeList = rb.getPropertyToDynArray("uploadTime");
-                    UniDynArray queueStatus = rb.getPropertyToDynArray("queueStatus");
-                    UniDynArray checkAmountList = rb.getPropertyToDynArray("checkAmount");
-                    UniDynArray networkIdList = rb.getPropertyToDynArray("networkId");
-                    UniDynArray networkNameList = rb.getPropertyToDynArray("networkName");
-                    UniDynArray networkCountryList = rb.getPropertyToDynArray("networkCountry");
-                    UniDynArray checkIdList = rb.getPropertyToDynArray("checkId");
-                    UniDynArray aoQueueIdList = rb.getPropertyToDynArray("aoQueueId");
-                    UniDynArray errorReportList = rb.getPropertyToDynArray("errorReport");
-                    UniDynArray successReportList = rb.getPropertyToDynArray("successReport");
-
-                    for (int val = 1; val <= vals; val++) {
-                        AopQueue aopQueue = new AopQueue();
-                        aopQueue.setAffiliateMasterId(affiliateMasterList.extract(1, val).toString());
-                        aopQueue.setFileName(fileNameList.extract(1, val).toString());
-                        aopQueue.setPath(pathList.extract(1, val).toString());
-                        aopQueue.setErrors(errorCountList.extract(1, val).toString());
-                        aopQueue.setStatus(processStatusList.extract(1, val).toString());
-                        aopQueue.setExclude("1".equals(excludeFlagList.extract(1, val).toString()));
-                        aopQueue.setUploadDate(uploadDateList.extract(1, val).toString());
-                        aopQueue.setUserName(userNameList.extract(1, val).toString());
-                        aopQueue.setLineCount(lineCountList.extract(1, val).toString());
-                        aopQueue.setOrderCount(orderCountList.extract(1, val).toString());
-                        aopQueue.setUploadTime(uploadTimeList.extract(1, val).toString());
-                        aopQueue.setQueueStatus(queueStatus.extract(1, val).toString());
-                        aopQueue.setCheckAmount(checkAmountList.extract(1, val).toString());
-                        aopQueue.setNetworkdId(networkIdList.extract(1, val).toString());
-                        aopQueue.setNetworkName(networkNameList.extract(1, val).toString());
-                        aopQueue.setNetworkCountry(networkCountryList.extract(1, val).toString());
-                        aopQueue.setCheckId(checkIdList.extract(1, val).toString());
-                        aopQueue.setAoQueueId(aoQueueIdList.extract(1, val).toString());
-                        aopQueue.setErrorReport(errorReportList.extract(1, val).toString());
-                        aopQueue.setSuccessReport(successReportList.extract(1, val).toString());
-                        this.queueList.add(aopQueue);
-                    }
-                }
-            }
-        } catch (RbException ex) {
+            controller.updateQueue();
+        } catch (UVException ex) {
+            FacesContext ctx = FacesContext.getCurrentInstance();
+            ctx.addMessage("msg", ex.toFacesMessage());
             Logger.getLogger(AopQueueBean.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("AopQueBean.getQueList() exception: " + ex.toString());
         }
-    }
-
-    public void deleteSelected() {
-        if (selectedItems != null) {
-            try {
-                UniDynArray queueIds = new UniDynArray();
-                int i=1;
-                for(AopQueue aopQueue : selectedItems) {
-                    queueIds.insert(1, i,aopQueue.getAoQueueId());
-                    i++;
-                }
-                RedObject rb = new RedObject("WDE", "AOP:Queue");
-                rb.setProperty("aoQueueId", queueIds);
-                rb.callMethod("deleteQueue");
-                UniDynArray errStat = rb.getPropertyToDynArray("errStat");
-                UniDynArray errCode = rb.getPropertyToDynArray("errCode");
-                UniDynArray errMsg = rb.getPropertyToDynArray("errMsg");
-                int errCount = errStat.count(1);
-                String errMsgs = "";
-                if (errCount > 0) {
-                    for (int e = 0; e <= errCount; e++) {
-                        errMsgs += errCode.extract(1, e).toString()+" ";
-                        errMsgs += errMsg.extract(1, e).toString() + "\n";
-                    }
-                    FacesMessage fmsg = new FacesMessage(errMsgs);
-                    fmsg.setSeverity(FacesMessage.SEVERITY_ERROR);
-                    FacesContext ctx = FacesContext.getCurrentInstance();
-                    ctx.addMessage("msg", fmsg);
-                }
-            } catch (RbException ex) {
-                Logger.getLogger(AopQueueBean.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-
-    public void processSelected() {
-        if (selectedItems != null) {
-            try {
-                UniDynArray fileNames = new UniDynArray();
-                UniDynArray affiliateMasterList = new UniDynArray();
-                UniDynArray processLevels = new UniDynArray();
-                UniDynArray queueIds = new UniDynArray();
-                UniDynArray removalFlags = new UniDynArray();
-                int i = 0;
-                for (AopQueue item : selectedItems) {
-                    i++;
-                    fileNames.insert(1, i, item.getFileName());
-                    affiliateMasterList.insert(1, i, item.getAffiliateMasterId());
-                    processLevels.insert(1, i, item.getStatus());
-                    removalFlags.insert(1, i, "1");
-                    queueIds.insert(1, i, item.getAoQueueId());
-                }
-                RedObject rb = new RedObject("WDE", "AOP:Queue");
-                rb.setProperty("fileName", fileNames.toString());
-                rb.setProperty("affiliateMasterId", affiliateMasterList.toString());
-                rb.setProperty("runLevel", processLevels.toString());
-                rb.setProperty("isRemoval", removalFlags);
-                rb.setProperty("aoQueueId", queueIds);
-                rb.callMethod("setQueue");
-                UniDynArray errStat = rb.getPropertyToDynArray("errStat");
-                UniDynArray errCode = rb.getPropertyToDynArray("errCode");
-                UniDynArray errMsg = rb.getPropertyToDynArray("errMsg");
-                int errCount = errStat.count(1);
-                String errMsgs = "";
-                if (errCount > 0) {
-                    for (int e = 0; i <= errCount; e++) {
-                        errMsgs += fileNames.extract(1, e).toString() + ": ";
-                        errMsgs += errMsg.extract(1, e).toString() + "\n";
-                    }
-                    FacesMessage fmsg = new FacesMessage(errMsgs);
-                    fmsg.setSeverity(FacesMessage.SEVERITY_ERROR);
-                    FacesContext ctx = FacesContext.getCurrentInstance();
-                    ctx.addMessage("msg", fmsg);
-                }
-            } catch (RbException ex) {
-                Logger.getLogger(AopQueueBean.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-
-    public void onClick(ActionEvent evt) {
-        System.out.println("AopQueueBean.onClick");
-    }
-    public void toggleSelect() {
-        String summary = "Checkbox event";
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(summary));
-        //System.out.println(selectedItems.size());
     }
 
     public void onRowSelect(SelectEvent se) {
@@ -250,7 +111,7 @@ public class AopQueueBean implements Serializable {
      */
     public void setQueueType(String qType) {
         this.queueType = qType;
-        setQueueList(null);
+        setQueueList();
     }
 
     /**
@@ -279,5 +140,19 @@ public class AopQueueBean implements Serializable {
      */
     public void setDownLoader(DownloadBean downLoader) {
         this.downLoader = downLoader;
+    }
+
+    /**
+     * @return the statusLevel
+     */
+    public Integer getStatusLevel() {
+        return statusLevel;
+    }
+
+    /**
+     * @param statusLevel the statusLevel to set
+     */
+    public void setStatusLevel(Integer statusLevel) {
+        this.statusLevel = statusLevel;
     }
 }

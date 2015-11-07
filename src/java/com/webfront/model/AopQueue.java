@@ -13,7 +13,7 @@ import java.util.HashMap;
  */
 public class AopQueue {
 
-    private String aoQueueId;
+    private String queueId;
     private String affiliateMasterId;
     private String path;
     private String errors;
@@ -33,12 +33,14 @@ public class AopQueue {
     private String runLevel;
     private String checkId;
     private String checkAmount;
+    private String checkDate;
     private String networkdId;
     private String networkName;
     private String networkCountry;
     private String errorReport;
     private String successReport;
     private String queueStatus;
+    private String queueType;
 
     public AopQueue() {
         /*
@@ -363,15 +365,15 @@ public class AopQueue {
     /**
      * @return the aoQueId
      */
-    public String getAoQueueId() {
-        return aoQueueId;
+    public String getQueueId() {
+        return queueId;
     }
 
     /**
      * @param aoQueId the aoQueId to set
      */
-    public void setAoQueueId(String aoQueId) {
-        this.aoQueueId = aoQueId;
+    public void setQueueId(String aoQueId) {
+        this.queueId = aoQueId;
     }
 
     /**
@@ -414,6 +416,34 @@ public class AopQueue {
      */
     public void setQueueStatus(String queueStatus) {
         this.queueStatus = queueStatus;
+    }
+
+    /**
+     * @return the queueType
+     */
+    public String getQueueType() {
+        return queueType;
+    }
+
+    /**
+     * @param queueType the queueType to set
+     */
+    public void setQueueType(String queueType) {
+        this.queueType = queueType;
+    }
+
+    /**
+     * @return the checkDate
+     */
+    public String getCheckDate() {
+        return checkDate;
+    }
+
+    /**
+     * @param checkDate the checkDate to set
+     */
+    public void setCheckDate(String checkDate) {
+        this.checkDate = checkDate;
     }
 
 }
