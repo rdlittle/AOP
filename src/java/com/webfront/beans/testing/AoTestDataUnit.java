@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.webfront.model;
+package com.webfront.beans.testing;
 
 /**
  *
@@ -18,6 +18,15 @@ public class AoTestDataUnit {
     private String requires;
     private String creditType;
 
+    public AoTestDataUnit() {
+        id="";
+        description="";
+        transType="";
+        lines="";
+        orders="";
+        requires="";
+        creditType="";
+    }
     /**
      * @return the id
      */

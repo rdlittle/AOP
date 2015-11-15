@@ -3,11 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.webfront.beans;
+package com.webfront.beans.testing;
 
 import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
+import com.webfront.beans.AffiliateDetailBean;
+import com.webfront.beans.AffiliateMasterBean;
 import com.webfront.model.AopSourceDesc;
 import com.webfront.model.Customer;
 import com.webfront.model.SelectItem;
@@ -15,9 +17,12 @@ import com.webfront.model.UnitTestLog;
 import com.webfront.model.UnitTestLogData;
 import com.webfront.model.UnitTestSuite;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,7 +31,9 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
@@ -45,7 +52,7 @@ public class AopTesting implements Serializable {
 
     private final RedObject rbo;
     private AopSourceDesc sourceDesc;
-    
+
     private ArrayList<Customer> selectedItems;
     private UnitTestSuite testSuite;
     private String userName;
@@ -73,7 +80,9 @@ public class AopTesting implements Serializable {
     private ArrayList<SelectItem> dateList;
     private ArrayList<SelectItem> timeList;
     private ArrayList<SelectItem> suiteIdList;
-    private HashMap<String,String> groupList;
+    private ArrayList<AoTestDataUnit> dataUnitList;
+    private ArrayList<AoTestDataUnit> selectedUnitList;
+    private HashMap<String, String> groupList;
 
     private UnitTestLog log;
     int errStatus;
@@ -83,12 +92,18 @@ public class AopTesting implements Serializable {
     private ChartSeries passSeries;
     private ChartSeries failSeries;
     private ArrayList<String> batchList;
+    private boolean edit;
+    private boolean rowSelected;
+    private AoTestDataUnit selectedDataUnit;
+    private AoTestDataGroup selectedTestDataGroup;
 
     public AopTesting() {
+        groupId = "";
         sourceDesc = new AopSourceDesc();
         batchList = new ArrayList<>();
         groupList = new HashMap<>();
         selectedItems = new ArrayList<>();
+        selectedUnitList = new ArrayList<>();
         storeList = new ArrayList<>();
         idList = new ArrayList<>();
         nameList = new ArrayList<>();
@@ -96,6 +111,7 @@ public class AopTesting implements Serializable {
         timeList = new ArrayList<>();
         testSuite = new UnitTestSuite();
         suiteIdList = new ArrayList<>();
+        dataUnitList = new ArrayList<>();
         log = new UnitTestLog();
         userName = "";
         countryCode = "";
@@ -114,6 +130,44 @@ public class AopTesting implements Serializable {
         Axis axisx = chartModel.getAxis(AxisType.X);
         axisx.setMax(100);
         axisx.setLabel("Pass/Fail");
+        edit = false;
+        selectedDataUnit = new AoTestDataUnit();
+        selectedTestDataGroup = new AoTestDataGroup();
+    }
+
+    public void openBox() {
+        RequestContext.getCurrentInstance().openDialog("selectCar");
+    }
+
+    public void addUnit() {
+        if (selectedDataUnit.getDescription() == null || "".equals(selectedDataUnit.getDescription())) {
+            return;
+        }
+        rbo.setProperty("unitId", "");
+        rbo.setProperty("unitDesc", selectedDataUnit.getDescription());
+        rbo.setProperty("unitTransType", selectedDataUnit.getTransType());
+        rbo.setProperty("unitLinesPerOrder", selectedDataUnit.getLines());
+        rbo.setProperty("unitOrdersPerCust", selectedDataUnit.getOrders());
+        rbo.setProperty("unitRequires", selectedDataUnit.getRequires());
+        rbo.setProperty("unitCreditType", selectedDataUnit.getCreditType());
+        try {
+            rbo.callMethod("putAopTestDataUnit");
+            errStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
+            errCode = rbo.getProperty("svrCtrlCode");
+            errMessage = rbo.getProperty("svrMessage");
+            if (errStatus == -1) {
+                FacesContext ctx = FacesContext.getCurrentInstance();
+                FacesMessage msg = new FacesMessage(errCode + ": " + errMessage);
+                ctx.addMessage(null, msg);
+            } else {
+                selectedDataUnit.setId(rbo.getProperty("unitId"));
+                dataUnitList.add(selectedDataUnit);
+                selectedDataUnit = new AoTestDataUnit();
+                setEdit(false);
+            }
+        } catch (RbException ex) {
+            Logger.getLogger(AopTesting.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void doLookup(AjaxBehaviorEvent event) {
@@ -226,6 +280,35 @@ public class AopTesting implements Serializable {
         }
     }
 
+    public void removeUnit() {
+        for(AoTestDataUnit unit : selectedUnitList) {
+            selectedTestDataGroup.removeUnit(unit.getId());
+        }
+        selectedUnitList.clear();
+        setRowSelected(false);
+    }
+    
+    public void deleteUnit() {
+        UniDynArray ilist = new UniDynArray();
+        for (AoTestDataUnit unit : selectedUnitList) {
+            ilist.insert(1, -1, unit.getId());
+        }
+        rbo.setProperty("unitId", ilist);
+        try {
+            rbo.callMethod("deleteTestingAoUnit");
+            errStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
+            errCode = rbo.getProperty("svrCtrlCode");
+            errMessage = rbo.getProperty("svrMessage");
+            if (errStatus == -1) {
+                FacesContext ctx = FacesContext.getCurrentInstance();
+                FacesMessage msg = new FacesMessage(errCode + ": " + errMessage);
+                ctx.addMessage(null, msg);
+            }
+        } catch (RbException ex) {
+            Logger.getLogger(AopTesting.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     public void changeVendor() {
         RedObject vendorRbo = new RedObject("WDE", "Affiliates:Detail");
         vendorRbo.setProperty("masterId", vendorId);
@@ -275,26 +358,216 @@ public class AopTesting implements Serializable {
             updateItem(cust);
         }
     }
-    
+
     public void getTestDataGroups() {
         rbo.setProperty("groupId", "");
         try {
             rbo.callMethod("getAopTestGroup");
             int errNum = Integer.parseInt(rbo.getProperty("svrStatus"));
-            if(errNum==-1) {
+            if (errNum == -1) {
                 return;
             }
             UniDynArray keys = rbo.getPropertyToDynArray("groupId");
             UniDynArray values = rbo.getPropertyToDynArray("groupDesc");
             int valueCount = keys.dcount(1);
-            for(int val=1 ; val<valueCount; val++) {
-                groupList.put(values.extract(1,val).toString(), keys.extract(1,val).toString());
+            for (int val = 1; val <= valueCount; val++) {
+                groupList.put(values.extract(1, val).toString(), keys.extract(1, val).toString());
             }
         } catch (RbException ex) {
             Logger.getLogger(AopTesting.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
+    /**
+     * @return the dataUnitList
+     */
+    public ArrayList<AoTestDataUnit> getDataUnitList() {
+        dataUnitList.clear();
+        getTestDataUnits();
+        return dataUnitList;
+    }
+
+    /**
+     * @param dataUnitList the dataUnitList to set
+     */
+    public void setDataUnitList(ArrayList<AoTestDataUnit> dataUnitList) {
+        this.dataUnitList = dataUnitList;
+    }
+
+    public void getTestDataUnits() {
+        rbo.setProperty("unitId", "");
+        try {
+            rbo.callMethod("getAopTestUnit");
+            errStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
+            errCode = rbo.getProperty("svrCtrlCode");
+            errMessage = rbo.getProperty("svrMessage");
+            if (errStatus == -1) {
+                String msg = "Error: [" + errCode + "] " + errMessage;
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", msg));
+            } else {
+                UniDynArray unitId = rbo.getPropertyToDynArray("unitId");
+                UniDynArray unitDesc = rbo.getPropertyToDynArray("unitDesc");
+                UniDynArray unitTransType = rbo.getPropertyToDynArray("unitTransType");
+                UniDynArray unitLinesPerOrder = rbo.getPropertyToDynArray("unitLinesPerOrder");
+                UniDynArray unitOrdersPerCust = rbo.getPropertyToDynArray("unitOrdersPerCust");
+                UniDynArray unitRequires = rbo.getPropertyToDynArray("unitRequires");
+                UniDynArray unitCreditType = rbo.getPropertyToDynArray("unitCreditType");
+                int vals = Integer.parseInt(rbo.getProperty("unitCount"));
+                for (int val = 1; val <= vals; val++) {
+                    AoTestDataUnit unit = new AoTestDataUnit();
+                    unit.setId(unitId.extract(1, val).toString());
+                    unit.setDescription(unitDesc.extract(1, val).toString());
+                    unit.setTransType(unitTransType.extract(1, val).toString());
+                    unit.setLines(unitLinesPerOrder.extract(1, val).toString());
+                    unit.setOrders(unitOrdersPerCust.extract(1, val).toString());
+                    unit.setRequires(unitRequires.extract(1, val).toString());
+                    unit.setCreditType(unitCreditType.extract(1, val).toString());
+                    dataUnitList.add(unit);
+                }
+            }
+        } catch (RbException ex) {
+            Logger.getLogger(AopTesting.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void onCreateDataGroup() {
+        groupId = "";
+        Date date = Calendar.getInstance(Locale.getDefault()).getTime();
+        SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+        selectedTestDataGroup = new AoTestDataGroup();
+        selectedTestDataGroup.setCreateDate(df.format(date));
+        setEdit(true);
+    }
+    
+    public void onSaveDataGroup() {
+        rbo.setProperty("groupId", groupId);
+        rbo.setProperty("groupDesc", selectedTestDataGroup.getDescription());
+        rbo.setProperty("groupDate", selectedTestDataGroup.getCreateDate());
+        UniDynArray units = new UniDynArray();
+        int val = 1;
+        for(AoTestDataUnit unit : selectedTestDataGroup.getUnits()) {
+            String unitId = unit.getId();
+            units.insert(1, val, unitId);
+            units.insert(2, val, selectedTestDataGroup.getNewBatch().get(unitId));
+            units.insert(3, val, selectedTestDataGroup.getOverloadRefund().get(unitId));
+            val++;
+        }
+        rbo.setProperty("groupUnits", units.extract(1));
+        rbo.setProperty("groupNewBatch", units.extract(2));
+        rbo.setProperty("groupOverRefund", units.extract(3));
+        try {
+            rbo.callMethod("putAopTestGroup");
+            errStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
+            errCode = rbo.getProperty("svrCtrlCode");
+            errMessage = rbo.getProperty("svrMessage");
+            if (errStatus == -1) {
+                String msg = "Error: [" + errCode + "] " + errMessage;
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", msg));
+            } else {
+                groupId = rbo.getProperty("groupId");
+                selectedTestDataGroup.setChanged(false);
+            }
+        } catch (RbException ex) {
+            Logger.getLogger(AopTesting.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void onDataGroupDelete() {
+        rbo.setProperty("groupId", groupId);
+        try {
+            rbo.callMethod("deleteAopTestGroup");
+            errStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
+            errCode = rbo.getProperty("svrCtrlCode");
+            errMessage = rbo.getProperty("svrMessage");
+            if (errStatus == -1) {
+                String msg = "Error: [" + errCode + "] " + errMessage;
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", msg));
+            } else {
+                selectedTestDataGroup = new AoTestDataGroup();
+                groupList.remove(groupId);
+                groupId = "-1";
+                getTestDataGroups();
+            }
+        } catch (RbException ex) {
+            Logger.getLogger(AopTesting.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void onDataGroupChange() {
+        if(groupId.equals("-1")) {
+            selectedTestDataGroup = new AoTestDataGroup();
+            return;
+        }
+        rbo.setProperty("groupId", groupId);
+        try {
+            rbo.callMethod("getAopTestGroup");
+            errStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
+            errCode = rbo.getProperty("svrCtrlCode");
+            errMessage = rbo.getProperty("svrMessage");
+            if (errStatus == -1) {
+                String msg = "Error: [" + errCode + "] " + errMessage;
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", msg));
+            } else {
+                LinkedHashMap<String, AoTestDataUnit> unitMap = new LinkedHashMap<>();
+                HashMap<String, String> batchMap = new HashMap<>();
+                HashMap<String, String> overloadMap = new HashMap<>();
+                dataUnitList.clear();
+                selectedTestDataGroup = new AoTestDataGroup();
+                selectedTestDataGroup.setGroupId(groupId);
+                int unitCount = Integer.parseInt(rbo.getProperty("groupUnitCount"));
+                UniDynArray groupDescs = rbo.getPropertyToDynArray("groupDesc");
+                UniDynArray createDates = rbo.getPropertyToDynArray("groupDate");
+                UniDynArray unitIds = rbo.getPropertyToDynArray("groupUnits");
+                UniDynArray unitDescs = rbo.getPropertyToDynArray("unitDesc");
+                UniDynArray transTypes = rbo.getPropertyToDynArray("unitTransType");
+                UniDynArray unitLines = rbo.getPropertyToDynArray("unitLinesPerOrder");
+                UniDynArray unitOrders = rbo.getPropertyToDynArray("unitOrdersPerCust");
+                UniDynArray unitRequires = rbo.getPropertyToDynArray("unitRequires");
+                UniDynArray credType = rbo.getPropertyToDynArray("unitCreditType");
+                UniDynArray newBatch = rbo.getPropertyToDynArray("groupNewBatch");
+                UniDynArray overload = rbo.getPropertyToDynArray("groupOverRefund");
+                selectedTestDataGroup.setDescription(groupDescs.extract(1, 1).toString());
+                selectedTestDataGroup.setCreateDate(createDates.extract(1, 1).toString());
+                for (int u = 1; u <= unitCount; u++) {
+                    String unitId = unitIds.extract(1, 1, u).toString();
+                    String createBatch = "Y".equals(newBatch.extract(1, 1, u).toString()) ? "Y" : "N";
+                    String refundOverload = "Y".equals(overload.extract(1, 1, u).toString()) ? "Y" : "N";
+                    selectedDataUnit = new AoTestDataUnit();
+                    selectedDataUnit.setId(unitId);
+                    selectedDataUnit.setDescription(unitDescs.extract(1, 1, u).toString());
+                    selectedDataUnit.setTransType(transTypes.extract(1, 1, u).toString());
+                    selectedDataUnit.setLines(unitLines.extract(1, 1, u).toString());
+                    selectedDataUnit.setOrders(unitOrders.extract(1, 1, u).toString());
+                    selectedDataUnit.setRequires(unitRequires.extract(1, 1, u).toString());
+                    selectedDataUnit.setCreditType(credType.extract(1, 1, u).toString());
+                    batchMap.put(unitId, createBatch);
+                    overloadMap.put(unitId, refundOverload);
+                    unitMap.put(unitId, selectedDataUnit);
+                }
+                selectedTestDataGroup.setNewBatch(batchMap);
+                selectedTestDataGroup.setOverloadedRefund(overloadMap);
+                selectedTestDataGroup.setUnits(unitMap);
+                selectedDataUnit = new AoTestDataUnit();
+            }
+        } catch (RbException ex) {
+            Logger.getLogger(AopTesting.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void onDataUnitChange() {
+        for(AoTestDataUnit u : dataUnitList) {
+            if (u.getId().equals(selectedDataUnit.getId())) {
+                selectedTestDataGroup.addUnit(u.getId(), u);
+                selectedDataUnit = new AoTestDataUnit();
+                return;
+            }
+        }
+    }
+
+    public void onAddUnit() {
+        
+    }
+    
     public void onChangeName() {
         try {
             idList.clear();
@@ -445,7 +718,7 @@ public class AopTesting implements Serializable {
             Logger.getLogger(AopTesting.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     /**
      * @param sl - ignored
      */
@@ -476,7 +749,7 @@ public class AopTesting implements Serializable {
             Logger.getLogger(AopTesting.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public void createOrders() {
         idList.clear();
         rbo.setProperty("siteCountry", countryCode);
@@ -492,17 +765,17 @@ public class AopTesting implements Serializable {
                 errCode = rbo.getProperty("svrCtrlCode");
                 errMessage = rbo.getProperty("svrmessage");
                 String msg = "Error: [" + errCode + "] " + errMessage;
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", msg));                
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", msg));
             } else {
                 UniDynArray oList1 = rbo.getPropertyToDynArray("batchId");
                 UniDynArray oList2 = rbo.getPropertyToDynArray("queueId");
-                int vals=oList1.dcount(1);
-                for (int val=1; val<=vals; val++) {
+                int vals = oList1.dcount(1);
+                for (int val = 1; val <= vals; val++) {
                     String key = oList2.extract(1, val).toString();
                     String value = oList1.extract(1, val).toString();
-                    idList.add(new SelectItem(key,value));
+                    idList.add(new SelectItem(key, value));
                 }
-                countryCode="";
+                countryCode = "";
                 groupId = "";
                 commissionType = "";
                 userName = "";
@@ -511,7 +784,7 @@ public class AopTesting implements Serializable {
             Logger.getLogger(AopTesting.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     /**
      * @return the sourceDesc
      */
@@ -667,11 +940,13 @@ public class AopTesting implements Serializable {
     }
 
     public void onRowSelect(SelectEvent event) {
-//        System.out.println(selectedItems.size());
+//        System.out.println("AopTesting.onRowSelect() selectedUnitList.size = " + selectedUnitList.size());
+        setRowSelected(selectedUnitList.size() == 0);
     }
 
     public void onRowUnselect(UnselectEvent event) {
-//        System.out.println(selectedItems.size());
+//        System.out.println("AopTesting.onRowUnSelect() selectedUnitList.size = " + selectedUnitList.size());
+        setRowSelected(selectedUnitList.size() == 0);
     }
 
     /**
@@ -688,7 +963,7 @@ public class AopTesting implements Serializable {
 
         this.idList = idList;
     }
-    
+
     public void setLogIds() {
 
     }
@@ -700,7 +975,6 @@ public class AopTesting implements Serializable {
         setNameList(null);
         return nameList;
     }
-    
 
     /**
      * @return the dateList
@@ -895,7 +1169,7 @@ public class AopTesting implements Serializable {
     /**
      * @return the groupList
      */
-    public HashMap<String,String> getGroupList() {
+    public HashMap<String, String> getGroupList() {
         getTestDataGroups();
         return groupList;
     }
@@ -903,7 +1177,7 @@ public class AopTesting implements Serializable {
     /**
      * @param groupList the groupList to set
      */
-    public void setGroupList(HashMap<String,String> groupList) {
+    public void setGroupList(HashMap<String, String> groupList) {
         this.groupList = groupList;
     }
 
@@ -934,4 +1208,77 @@ public class AopTesting implements Serializable {
     public void setBatchList(ArrayList<String> batchList) {
         this.batchList = batchList;
     }
+
+    /**
+     * @return the edit
+     */
+    public boolean isEdit() {
+        return edit;
+    }
+
+    /**
+     * @param bedit the edit to set
+     */
+    public void setEdit(boolean bedit) {
+        this.edit = bedit;
+    }
+
+    public void toggleEdit(ActionEvent actionEvent) {
+        setEdit(!edit);
+    }
+
+    /**
+     * @return the selectedDataUnit
+     */
+    public AoTestDataUnit getSelectedDataUnit() {
+        return selectedDataUnit;
+    }
+
+    /**
+     * @param selectedDataUnit the selectedDataUnit to set
+     */
+    public void setSelectedDataUnit(AoTestDataUnit selectedDataUnit) {
+        this.selectedDataUnit = selectedDataUnit;
+    }
+
+    /**
+     * @return the selectedUnitList
+     */
+    public ArrayList<AoTestDataUnit> getSelectedUnitList() {
+        return selectedUnitList;
+    }
+
+    /**
+     * @param selectedUnitList the selectedUnitList to set
+     */
+    public void setSelectedUnitList(ArrayList<AoTestDataUnit> selectedUnitList) {
+        this.selectedUnitList = selectedUnitList;
+    }
+
+    /**
+     * @return the rowSelected
+     */
+    public boolean isRowSelected() {
+        setRowSelected(selectedUnitList.size() == 0);
+        return rowSelected;
+    }
+
+    public void setRowSelected(boolean rowsel) {
+        this.rowSelected = rowsel;
+    }
+
+    /**
+     * @return the selectedTestDataGroup
+     */
+    public AoTestDataGroup getSelectedTestDataGroup() {
+        return selectedTestDataGroup;
+    }
+
+    /**
+     * @param selectedTestDataGroup the selectedTestDataGroup to set
+     */
+    public void setSelectedTestDataGroup(AoTestDataGroup selectedTestDataGroup) {
+        this.selectedTestDataGroup = selectedTestDataGroup;
+    }
+
 }

@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <body>
+
+        <ui:composition template="./layout.xhtml">
+
+            <ui:define name="content">
+                <p:messages id="msgs" autoUpdate="true"/>
+                <h:form id="form">
+                    <span style="width: 99%; text-align: center; margin: 2em auto 3em auto;">
+                        <h2>Use Case Entry &amp; Edit</h2>
+                    </span>
+
+                    <h:panelGrid columns="3">
+                        <h:outputLabel id='groupSelectorLabel' for="groupSelector" value="Select use case"/>
+                        <p:selectOneMenu label="groupSelectorLabel" 
+                                         id="groupSelector" value="#{aopTestBean.groupId}">
+                            <f:selectItem itemValue = "-1" itemLabel="Select use case"/>
+                            <f:selectItems value='#{aopTestBean.groupList}'/>   
+                            <p:ajax event="change" listener="#{aopTestBean.onDataGroupChange()}" update="itemId,createDate,table,deleteGroup"/>
+                        </p:selectOneMenu>
+                        <h:panelGrid columns="2" style="margin-left: 30px;" cellspacing="5">
+                            <h:outputText value="Item id" style="font-weight: 700;"/>
+                            <h:outputText id="itemId" value="#{aopTestBean.selectedTestDataGroup.groupId}"/>
+                            <h:outputText value="Create Date" style="font-weight: 700;"/>
+                            <h:outputText id="createDate" value="#{aopTestBean.selectedTestDataGroup.createDate}"/>                            
+                        </h:panelGrid>
+                    </h:panelGrid>
+
+                    <p:dataTable id="table" 
+                                 value="#{aopTestBean.selectedTestDataGroup.units}"
+                                 selection="#{aopTestBean.selectedUnitList}"
+                                 rowKey="#{unit.id}"
+                                 selectionMode="multiple"
+                                 var="unit">
+                        <p:ajax event="rowSelect" listener="#{aopTestBean.onRowSelect(event)}" update="deleteUnit"/>
+                        <p:ajax event="rowUnselect" listener="#{aopTestBean.onRowUnselect(event)}" update="deleteUnit"/>
+                        <f:facet name="header">
+                            <h:outputText value="Test Data Units"/>
+                        </f:facet>
+                        <p:column headerText="Unit #" style="width: 3%;">
+                            <h:outputText value="#{unit.id}"/>
+                        </p:column>
+                        <p:column headerText="Description" style="width: 20%;">
+                            <h:outputText value="#{unit.description}"/>
+                        </p:column>
+                        <p:column headerText="Trans type" style="width: 5%;">
+                            <h:outputText value="#{unit.transType}"/>
+                        </p:column>
+                        <p:column headerText="Lines per order" style="width: 5%;">
+                            <h:outputText value="#{unit.lines}"/>
+                        </p:column>
+                        <p:column headerText="Orders per cust" style="width: 5%;">
+                            <h:outputText value="#{unit.orders}"/>
+                        </p:column>
+                        <p:column headerText="New batch?" style="width: 5%;">
+                            <h:outputText value="#{aopTestBean.selectedTestDataGroup.newBatch[unit.id]}"/>
+                        </p:column>
+                        <p:column headerText="Requires" style="width: 5%;">
+                            <h:outputText value="#{unit.requires}"/>
+                        </p:column>
+                        <p:column headerText="Credit type" style="width: 5%;">
+                            <h:outputText value="#{unit.creditType}"/>
+                        </p:column>                                    
+                        <p:column headerText="Overload Refund" style="width: 5%;">
+                            <h:outputText value="#{aopTestBean.selectedTestDataGroup.overloadRefund[unit.id]}"/>
+                        </p:column>
+                        <f:facet id="footer" name="footer">
+                            
+                            <p:commandButton id="deleteUnit" value="Remove Unit" disabled="#{aopTestBean.rowSelected}"
+                                             actionListener="#{aopTestBean.removeUnit()}" update="table,form:saveGroup"/>
+                            
+                            <p:panelGrid columns="3" id="footerPanel" rendered="#{aopTestBean.edit}">
+                                <h:outputText value="Data type"/>
+                                <h:outputText value="Batch type"/>
+                                <h:outputText value="Overload Refunds"/>
+                                
+                                <p:selectOneMenu id="unitSelector" value="#{aopTestBean.selectedDataUnit.id}">
+                                    <f:selectItem itemValue = "-1" itemLabel="Select data unit"/>
+                                    <f:selectItems value='#{aopTestBean.dataUnitList}' var="u" itemValue="#{u.id}" itemLabel="#{u.description}"/>    
+                                    <p:ajax event="change" listener="#{aopTestBean.onDataUnitChange()}" update="table"/>
+                                </p:selectOneMenu>
+                                
+                                <p:selectOneRadio id="batchTypeSelector" value="">
+                                    <f:selectItem itemValue="0" itemLabel="Same batch"/>
+                                    <f:selectItem itemValue="1" itemLabel="Create new batch"/>
+                                </p:selectOneRadio>
+                                
+                                <p:selectOneRadio id="overloadSelector">
+                                    <f:selectItem itemValue="I" itemLabel="By item count"/>
+                                    <f:selectItem itemValue="O" itemLabel="By order total"/>
+                                </p:selectOneRadio>
+                                
+                            </p:panelGrid>
+
+                        </f:facet>
+                    </p:dataTable>
+                    <p:button id="createGroup" value="Create Group" outcome="testGroupSetup.xhtml"/>
+                    <p:commandButton id="saveGroup" value="Save Group" disabled="#{!aopTestBean.selectedTestDataGroup.changed}"
+                                     actionListener="#{aopTestBean.onSaveDataGroup()}" update="@form"/>
+                    <p:commandButton id="deleteGroup" value="Delete Group" disabled='#{aopTestBean.groupId eq "-1" || aopTestBean.groupId eq ""}'
+                                     actionListener="#{aopTestBean.onDataGroupDelete()}"
+                                     update="@form"/>
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

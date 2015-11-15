@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./layout.xhtml">
+
+            <ui:define name="banner">
+                banner
+            </ui:define>
+
+            <ui:define name="content">
+                <p:messages id="msgs" autoUpdate="true"/>
+                <h:form id="form1">
+                    <p:dataTable id="data" value="#{aopTestBean.dataUnitList}" var="unit" 
+                                 selection="#{aopTestBean.selectedUnitList}"
+                                 rowKey="#{unit.id}"
+                                 selectionMode="multiple"
+                                 resizableColumns="true"
+                                 style="width:99%; margin: auto;">
+                        <f:facet name="header">
+                            <h:outputText value="AOP Test Order Units"/>
+                        </f:facet>
+                        <p:column headerText="Id" width="3%">
+                            <h:outputText value="#{unit.id}"/>
+                        </p:column>
+                        <p:column headerText="Description" width="30%">
+                            <h:outputText value="#{unit.description}"/>
+                        </p:column>
+                        <p:column headerText="Trans type" style="text-align: center;">
+                            <h:outputText value="#{unit.transType}"/>
+                        </p:column>
+                        <p:column headerText="Lines" style="text-align: center;">
+                            <h:outputText value="#{unit.lines}"/>
+                        </p:column>
+                        <p:column headerText="Orders" style="text-align: center;">
+                            <h:outputText value="#{unit.orders}"/>
+                        </p:column>
+                        <p:column headerText="Credit Type" style="text-align: center;">
+                            <h:outputText value="#{unit.creditType}"/>
+                        </p:column>
+                        <p:column headerText="Requires Unit" style="text-align: center;">
+                            <h:outputText value="#{unit.requires}"/>
+                        </p:column>   
+                        <f:facet name="footer">
+                            <h:panelGroup id="panelGroup1">
+                                <p:commandButton id="addButton" value='Add'
+                                                 disabled="#{aopTestBean.edit}"
+                                                 actionListener="#{aopTestBean.toggleEdit}" 
+                                                 update="@parent"  style="width: 200px; margin-right: 20px;" />
+                                <p:commandButton id="deleteButton" value="Delete selected" 
+                                                 actionListener="#{aopTestBean.deleteUnit()}"
+                                                 disabled="#{aopTestBean.rowSelected}"
+                                                 style="width: 200px;"/>
+
+                                <p:panelGrid id="panel1" rendered="#{aopTestBean.edit}">
+                                    <p:row>
+                                        <p:column>
+                                            <h:outputText value="Description"/>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="Trans Type"/>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="Lines"/>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="Orders"/>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="Requires"/>
+                                        </p:column>                                    
+                                        <p:column>
+                                            <h:outputText value="Credit Type"/>
+                                        </p:column>
+                                    </p:row>
+                                    <p:row>
+                                        <p:column>
+                                            <h:inputText value="#{aopTestBean.selectedDataUnit.description}"/>    
+                                        </p:column>
+                                        <p:column>
+                                            <h:inputText value="#{aopTestBean.selectedDataUnit.transType}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <h:inputText value="#{aopTestBean.selectedDataUnit.lines}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <h:inputText value="#{aopTestBean.selectedDataUnit.orders}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <h:inputText value="#{aopTestBean.selectedDataUnit.requires}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <h:inputText value="#{aopTestBean.selectedDataUnit.creditType}"/>                                
+                                        </p:column>
+                                    </p:row>
+                                    <p:row>
+                                        <p:column colspan="6">
+                                            <p:commandButton id="okButton" value = "OK" actionListener="#{aopTestBean.addUnit}"
+                                                             update="data" style="width: 100px; margin-right: 20px;"/>
+                                            <p:commandButton id="cancelButton" value="Cancel" 
+                                                             actionListener="#{aopTestBean.toggleEdit(actionEvent)}"
+                                                             update="data" style="width: 100px;"/>
+                                        </p:column>
+                                    </p:row>
+                                </p:panelGrid>
+
+                            </h:panelGroup>
+                        </f:facet>
+                        <p:ajax event="rowSelect" listener="#{aopTestBean.onRowSelect(se)}" update="deleteButton"/>
+                        <p:ajax event="rowUnselect" listener="#{aopTestBean.onRowUnselect(se)}" update="deleteButton"/>
+                    </p:dataTable>
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

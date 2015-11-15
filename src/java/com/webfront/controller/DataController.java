@@ -9,7 +9,6 @@ import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.beans.BatchManagementBean;
 import com.webfront.beans.BatchSummaryBean;
-import com.webfront.beans.Config;
 import com.webfront.beans.WebDEBean;
 import com.webfront.model.AffiliateOrder;
 import com.webfront.model.BatchItem;
@@ -33,7 +32,6 @@ public final class DataController {
     BatchManagementBean mgmtBean;
     WebDEBean wdeBean;
     BatchTree batchTree;
-    public Config config;
     protected ArrayList<BatchItem> batchList;
     private List<AffiliateOrder> orderList;
     public List<String> orderIdList;
@@ -47,7 +45,6 @@ public final class DataController {
 
     public DataController() {
         setMap(FacesContext.getCurrentInstance().getExternalContext().getSessionMap());
-        config = new Config();
         wdeBean = (WebDEBean) getMap().get("webDEBean");
         mgmtBean = (BatchManagementBean) map.get("batchManagementBean");
         batchTree = (BatchTree) map.get("batchTree");

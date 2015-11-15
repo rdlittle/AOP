@@ -51,7 +51,4 @@
         <filter-name>PrimeFaces FileUpload Filter</filter-name>
         <servlet-name>Faces Servlet</servlet-name>
     </filter-mapping>
-    <listener>
-        <listener-class>com.webfront.beans.Config</listener-class>
-    </listener>
 </web-app>

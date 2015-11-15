@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.webfront.beans;
+package com.webfront.beans.testing;
 
 import asjava.uniclientlibs.UniDynArray;
+import com.webfront.beans.WebDE;
 import com.webfront.model.SelectItem;
 import com.webfront.model.UnitTestSuite;
 import com.webfront.model.UnitTestSuiteSegment;
@@ -100,8 +101,8 @@ public class TestSuiteBean implements Serializable {
             webde.getInProperties().put("utProgName", segs.extract(3));
             webde.setMethodName("setUnitTestSuite");
             webde.call();
-            if (webde.errStatus == -1) {
-                String msg = "Error: [" + webde.errCode + "] " + webde.errMessage;
+            if (webde.getErrStatus() == -1) {
+                String msg = "Error: [" + webde.getErrCode() + "] " + webde.getErrMessage();
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", msg));
             } else {
                 String uid = webde.getObjectMap().get("utSuiteId").toString();
@@ -125,8 +126,8 @@ public class TestSuiteBean implements Serializable {
                 webde.getInProperties().put("utSuiteId", new UniDynArray(utSuiteId));
                 webde.setMethodName("deleteUnitTestSuite");
                 webde.call();
-                if (webde.errStatus == -1) {
-                    String msg = "Error: [" + webde.errCode + "] " + webde.errMessage;
+                if (webde.getErrStatus() == -1) {
+                    String msg = "Error: [" + webde.getErrCode() + "] " + webde.getErrMessage();
                     FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", msg));
                 } else {
                     for(SelectItem se : suiteIdList) {
@@ -155,8 +156,8 @@ public class TestSuiteBean implements Serializable {
                 webde.getInProperties().put("utSuiteId", new UniDynArray(utSuiteId));
                 webde.setMethodName("getUnitTestSuite");
                 webde.call();
-                if (webde.errStatus == -1) {
-                    String msg = "Error: [" + webde.errCode + "] " + webde.errMessage;
+                if (webde.getErrStatus() == -1) {
+                    String msg = "Error: [" + webde.getErrCode() + "] " + webde.getErrMessage();
                     FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", msg));
                 } else {
                     testSuite = new UnitTestSuite();

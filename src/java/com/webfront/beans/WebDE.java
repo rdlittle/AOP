@@ -18,6 +18,10 @@ import javax.faces.context.FacesContext;
 /**
  *
  * @author rlittle
+ * This class is an attempt on creating a generic Web DE module but there is still much work to do, and this class is not ready for use.
+ * The goal is to have one class that could handle all UniVerse I/O. A method from any other bean should be able to set a list of input and 
+ * output properties, invoke a named method and retrieve all the output properties and error properties.
+ * 
  */
 @ManagedBean(name = "webde")
 @SessionScoped
@@ -36,9 +40,9 @@ public class WebDE implements Serializable {
     String inProperty;
     String inValue;
 
-    int errStatus;
-    String errMessage;
-    String errCode;
+    private int errStatus;
+    private String errMessage;
+    private String errCode;
     
     public WebDE() {
         inProperties = new HashMap<>();
@@ -108,13 +112,13 @@ public class WebDE implements Serializable {
             UniDynArray uniDynarray = pValues.extract(attr);
             getObjectMap().put(pName, uniDynarray);
             if(pName.equals("errStat")) {
-                errStatus = Integer.parseInt(uniDynarray.extract(1,1).toString());
+                setErrStatus(Integer.parseInt(uniDynarray.extract(1,1).toString()));
             }
             if(pName.equals("errCode")) {
-                errCode = uniDynarray.extract(1,1).toString();
+                setErrCode(uniDynarray.extract(1,1).toString());
             }
             if(pName.equals("errMsg")) {
-                errMessage = uniDynarray.extract(1,1).toString();
+                setErrMessage(uniDynarray.extract(1,1).toString());
             }
         }
         
@@ -176,6 +180,48 @@ public class WebDE implements Serializable {
      */
     public void setInProperties(HashMap<String, UniDynArray> map) {
         this.inProperties = map;
+    }
+
+    /**
+     * @return the errStatus
+     */
+    public int getErrStatus() {
+        return errStatus;
+    }
+
+    /**
+     * @param errStatus the errStatus to set
+     */
+    public void setErrStatus(int errStatus) {
+        this.errStatus = errStatus;
+    }
+
+    /**
+     * @return the errMessage
+     */
+    public String getErrMessage() {
+        return errMessage;
+    }
+
+    /**
+     * @param errMessage the errMessage to set
+     */
+    public void setErrMessage(String errMessage) {
+        this.errMessage = errMessage;
+    }
+
+    /**
+     * @return the errCode
+     */
+    public String getErrCode() {
+        return errCode;
+    }
+
+    /**
+     * @param errCode the errCode to set
+     */
+    public void setErrCode(String errCode) {
+        this.errCode = errCode;
     }
 
 }
