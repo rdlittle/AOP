@@ -172,8 +172,8 @@
                         <p:commandLink id="saveColumn" actionListener="#{affiliateMaster.saveColumn}" 
                                        process="@this" update="@this @form" rendered="#{affiliateMaster.newColumn}"
                                        value="Save" />
-                        <p:dataTable id="fieldTable" var="mf" value="#{affiliateMaster.fieldMapList}" rowKey="#{mf.key}" 
-                                     rowIndexVar="mfidx" binding="#{affiliateMaster.selector}" widgetVar="fieldTable" 
+                        <p:dataTable id="fields" var="mf" value="#{affiliateMaster.fieldMapList}" rowKey="#{mf.key}" 
+                                     rowIndexVar="mfidx" 
                                      resizableColumns="true" >
                             <f:facet name="header">
                                 <h:outputText value="Report Mapping"/>
@@ -183,13 +183,12 @@
                                 <h:inputHidden id="rowCounter" value="#{mfidx+1}" />
                             </p:column>
                             <p:column id="fieldName" headerText="Field Name" width="100">
-                                <p:selectOneMenu id="mappedField1" value="#{affiliateMaster.getField(mfidx)}" 
-                                                 valueChangeListener="#{affiliateMaster.fieldMapChangeListener}">
+                                <p:selectOneMenu id="mappedField1" value="#{affiliateMaster.getField(mfidx)}">
                                     <f:selectItems value="#{webDEBean.mappedFields}" var="mp" 
                                                    itemValue="#{mp.key}" 
                                                    itemLabel="#{mp.value}">
                                     </f:selectItems>
-                                    <f:ajax execute="@this" event="change" listener="#{affiliateMaster.changeField}"/>
+                                    <p:ajax process="@this" event="change" listener="#{affiliateMaster.changeField}"/>
                                 </p:selectOneMenu>
                             </p:column>
                             <p:column id="delColumn" headerText="Delete" width="30">

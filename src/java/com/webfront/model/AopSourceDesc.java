@@ -32,6 +32,8 @@ public class AopSourceDesc {
     private String cashback;
     private String vendorId;
     private String vendorDiv;
+    private boolean newRecord;
+    private boolean changed;
 
     public AopSourceDesc() {
         pcId = "";
@@ -47,6 +49,8 @@ public class AopSourceDesc {
         cashback = "";
         sponsor = "";
         custList = new ArrayList<>();
+        changed = false;
+        newRecord = true;
     }
     
     /**
@@ -249,6 +253,34 @@ public class AopSourceDesc {
      */
     public void setCustList(ArrayList<Customer> custList) {
         this.custList = custList;
+    }
+
+    /**
+     * @return the newRecord
+     */
+    public boolean isNewRecord() {
+        return newRecord;
+    }
+
+    /**
+     * @param newRecord the newRecord to set
+     */
+    public void setNewRecord(boolean newRecord) {
+        this.newRecord = newRecord;
+    }
+
+    /**
+     * @return the changed
+     */
+    public boolean isChanged() {
+        return changed;
+    }
+
+    /**
+     * @param changed the changed to set
+     */
+    public void setChanged(boolean changed) {
+        this.changed = changed;
     }
     
 }

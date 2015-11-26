@@ -9,6 +9,7 @@ package com.webfront.model;
 import com.webfront.controller.AffiliateDetailController;
 import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.event.AjaxBehaviorEvent;
 
@@ -19,6 +20,7 @@ import javax.faces.event.AjaxBehaviorEvent;
 @ManagedBean
 @SessionScoped
 public class AffiliateDetail implements Serializable {
+    @ManagedProperty(value="#{affiliateDetailController}")
     private AffiliateDetailController controller;
     private String id;
     private String affiliateMasterId;
@@ -47,7 +49,6 @@ public class AffiliateDetail implements Serializable {
     private String threshhold;
 
     public AffiliateDetail() {
-        this.controller = new AffiliateDetailController();
         this.id=new String();
         this.affiliateMasterId=new String();
         this.storeName=new String();
@@ -70,6 +71,7 @@ public class AffiliateDetail implements Serializable {
         this.displayIBV=true;
         this.displayCB=true;
         this.ibvOnGiftCard=false;
+        this.threshhold=new String();
     }
     
     public void changeAffiliateMaster(AjaxBehaviorEvent event) {
@@ -88,8 +90,7 @@ public class AffiliateDetail implements Serializable {
         controller.setAffiliateDetail(this);
     }
     public void changeStore(AjaxBehaviorEvent event) {
-        String storeId = getId();
-        AffiliateDetail newStore = getController().getAffiliateDetail(storeId);
+        AffiliateDetail newStore = getController().getAffiliateDetail(id);
         if(newStore != null) {
             setAffiliateMasterId(newStore.getAffiliateMasterId());
             setStoreName(newStore.getStoreName());

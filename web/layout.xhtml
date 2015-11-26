@@ -22,7 +22,7 @@
             </p:layoutUnit>
 
             <p:layoutUnit position="west" size="250" header="AOP Menu" collapsible="true">
-                <p:slideMenu style="width: 100%;">
+                <p:menu toggleable="true" style="width: 100%;">
                     <p:submenu label="Affiliates">
                         <p:menuitem value="Networks" url="/faces/affiliateNetworkForm.xhtml"/>
                         <p:menuitem value="Aggregators" url="/faces/affiliateMasterForm.xhtml"/>
@@ -40,17 +40,15 @@
                         <p:menuitem value="Check reconcilliation" url="/faces/checkReconFileUploader.xhtml"/>                        
                         <p:menuitem value="Payment queue" url="/faces/paymentQueue.xhtml"/>
                     </p:submenu>
-                    <p:submenu label="Testing">
-                        <p:submenu label="Batch Components">
-                            <p:menuitem value="Source Descriptor" url="/faces/aopTestSourceDesc.xhtml"/>
-                            <p:menuitem value="Units" url="/faces/aopTestUnit.xhtml"/>
-                            <p:menuitem value="Groups" url="/faces/aopTestGroup.xhtml"/>
-                        </p:submenu>
+                    <p:submenu label="Testing" expanded="false">
+                        <p:menuitem value="Source Descriptor" url="/faces/aoTestSourceDesc.xhtml"/>
+                        <p:menuitem value="Units" url="/faces/aoTestUnit.xhtml"/>
+                        <p:menuitem value="Groups" url="/faces/aoTestGroup.xhtml"/>
                         <p:menuitem value="Create Test Orders" url="/faces/testingBatchSetupForm.xhtml"/>
                         <p:menuitem value="Run Test Suites" url="/faces/unitTestSuiteForm.xhtml"/>                        
                         <p:menuitem value="View Test Results" url="/faces/unitTestLog.xhtml"/>                        
                     </p:submenu>
-                </p:slideMenu>
+                </p:menu>
             </p:layoutUnit>
 
             <p:layoutUnit position="center" resizable="true" closable="true" collapsible="true">

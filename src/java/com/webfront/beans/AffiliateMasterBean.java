@@ -13,16 +13,18 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.ApplicationScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.inject.Named;
 
 /**
  *
  * @author rlittle
  */
-@ManagedBean
-@SessionScoped
-public final class AffiliateMasterBean implements Serializable {
+@Named("affiliateMasterBean")
+@ApplicationScoped
+public class AffiliateMasterBean implements Serializable {
 
     private RedObject rbo;
     private LinkedList<SelectItem> affiliateMasterList;
@@ -34,20 +36,28 @@ public final class AffiliateMasterBean implements Serializable {
     private ArrayList<SelectItem> fileFormats;
     private String networkId;
     private String userId;
+    private String countryCode;
+    private String commType;
 
     /**
      * Creates a new instance of WebDEBean
      */
     public AffiliateMasterBean() {
         todayInternal = 1;
-        setTodayInternal(1);
-        setRbo(new RedObject("WDE", "Affiliates:Master"));
-        setAffiliateMasterList(new LinkedList<SelectItem>());
-        setNetworkList(new ArrayList<SelectItem>());
-        setMappedFields(new LinkedList<SelectItem>());
-        setAccessMethods(new ArrayList<SelectItem>());
-        setFileFormats(new ArrayList<SelectItem>());
+        rbo = new RedObject("WDE", "Affiliates:Master");
+        affiliateMasterList = new LinkedList<>();
+        networkList = new ArrayList<>();
+        mappedFields = new LinkedList<>();
+        accessMethods = new ArrayList<>();
+        fileFormats = new ArrayList<>();
         networkId = "";
+        commType = "";
+        countryCode = "";
+        System.out.println("AffiliateMasterBean()");
+    }
+
+    public void init() {
+        System.out.println("AffiliateMasterBean.init()");
     }
 
     /**
@@ -70,19 +80,34 @@ public final class AffiliateMasterBean implements Serializable {
     public LinkedList<SelectItem> getAffiliateMasterList() {
         LinkedList<SelectItem> list = new LinkedList<>();
         try {
-            if(networkId!=null) {
+            if (networkId != null) {
                 getRbo().setProperty("networkId", networkId);
             }
+            if (countryCode != null) {
+                getRbo().setProperty("country", countryCode);
+            }
+            if (commType != null) {
+                getRbo().setProperty("type", commType);
+            }
             getRbo().callMethod("getMasterList");
-            UniDynArray vendorNames = getRbo().getPropertyToDynArray("affiliateName");
-            UniDynArray vendorIds = getRbo().getPropertyToDynArray("masterId");
-            int vals = vendorNames.dcount(1);
-            SelectItem defaultItem = new SelectItem("-1", "Select Affiliate");
-            list.add(defaultItem);
-            for (int i = 1; i <= vals; i++) {
-                String str = vendorNames.extract(1, i).toString();
-                String vid = vendorIds.extract(1, i).toString();
-                list.add(new SelectItem(vid, str));
+            int errStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
+            String errCode = rbo.getProperty("svrCtrlCode");
+            String errMessage = rbo.getProperty("svrMessage");
+            if (errStatus == -1) {
+                FacesContext ctx = FacesContext.getCurrentInstance();
+                FacesMessage msg = new FacesMessage(errCode + ": " + errMessage);
+                ctx.addMessage(null, msg);
+            } else {
+                UniDynArray vendorNames = getRbo().getPropertyToDynArray("affiliateName");
+                UniDynArray vendorIds = getRbo().getPropertyToDynArray("masterId");
+                int vals = vendorNames.dcount(1);
+                SelectItem defaultItem = new SelectItem("-1", "Select Affiliate");
+                list.add(defaultItem);
+                for (int i = 1; i <= vals; i++) {
+                    String str = vendorNames.extract(1, i).toString();
+                    String vid = vendorIds.extract(1, i).toString();
+                    list.add(new SelectItem(vid, str));
+                }
             }
         } catch (RbException ex) {
             Logger.getLogger(AffiliateMasterBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -328,5 +353,33 @@ public final class AffiliateMasterBean implements Serializable {
      */
     public void setNetworkId(String networkId) {
         this.networkId = networkId;
+    }
+
+    /**
+     * @return the countryCode
+     */
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    /**
+     * @param countryCode the countryCode to set
+     */
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
+
+    /**
+     * @return the commType
+     */
+    public String getCommType() {
+        return commType;
+    }
+
+    /**
+     * @param commType the commType to set
+     */
+    public void setCommType(String commType) {
+        this.commType = commType;
     }
 }

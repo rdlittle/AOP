@@ -43,20 +43,31 @@ a:link:hover, a:visited:hover  {
 }
 
 .custom2 tr {
-    margin: 2em auto;
+    margin: 0px;
+    padding: 0px;
 }
 .custom2 td {
     top: 0px;
-    left: auto;
+    left: 0px;
+    padding: 0px;
     margin: 0px;
-    vertical-align: top !important;
-    border-style: hidden !important;
-    background: skyblue;
+    vertical-align: middle !important;
 }
 
+.colhdr {
+    background-color: #ece3a5;
+}
 .myStyle {
     color: white;
     background: blue;
+}
+
+.radioHorizontal {
+    padding-left: 0px;
+    padding-right: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    border-style: hidden !important;
 }
 
 .banner,
@@ -65,4 +76,8 @@ a:link:hover, a:visited:hover  {
     background-image: url("../images/ma-logo.png");
     background-repeat: no-repeat;
     background-position: 10px;
+}
+
+.ui-spinner .ui-spinner-input {
+    width: 50px;
 }

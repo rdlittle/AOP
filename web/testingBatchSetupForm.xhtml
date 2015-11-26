@@ -20,38 +20,42 @@
                 </span>
 
                 <h:form id="form">
-                    <p:panelGrid styleClass="custom" style="width: 70%; margin: auto; vertical-align: top; ">
+                    <p:panelGrid styleClass="custom" style="width: 100%; margin: auto; vertical-align: top; ">
                         <p:row>
-                            <p:column>
+                            <p:column style="width: 20%;">
                                 <h:outputText value="User"/>
                             </p:column>
-                            <p:column>
+                            <p:column style="width: 30%;">
                                 <p:selectOneMenu id ="userName" value='#{aopTestBean.userName}' editable="true">
-                                    <p:ajax listener="#{aopTestBean.doLookup(event)}" update="baseCountry,commissionType"/>
+                                    <p:ajax listener="#{aopTestBean.readSourceDesc(event)}" update="baseCountry,commissionType"/>
                                     <f:selectItem itemValue = "-1" itemLabel="Select user"/>
                                     <f:selectItems value='#{webDEBean.getValues("PARAMS", "AOP.SOURCE.DESC.CONTROL","1")}'
                                                    var="user" itemLabel="#{user}"/>
                                 </p:selectOneMenu>
                             </p:column>
 
-                            <p:column rowspan="3" style="vertical-align: top;">
+                            <p:column rowspan="3" style="width: 70%; vertical-align: top;">
                                 <p:panelGrid style="vertical-align: top;">
                                     <p:row>
-                                        <p:column>
-                                            <p:outputLabel id="aoGroupLabel" for="aoGroup" value="Use case"/>
+                                        <p:column style="width: 10%;">
+                                            <h:outputText value="Use case"/>
                                         </p:column>
-                                    </p:row>                                    
-                                    <p:row>
-                                        <p:column>
+                                        <p:column style="width: 90%;">
                                             <p:selectOneMenu id="aoGroup" value="#{aopTestBean.groupId}">
                                                 <f:selectItem itemValue = "-1" itemLabel="Select use case"/>
-                                                <f:selectItems value='#{aopTestBean.groupList}'/>   
+                                                <f:selectItems value='#{aopTestBean.groupList}'/> 
+                                                <p:ajax event="change" listener="#{aopTestBean.onChangeDataGroup()}" 
+                                                        update="longText"/>
                                             </p:selectOneMenu>
+                                        </p:column>
+                                    </p:row>
+                                    <p:row>
+                                        <p:column colspan="2">
+                                            <h:outputText id="longText" value="#{aopTestBean.selectedTestDataGroup.longText}"/>
                                         </p:column>
                                     </p:row>
                                 </p:panelGrid>
                             </p:column>
-
                         </p:row>
 
                         <p:row>
@@ -60,7 +64,7 @@
                             </p:column>
                             <p:column>
                                 <p:selectOneMenu id="baseCountry" value='#{aopTestBean.countryCode}'>
-                                    <p:ajax listener="#{aopTestBean.doLookup(event)}" update="commissionType"/>
+                                    <p:ajax listener="#{aopTestBean.readSourceDesc(event)}" update="commissionType"/>
                                     <f:selectItem itemValue = "-1" itemLabel="Select country"/>
                                     <f:selectItems value='#{webDEBean.getKeyValues("COUNTRY", "", "0", "1")}' 
                                                    var = "countryItem" itemValue="#{countryItem.key}" itemLabel="#{countryItem.value}"/>
@@ -74,18 +78,18 @@
                             </p:column>
                             <p:column>
                                 <p:selectOneRadio id='commissionType' value='#{aopTestBean.commissionType}'>
-                                    <p:ajax listener="#{aopTestBean.doLookup(event)}"/>
-                                    <f:selectItem itemLabel="Percentage" itemValue="P"/>
-                                    <f:selectItem itemLabel="Fixed Rate" itemValue="F"/>
+                                    <p:ajax listener="#{aopTestBean.readSourceDesc(event)}"/>
+                                    <f:selectItems value="#{aopTestBean.commissionDescriptions}" var="c" itemLabel="#{c}" itemValue="#{c}"/>
                                 </p:selectOneRadio>
                             </p:column>
                         </p:row>
 
                     </p:panelGrid>
+
                     <br/>
                     <p:panel style="border: none; width: 40%; margin: auto; text-align: right;">
                         <p:commandButton value="Create orders"
-                            actionListener="#{aopTestBean.createOrders()}" update=":form"/>
+                                         actionListener="#{aopTestBean.createOrders()}" update="@form"/>
                         &nbsp;
                         <p:button value="Cancel"/>
                     </p:panel>

@@ -37,16 +37,23 @@
                         </p:row>
                         <p:row>
                             <p:column colspan="2">
-                                <p:commandButton id="addButton" value="+"
-                                                 actionListener="#{aopTestBean.selectedTestDataGroup.addRow()}" update="unitTable"/>
+                                <p:commandButton id="addButton" value="Add Unit"
+                                                 actionListener="#{aopTestBean.selectedTestDataGroup.addRow()}" 
+                                                 disabled="#{aopTestBean.selectedTestDataGroup.addingRow}"
+                                                 update="unitTable"/>
+                                <p:commandButton id="resetButton" value="Reset"
+                                                 actionListener="#{aopTestBean.selectedTestDataGroup.onReset()}"
+                                                 disabled="#{!aopTestBean.selectedTestDataGroup.changed}"
+                                                 update="@form"/>
+                                <p:commandButton id ="saveButton" value="Save"
+                                                 actionListener="#{aopTestBean.onSaveDataGroup()}" 
+                                                 disabled="#{!aopTestBean.selectedTestDataGroup.changed}"/>
                             </p:column>
                         </p:row>
                         <p:row>
                             <p:column colspan="2">
 
-                                <p:dataTable id="unitTable" editable="true" editMode="cell"
-                                             value="#{aopTestBean.selectedTestDataGroup.units}"
-                                             var="u">
+                                <p:dataTable id="unitTable" var="u" value="#{aopTestBean.selectedTestDataGroup.unitList}">
                                     <p:column headerText="Trans Type">
                                         <c:choose>
                                             <c:when test="#{aopTestBean.selectedTestDataGroup.addingRow}">
@@ -82,9 +89,22 @@
                                     </p:column>
 
                                     <p:column>
-                                        <p:commandButton id="okButton" icon="ui-icon-check"
-                                                         actionListener="#{aopTestBean.selectedTestDataGroup.commitRow()}"
-                                                         update="unitTable"/>
+                                        <c:choose>
+                                            <c:when test="#{aopTestBean.selectedTestDataGroup.addingRow}">
+                                                <p:commandButton id="okButton" icon="ui-icon-check"
+                                                                 actionListener="#{aopTestBean.selectedTestDataGroup.commitRow()}"
+                                                                 update="@form:saveButton,@form:resetButton,@form:addButton,unitTable">
+                                                </p:commandButton>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <p:commandButton id="deleteButton" icon="ui-icon-close"
+                                                                 actionListener="#{aopTestBean.selectedTestDataGroup.removeRow()}"
+                                                                 update="@form:saveButton,@form:resetButton,@form:addButton,unitTable">
+                                                    <f:setPropertyActionListener value="#{u}" 
+                                                                                 target="#{aopTestBean.selectedTestDataGroup.selectedUnit}"/>
+                                                </p:commandButton>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </p:column>
 
                                 </p:dataTable>

@@ -5,6 +5,9 @@
  */
 package com.webfront.beans.testing;
 
+import com.webfront.model.SelectItem;
+import java.util.ArrayList;
+
 /**
  *
  * @author rlittle
@@ -17,16 +20,35 @@ public class AoTestDataUnit {
     private String orders;
     private String requires;
     private String creditType;
+    private String errorCodes;
+    private String errorLines;
+    private String errorSameLine;
+    private ArrayList<SelectItem> errorList;
+    private boolean hasErrors;
 
     public AoTestDataUnit() {
         id="";
         description="";
-        transType="";
-        lines="";
-        orders="";
+        transType="D";
+        lines="1";
+        orders="1";
         requires="";
         creditType="";
+        errorCodes = "";
+        errorLines = "0";
+        errorSameLine = "1";
+        errorList = new ArrayList<>();
+        hasErrors = false;
     }
+    
+    public boolean getHasErrors() {
+        return errorList.isEmpty();
+    }
+    
+    public void setHasErrors() {
+        hasErrors=errorList.isEmpty();
+    }
+    
     /**
      * @return the id
      */
@@ -123,5 +145,61 @@ public class AoTestDataUnit {
      */
     public void setCreditType(String creditType) {
         this.creditType = creditType;
+    }
+
+    /**
+     * @return the errorCode
+     */
+    public String getErrorCodes() {
+        return errorCodes;
+    }
+
+    /**
+     * @param errorCode the errorCode to set
+     */
+    public void setErrorCodes(String errorCode) {
+        this.errorCodes = errorCode;
+    }
+
+    /**
+     * @return the errorLines
+     */
+    public String getErrorLines() {
+        return errorLines;
+    }
+
+    /**
+     * @param errorLines the errorLines to set
+     */
+    public void setErrorLines(String errorLines) {
+        this.errorLines = errorLines;
+    }
+
+    /**
+     * @return the errorSameLine
+     */
+    public String getErrorSameLine() {
+        return errorSameLine;
+    }
+
+    /**
+     * @param errorSameLine the errorSameLine to set
+     */
+    public void setErrorSameLine(String errorSameLine) {
+        this.errorSameLine = errorSameLine;
+    }
+
+    /**
+     * @return the errorList
+     */
+    public ArrayList<SelectItem> getErrorList() {
+        return errorList;
+    }
+
+    /**
+     * @param errorList the errorList to set
+     */
+    public void setErrorList(ArrayList<SelectItem> errorList) {
+        this.errorList = errorList;
     }
 }

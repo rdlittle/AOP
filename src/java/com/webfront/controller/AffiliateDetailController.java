@@ -15,12 +15,16 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
 /**
  *
  * @author rlittle
  */
+@ManagedBean(name="affiliateDetailController")
+@SessionScoped
 public class AffiliateDetailController implements Serializable {
 
     private RedObject rb;
@@ -89,7 +93,7 @@ public class AffiliateDetailController implements Serializable {
             newStore.setDisplayIBV("1".equals(getRb().getProperty("displayIBV")));
             newStore.setDisplayCB("1".equals(getRb().getProperty("displayCB")));
             newStore.setThreshhold(getRb().getProperty("threshhold"));
-            newStore.setIbvOnGiftCard("1".equals(getRb().getProperty("ibvOnGiftCard").toString()));
+            newStore.setIbvOnGiftCard("1".equals(getRb().getProperty("ibvOnGiftCard")));
             System.out.println(newStore.toString());
         } catch (RbException rbe) {
             Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, rbe);
@@ -100,7 +104,7 @@ public class AffiliateDetailController implements Serializable {
     public void setAffiliateDetail(AffiliateDetail rec) {
         try {
             getRb().setProperty("id", rec.getId());
-            getRb().setProperty("masterId", rec.getAffiliateMasterId());
+            getRb().setProperty("affiliateMasterId", rec.getAffiliateMasterId());
             getRb().setProperty("storeName", rec.getStoreName());
             getRb().setProperty("subVendorId", rec.getSubVendorId());
             getRb().setProperty("createDate", rec.getCreateDate());
@@ -124,7 +128,7 @@ public class AffiliateDetailController implements Serializable {
             getRb().setProperty("cbTerms", rec.getCbTerms());
             getRb().setProperty("ibvOnGiftCard", rec.isIbvOnGiftCard() ? "1" : "0");
 
-            getRb().callMethod("setAffiliateDetailRec");
+            getRb().callMethod("setAffiliateDetail");
             String errStat = getRb().getProperty("errStat");
             String errCode = getRb().getProperty("errCode");
             String errMsg = getRb().getProperty("errMsg");

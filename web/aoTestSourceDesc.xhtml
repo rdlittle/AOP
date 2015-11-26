@@ -20,6 +20,7 @@
                 </span>
 
                 <h:form id="form">
+                    <p:growl id="msgs" showDetail="true"/>
                     <p:panelGrid style="width: 25%; margin: auto; margin-bottom: 1em;">
                         <p:row>
                             <p:column>
@@ -27,11 +28,12 @@
                             </p:column>
                             <p:column>
                                 <p:selectOneMenu id ="userName" value='#{aopTestBean.userName}' editable="true">
-                                    <p:ajax listener="#{aopTestBean.doLookup(event)}" update=":form:data,vendorId,vendorDiv,storeId"/>
-                                    <p:ajax event="blur" listener="#{aopTestBean.doLookup(event)}" update=":form:data,user,country,commssion,vendorId,vendorDiv,storeId"/>
+                                    <p:ajax event="change" listener="#{aopTestBean.readSourceDesc(event)}" 
+                                            update="@form"
+                                            process="@this"/>
                                     <f:selectItem itemValue = "-1" itemLabel="Select user"/>
                                     <f:selectItems value='#{webDEBean.getValues("PARAMS", "AOP.SOURCE.DESC.CONTROL","1")}'
-                                                   var="user" itemLabel="#{user}"/>
+                                                   var="users" itemValue="#{users}" itemLabel="#{users}"/>
                                 </p:selectOneMenu>
                             </p:column>
                         </p:row>
@@ -41,11 +43,13 @@
                                 <h:outputText value="Country"/>
                             </p:column>
                             <p:column>
-                                <p:selectOneMenu id="baseCountry" value='#{aopTestBean.countryCode}'>
-                                    <p:ajax listener="#{aopTestBean.doLookup(event)}" update=":form:data,vendorId,vendorDiv,storeId"/>
+                                <p:selectOneMenu id="baseCountry" value='#{aopTestBean.countryCode}' disabled='#{aopTestBean.userName eq ""}'>
+                                    <p:ajax listener="#{aopTestBean.readSourceDesc(event)}" 
+                                            process="@this"
+                                            update="@form"/>
                                     <f:selectItem itemValue = "-1" itemLabel="Select country"/>
-                                    <f:selectItems value='#{webDEBean.getKeyValues("COUNTRY", "", "0", "1")}' 
-                                                   var = "countryItem" itemValue="#{countryItem.key}" itemLabel="#{countryItem.value}"/>
+                                    <f:selectItems value="#{aopTestBean.allCountries}" 
+                                                   var = "countryItem" itemValue="#{countryItem}" itemLabel="#{countryItem}"/>
                                 </p:selectOneMenu>
                             </p:column>
                         </p:row>
@@ -55,11 +59,13 @@
                                 <h:outputText value="Commission"/>
                             </p:column>
                             <p:column>
-                                <p:selectOneRadio id='commissionType' value='#{aopTestBean.commissionType}'>
-                                    <p:ajax listener="#{aopTestBean.doLookup(event)}" update=":form:data,vendorId,vendorDiv,storeId"/>
-                                    <f:selectItem itemLabel="Percentage" itemValue="P"/>
-                                    <f:selectItem itemLabel="Fixed Rate" itemValue="F"/>
-                                </p:selectOneRadio>
+                                <p:selectOneListbox id='commissionType' value='#{aopTestBean.commissionType}' 
+                                                    disabled='#{aopTestBean.countryCode eq ""}'>
+                                    <p:ajax listener="#{aopTestBean.readSourceDesc(event)}" 
+                                            process="@this"
+                                            update="@form"/>
+                                    <f:selectItems value="#{aopTestBean.commissionDescriptions}" var="c" itemLabel="#{c}" itemValue="#{c}"/>
+                                </p:selectOneListbox>
                             </p:column>
                         </p:row>
 
@@ -69,12 +75,13 @@
                             </p:column>
                             <p:column>
                                 <p:selectOneMenu id="vendorId" 
-                                                 value="#{aopTestBean.vendorId}">
+                                                 value="#{aopTestBean.vendorId}"
+                                                 disabled='#{aopTestBean.commissionType eq ""}'>
                                     <f:selectItems value="#{affiliateMasterBean.affiliateMasterList}" var="vendor" 
                                                    itemLabel="#{vendor.value}"
                                                    itemValue="#{vendor.key}">
                                     </f:selectItems>
-                                    <p:ajax listener="#{aopTestBean.changeVendor()}" update="vendorDiv,storeId"/>
+                                    <p:ajax listener="#{aopTestBean.onChangeVendor()}" update="@form"/>
                                 </p:selectOneMenu>
                             </p:column>
                         </p:row>
@@ -84,7 +91,8 @@
                                 <h:outputText value="Division"/>
                             </p:column>
                             <p:column>
-                                <p:selectOneMenu id="vendorDiv" value="#{aopTestBean.vendorDiv}">
+                                <p:selectOneMenu id="vendorDiv" value="#{aopTestBean.vendorDiv}"
+                                                 disabled='#{aopTestBean.vendorId eq ""}'>
                                     <f:selectItems value="#{aopTestBean.storeList}" var="stores" 
                                                    itemLabel="#{stores.value}" itemValue="#{stores.key}">
                                     </f:selectItems>
@@ -98,6 +106,15 @@
                             </p:column>
                             <p:column>
                                 <h:outputText id="storeId" value="#{aopTestBean.storeId}"/>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column colspan="2">
+                                <p:commandButton actionListener="#{aopTestBean.onSaveSourceDesc()}"
+                                                 disabled="#{not(aopTestBean.sourceDesc.newRecord) and not(aopTestBean.sourceDesc.changed)}"
+                                                 value="Save" 
+                                                 update="msgs,@form"/>
                             </p:column>
                         </p:row>
 
@@ -149,7 +166,7 @@
                                 </h:outputText>
                             </p:column>  
                             <f:facet name="footer">
-                                <p:commandButton id="deleteButton" value="Delete selected" action="#{aopTestBean.deleteItem}" 
+                                <p:commandButton id="deleteButton" value="Delete selected" action="#{aopTestBean.deleteCustFromSourceDesc}" 
                                                  disabled = "#{aopTestBean.selectedItems.size()==0}"
                                                  update=":form:data"/>
                                 <h:outputText value="PC ID" style="margin-right: 2em;"/>
@@ -162,10 +179,9 @@
                                             style="margin-right: 2em;">
                                     <f:convertDateTime dateStyle="short"/>
                                 </p:calendar>
-                                <p:commandButton value="Add item" action="#{aopTestBean.addItem}" update=":form:data"/>
+                                <p:commandButton value="Add item" action="#{aopTestBean.addCustToSourceDesc}" update="@form,msgs"/>
                             </f:facet>
                         </p:dataTable>
-
                     </p:panel>
                 </h:form>
             </ui:define>

@@ -8,6 +8,7 @@ package com.webfront.beans.testing;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import javax.faces.event.AjaxBehaviorEvent;
 
 /**
  *
@@ -22,11 +23,15 @@ public class AoTestDataGroup {
     private HashMap<String,String> overloadRefund;
     
     private LinkedHashMap<String,AoTestDataUnit> units;
+    private ArrayList<AoTestDataUnit> unitList;
     private boolean multiBatch;
     private boolean changed;
     private boolean addingRow;
     private int row;
     private AoTestDataUnit unit;
+    private AoTestDataUnit selectedUnit;
+    private String rowIndex;
+    private String longText;
     
     public AoTestDataGroup() {
         groupId = "";
@@ -40,6 +45,8 @@ public class AoTestDataGroup {
         row = 0;
         addingRow = false;
         unit = new AoTestDataUnit();
+        unitList = new ArrayList<>();
+        longText = "";
     }
 
     /**
@@ -62,20 +69,38 @@ public class AoTestDataGroup {
     
     public void addRow() {
         setRow(getRow() + 1);
-        addUnit(Integer.toString(getRow()),getUnit());
         unit = new AoTestDataUnit();
+        unitList.add(unit);
         setAddingRow(true);
     }
     
     public void commitRow() {
-        addUnit(Integer.toString(getRow()),getUnit());
-        unit = new AoTestDataUnit();
+        units.put(Integer.toString(getRow()),getUnit());
         setAddingRow(false);
+        setChanged(true);
     }
     
-    public void addUnit(String id, AoTestDataUnit u) {
+    public void addUnit(String id,AoTestDataUnit u) {
         units.put(id, u);
         setChanged(true);
+    }
+    
+    public void onChangeDesc(AjaxBehaviorEvent abe) {
+        setChanged(true);
+    }
+    
+    public void onReset() {
+        units.clear();
+        unitList.clear();
+        row=1;
+        unit = new AoTestDataUnit();
+        setAddingRow(false);
+        setChanged(false);
+    }
+    
+    public void removeRow() {
+        System.out.println(row);
+        this.unit=new AoTestDataUnit();
     }
 
     /**
@@ -221,6 +246,64 @@ public class AoTestDataGroup {
      */
     public void setAddingRow(boolean addingRow) {
         this.addingRow = addingRow;
+    }
+
+    /**
+     * @return the rowIndex
+     */
+    public String getRowIndex() {
+        return rowIndex;
+    }
+
+    /**
+     * @param rowIndex the rowIndex to set
+     */
+    public void setRowIndex(String rowIndex) {
+        this.rowIndex = rowIndex;
+    }
+
+    /**
+     * @return the selectedUnit
+     */
+    public AoTestDataUnit getSelectedUnit() {
+        System.out.println("AoTestDataGroup.getSelectedUnit(): "+selectedUnit.getId());
+        return selectedUnit;
+    }
+
+    /**
+     * @param selectedUnit the selectedUnit to set
+     */
+    public void setSelectedUnit(AoTestDataUnit selectedUnit) {
+        System.out.println("AoTestDataGroup.setSelectedUnit(): "+selectedUnit.getId());
+        this.selectedUnit = selectedUnit;
+    }
+
+    /**
+     * @return the unitList
+     */
+    public ArrayList<AoTestDataUnit> getUnitList() {
+        return unitList;
+    }
+
+    /**
+     * @param unitList the unitList to set
+     */
+    public void setUnitList(ArrayList<AoTestDataUnit> unitList) {
+        this.unitList = unitList;
+    }
+
+    /**
+     * @return the longText
+     */
+    public String getLongText() {
+        return longText;
+    }
+
+    /**
+     * @param longText the longText to set
+     */
+    public void setLongText(String longText) {
+        this.longText = longText;
     }
     
 }
