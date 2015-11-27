@@ -30,7 +30,8 @@
                                                    itemLabel="#{vendor.value}"
                                                    itemValue="#{vendor.key}">
                                     </f:selectItems>
-                                    <p:ajax listener="#{affiliateDetailBean.changeMasterId}" update="@form"/>
+                                    <p:ajax listener="#{affiliateDetailBean.changeMasterId}"/>
+                                    <p:ajax listener="#{affiliateDetail.init()}" update="@form"/>
                                 </p:selectOneMenu>
                             </p:column>
                             <p:column style="width: 20%; vertical-align: middle;">

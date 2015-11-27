@@ -49,6 +49,10 @@ public class AffiliateDetail implements Serializable {
     private String threshhold;
 
     public AffiliateDetail() {
+        this.init();
+    }
+    
+    public final void init() {
         this.id=new String();
         this.affiliateMasterId=new String();
         this.storeName=new String();
@@ -71,7 +75,7 @@ public class AffiliateDetail implements Serializable {
         this.displayIBV=true;
         this.displayCB=true;
         this.ibvOnGiftCard=false;
-        this.threshhold=new String();
+        this.threshhold=new String();        
     }
     
     public void changeAffiliateMaster(AjaxBehaviorEvent event) {
@@ -89,6 +93,7 @@ public class AffiliateDetail implements Serializable {
     public void save() {
         controller.setAffiliateDetail(this);
     }
+    
     public void changeStore(AjaxBehaviorEvent event) {
         AffiliateDetail newStore = getController().getAffiliateDetail(id);
         if(newStore != null) {

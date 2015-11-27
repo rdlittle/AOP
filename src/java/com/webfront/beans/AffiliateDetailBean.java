@@ -55,6 +55,7 @@ public class AffiliateDetailBean implements Serializable {
         setStoreList(new ArrayList<SelectItem>());
         setMinPayList(new ArrayList<SelectItem>());
         setMaxPayList(new ArrayList<SelectItem>());
+        affiliateDetailId = "";
     }
 
     /**
