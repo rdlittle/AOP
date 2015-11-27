@@ -19,36 +19,78 @@
 
                 <h:form id="form">
 
-                    <p:panelGrid columns="3" styleClass="custom">
-                        <h:outputText value="Affiliate Master ID" style="text-align: right;"/>
-                        <p:selectOneMenu id="masterId" value="#{affiliateDetailBean.affiliateMasterId}">
-                            <f:selectItems value="#{affiliateMasterBean.affiliateMasterList}" var="vendor" 
-                                           itemLabel="#{vendor.value}"
-                                           itemValue="#{vendor.key}">
-                            </f:selectItems>
-                            <p:ajax listener="#{affiliateDetailBean.changeMasterId}" update="@form"/>
-                        </p:selectOneMenu>
-                        <h:outputText value=""/>
+                    <p:panelGrid styleClass="custom" style="margin: auto;">
+                        <p:row>
+                            <p:column style="width: 20%;">
+                                <h:outputText value="Affiliate Master ID" style="text-align: right;"/>
+                            </p:column>
+                            <p:column style="width: 60%;">
+                                <p:selectOneMenu id="masterId" value="#{affiliateDetailBean.affiliateMasterId}" style="width: 90%;">
+                                    <f:selectItems value="#{affiliateMasterBean.affiliateMasterList}" var="vendor" 
+                                                   itemLabel="#{vendor.value}"
+                                                   itemValue="#{vendor.key}">
+                                    </f:selectItems>
+                                    <p:ajax listener="#{affiliateDetailBean.changeMasterId}" update="@form"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column style="width: 20%; vertical-align: middle;">
+                                <p:ajaxStatus 
+                                    style="width: 50px; height: 50px; display:block; 
+                                    margin: auto; ">
+                                    <f:facet name="default">
+                                        <h:outputText value="" />
+                                    </f:facet>
 
-                        <h:outputText value="Edit / Add new store" />
-                        <p:selectOneMenu id="storeList" value="#{affiliateDetail.id}">
-                            <f:selectItem itemValue="" itemLabel="Select"/>
-                            <f:selectItems value="#{affiliateDetailBean.storeList}" var="stores"
-                                           itemLabel="#{stores.value}" itemValue="#{stores.key}">
-                            </f:selectItems>
-                            <p:ajax listener="#{affiliateDetail.changeStore}" update="@form"/>
-                            <p:ajax listener="#{campaignBean.changeCampaign}"/>
-                        </p:selectOneMenu>
-                        <h:outputText value=""/>
+                                    <f:facet name="start">
+                                        <p:graphicImage name="/images/loading.gif" width="50" height="50" />
+                                    </f:facet>
 
-                        <h:outputText value="Date Entered"/>
-                        <h:inputText id="createDate" value="#{affiliateDetail.createDate}" readonly="true"/>
-                        <p:selectBooleanCheckbox id="isActive" value="#{affiliateDetail.isActive}" itemLabel="Active" />
+                                    <f:facet name="complete">
+                                        <h:outputText value="" />
+                                    </f:facet>
+                                </p:ajaxStatus>
+                            </p:column>
+                        </p:row>
 
-                        <h:outputText value="Store ID"/>
-                        <h:inputText id="storeId" value="#{affiliateDetail.storeId}"/>
-                        <p:selectBooleanCheckbox id="isTiered" value="#{affiliateDetail.tiered}" itemLabel="Tiered" />
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Edit / Add new store" />
+                            </p:column>
+                            <p:column colspan="2">
+                                <p:selectOneMenu id="storeList" value="#{affiliateDetail.id}" style="width: 50%;">
+                                    <f:selectItem itemValue="" itemLabel="Select"/>
+                                    <f:selectItems value="#{affiliateDetailBean.storeList}" var="stores"
+                                                   itemLabel="#{stores.value}" itemValue="#{stores.key}">
+                                    </f:selectItems>
+                                    <p:ajax listener="#{affiliateDetail.changeStore}" update="@form"/>
+                                    <p:ajax listener="#{campaignBean.changeCampaign}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
 
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Date Entered"/>
+                            </p:column>
+                            <p:column>
+                                <h:inputText id="createDate" value="#{affiliateDetail.createDate}" readonly="true"/>
+                            </p:column>
+                            <p:column>
+                                <p:selectBooleanCheckbox id="isActive" value="#{affiliateDetail.isActive}" itemLabel="Active" />
+                            </p:column>
+                        </p:row>
+                        
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Store ID"/>
+                            </p:column>
+                            <p:column>
+                                <h:inputText id="storeId" value="#{affiliateDetail.storeId}"/>
+                            </p:column>
+                            <p:column>
+                                <p:selectBooleanCheckbox id="isTiered" value="#{affiliateDetail.tiered}" itemLabel="Tiered" />
+                            </p:column>
+                        </p:row>
                     </p:panelGrid>
 
                     <p:panelGrid style="width: 95%; margin: 1.25em auto 1em auto;">
@@ -208,6 +250,7 @@
                         </p:dataTable>
                     </p:panel>
                     <p:commandButton id="btnSubmit" ajax="false" actionListener="#{affiliateDetail.save}" value="Submit"/>
+
                 </h:form>
 
             </ui:define>
