@@ -10,6 +10,7 @@ import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.model.Campaign;
 import com.webfront.model.AffiliateDetail;
+import com.webfront.util.JSFHelper;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -86,7 +87,7 @@ public class CampaignBean {
                 String errCode = rb.getProperty("errCode").toString();
                 String errMsg = rb.getProperty("errMsg").toString();
                 if (errStat.equals("-1")) {
-
+                    JSFHelper.sendFacesMessage(errCode+" "+errMsg);
                 } else {
                     int rows = Integer.valueOf(rb.getProperty("campaignCount").toString());
                     if (rows > 0) {
@@ -314,6 +315,10 @@ public class CampaignBean {
 
     public void createCampaign() {
         setNewCampaign(true);
+    }
+    
+    public void onCampaignCancel() {
+        setNewCampaign(false);
     }
 
     public void saveCampaign() {

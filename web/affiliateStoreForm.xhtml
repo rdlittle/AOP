@@ -278,8 +278,12 @@
                         </p:commandLink>
                         <p:commandLink id="saveCampaignLink" actionListener="#{campaignBean.saveCampaign}" 
                                        rendered="#{campaignBean.newCampaign}" ajax="true" update="campaignGrid @this @form">
-                            <h:outputText value="Save new campaign"/>
-                        </p:commandLink>                        
+                            <h:outputText value="Save"/>
+                        </p:commandLink>  
+                        <p:commandLink id="cancelButton" actionListener="#{campaignBean.onCampaignCancel}"
+                                       rendered="#{campaignBean.newCampaign}" ajax="true" update="campaignGrid @this @form">
+                            <h:outputText value="Cancel" style="margin-left: 20px;"/>
+                        </p:commandLink>
                         <p:panelGrid id="campaignGrid" styleClass="custom" columns="6" style="width: 75%; margin: auto;">    
                             <h:outputLabel for="campaignStart" value="Start Date" rendered="#{campaignBean.newCampaign}"/>
                             <p:calendar id="campaignStart" value="#{campaignBean.campaignStart}" rendered="#{campaignBean.newCampaign}"/>
