@@ -16,6 +16,7 @@ import com.webfront.model.SelectItem;
 import com.webfront.model.UnitTestLog;
 import com.webfront.model.UnitTestLogData;
 import com.webfront.model.UnitTestSuite;
+import com.webfront.util.JSFHelper;
 import com.webfront.util.MVUtils;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -29,7 +30,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
-import javax.faces.application.FacesMessage.Severity;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -109,8 +109,6 @@ public class AopTestingBean implements Serializable {
     private AoTestDataUnit selectedDataUnit;
     private AoTestDataGroup selectedTestDataGroup;
 
-    HashMap<String, Severity> messageMap;
-
     public AopTestingBean() {
         groupId = "";
         sourceDesc = new AopSourceDesc();
@@ -161,12 +159,6 @@ public class AopTestingBean implements Serializable {
         errorList.add(new SelectItem("103", "Duplicate order"));
         countryPickList = new DualListModel<>();
         allCountries = new ArrayList<>();
-
-        messageMap = new HashMap<>();
-        messageMap.put("Error", FacesMessage.SEVERITY_ERROR);
-        messageMap.put("Warning", FacesMessage.SEVERITY_WARN);
-        messageMap.put("Info", FacesMessage.SEVERITY_INFO);
-        messageMap.put("Fatal", FacesMessage.SEVERITY_FATAL);
     }
 
     public void addUnit() {
@@ -324,9 +316,9 @@ public class AopTestingBean implements Serializable {
             errCode = rbo.getProperty("svrCtrlCode");
             errMessage = rbo.getProperty("svrMessage");
             if (errStatus == -1) {
-                sendFacesMessage(errCode + ": " + errMessage, "Error");
+                JSFHelper.sendFacesMessage(errCode + ": " + errMessage, "Error");
             } else {
-                sendFacesMessage("Customer sucessfully added.");
+                JSFHelper.sendFacesMessage("Customer sucessfully added.");
                 sourceDesc.setPcId("");
                 sourceDesc.setOrderTotal("");
                 readSourceDesc(null);
@@ -356,34 +348,15 @@ public class AopTestingBean implements Serializable {
             errCode = rbo.getProperty("svrCtrlCode");
             errMessage = rbo.getProperty("svrMessage");
             if (errStatus == -1) {
-                sendFacesMessage(errCode + ": " + errMessage, "Error");
+                JSFHelper.sendFacesMessage(errCode + ": " + errMessage, "Error");
             } else {
-                sendFacesMessage("Customer successully removed");
+                JSFHelper.sendFacesMessage("Customer successully removed");
                 selectedItems.clear();
                 readSourceDesc(null);
             }
         } catch (RbException ex) {
             System.out.println(ex.toString());
         }
-    }
-
-    public void sendFacesMessage(String errMsg) {
-        sendFacesMessage(errMsg, "");
-    }
-
-    public void sendFacesMessage(String errMsg, String errorType) {
-        if (errorType.isEmpty()) {
-            errorType = "Info";
-        }
-        if (!messageMap.containsKey(errorType)) {
-            errorType = "Error";
-        }
-        FacesMessage facesMsg = new FacesMessage();
-        facesMsg.setDetail(errMsg);
-        facesMsg.setSummary(errorType);
-        facesMsg.setSeverity(messageMap.get(errorType));
-        FacesContext fc = FacesContext.getCurrentInstance();
-        fc.addMessage(null, facesMsg);
     }
 
     public void removeUnitFromGroup() {
@@ -406,9 +379,9 @@ public class AopTestingBean implements Serializable {
             errCode = rbo.getProperty("svrCtrlCode");
             errMessage = rbo.getProperty("svrMessage");
             if (errStatus == -1) {
-                sendFacesMessage(errCode + ": " + errMessage, "Error");
+                JSFHelper.sendFacesMessage(errCode + ": " + errMessage, "Error");
             } else {
-                sendFacesMessage("Data unit successfully deleted");
+                JSFHelper.sendFacesMessage("Data unit successfully deleted");
                 dataUnitList.removeAll(selectedUnitList);
                 selectedUnitList.clear();
             }
@@ -430,9 +403,9 @@ public class AopTestingBean implements Serializable {
             errCode = rbo.getProperty("errCode");
             errMessage = rbo.getProperty("errMsg");
             if (errStatus == -1) {
-                sendFacesMessage(errCode + ": " + errMessage, "Error");
+                JSFHelper.sendFacesMessage(errCode + ": " + errMessage, "Error");
             } else {
-                sendFacesMessage("Update successful");
+                JSFHelper.sendFacesMessage("Update successful");
             }
         } catch (RbException ex) {
             System.out.println(ex.toString());
@@ -458,9 +431,9 @@ public class AopTestingBean implements Serializable {
             errCode = rbo.getProperty("svrCtrlCode");
             errMessage = rbo.getProperty("svrMessage");
             if (errStatus == -1) {
-                sendFacesMessage(errCode + ": " + errMessage, "Error");
+                JSFHelper.sendFacesMessage(errCode + ": " + errMessage, "Error");
             } else {
-                sendFacesMessage("Update successful");
+                JSFHelper.sendFacesMessage("Update successful");
                 UniDynArray keys = rbo.getPropertyToDynArray("groupId");
                 UniDynArray values = rbo.getPropertyToDynArray("groupDesc");
                 int valueCount = keys.dcount(1);
@@ -500,7 +473,7 @@ public class AopTestingBean implements Serializable {
             errCode = rbo.getProperty("svrCtrlCode");
             errMessage = rbo.getProperty("svrMessage");
             if (errStatus == -1) {
-                sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
+                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
             } else {
                 UniDynArray unitId = rbo.getPropertyToDynArray("unitId");
                 UniDynArray unitDesc = rbo.getPropertyToDynArray("unitDesc");
@@ -545,7 +518,7 @@ public class AopTestingBean implements Serializable {
             errCode = rbo.getProperty("svrCtrlCode");
             errMessage = rbo.getProperty("svrMessage");
             if (errStatus == -1) {
-                sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
+                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
             } else {
                 LinkedHashMap<String, AoTestDataUnit> unitMap = new LinkedHashMap<>();
                 HashMap<String, String> batchMap = new HashMap<>();
@@ -619,7 +592,7 @@ public class AopTestingBean implements Serializable {
             passSeries.set("%", 0);
             failSeries.set("%", 0);
             if (errStatus == -1) {
-                sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
+                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
             } else {
                 UniDynArray ids = rb.getPropertyToDynArray("utLogId");
                 UniDynArray names = rb.getPropertyToDynArray("utName");
@@ -665,7 +638,7 @@ public class AopTestingBean implements Serializable {
             errCode = rb.getProperty("errCode");
             errMessage = rb.getProperty("errMsg");
             if (errStatus == -1) {
-                sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
+                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
             } else {
                 log = new UnitTestLog();
                 log.setLogId(rb.getProperty("utLogId"));
@@ -743,7 +716,7 @@ public class AopTestingBean implements Serializable {
             errCode = vendorRbo.getProperty("svrCtrlCode");
             errMessage = vendorRbo.getProperty("svrMessage");
             if (errStatus == -1) {
-                sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
+                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
             } else {
                 UniDynArray keys = vendorRbo.getPropertyToDynArray("keyList");
                 UniDynArray values = vendorRbo.getPropertyToDynArray("valueList");
@@ -777,13 +750,13 @@ public class AopTestingBean implements Serializable {
             errCode = rbo.getProperty("svrCtrlCode");
             errMessage = rbo.getProperty("svrMessage");
             if (errStatus == -1) {
-                sendFacesMessage("Error: [" + errCode + "] " + errMessage,"Error");
+                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage,"Error");
             } else {
                 selectedTestDataGroup = new AoTestDataGroup();
                 groupList.remove(groupId);
                 groupId = "-1";
                 getTestDataGroups();
-                sendFacesMessage("Data group successfully deleted");
+                JSFHelper.sendFacesMessage("Data group successfully deleted");
             }
         } catch (RbException ex) {
             Logger.getLogger(AopTestingBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -813,11 +786,11 @@ public class AopTestingBean implements Serializable {
             errCode = rbo.getProperty("svrCtrlCode");
             errMessage = rbo.getProperty("svrMessage");
             if (errStatus == -1) {
-                sendFacesMessage("Error: [" + errCode + "] " + errMessage,"Error");
+                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage,"Error");
             } else {
                 groupId = rbo.getProperty("groupId");
                 selectedTestDataGroup.setChanged(false);
-                sendFacesMessage("Data group successfully saved");
+                JSFHelper.sendFacesMessage("Data group successfully saved");
             }
         } catch (RbException ex) {
             Logger.getLogger(AopTestingBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -862,9 +835,9 @@ public class AopTestingBean implements Serializable {
             errCode = rbo.getProperty("svrCtrlCode");
             errMessage = rbo.getProperty("svrMessage");
             if (errStatus == -1) {
-                sendFacesMessage("Error: [" + errCode + "] " + errMessage,"Error");
+                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage,"Error");
             } else {
-                sendFacesMessage("Saved successfully");
+                JSFHelper.sendFacesMessage("Saved successfully");
                 sourceDesc.setNewRecord(false);
                 sourceDesc.setChanged(false);
             }
@@ -898,7 +871,7 @@ public class AopTestingBean implements Serializable {
             errCode = rb.getProperty("errCode");
             errMessage = rb.getProperty("errMsg");
             if (errStatus == -1) {
-                sendFacesMessage("Error: [" + errCode + "] " + errMessage,"Error");
+                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage,"Error");
             } else {
                 UniDynArray ids = rb.getPropertyToDynArray("utLogId");
                 UniDynArray names = rb.getPropertyToDynArray("utName");
@@ -926,7 +899,7 @@ public class AopTestingBean implements Serializable {
             errCode = rb.getProperty("errCode");
             errMessage = rb.getProperty("errMsg");
             if (errStatus == -1) {
-                sendFacesMessage("Error: [" + errCode + "] " + errMessage,"Error");
+                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage,"Error");
             } else {
                 UniDynArray utSuiteIdList = rb.getPropertyToDynArray("suiteId");
                 UniDynArray utDescList = rb.getPropertyToDynArray("utDate");
@@ -957,7 +930,7 @@ public class AopTestingBean implements Serializable {
             if (errStatus == -1) {
                 errCode = rbo.getProperty("svrCtrlCode");
                 errMessage = rbo.getProperty("svrmessage");
-                sendFacesMessage("Error: [" + errCode + "] " + errMessage,"Error");
+                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage,"Error");
             } else {
                 UniDynArray oList1 = rbo.getPropertyToDynArray("batchId");
                 UniDynArray oList2 = rbo.getPropertyToDynArray("queueId");

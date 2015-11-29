@@ -15,57 +15,71 @@
             </ui:define>
 
             <ui:define name="content">
-                <span style="width: 99%; text-align: center; margin: 2em auto;">
+                <span style="width: 99%; text-align: center; margin: auto;">
                     <h2>Affiliate Network Management</h2>
                 </span>
+
                 <h:form id="networkForm">
-                    <h:selectOneMenu id="network" value="#{affiliateNetworkBean.networkId}">
-                        <p:ajax listener="#{affiliateNetworkBean.onChangeNetwork(null)}" update="members"/>
-                        <f:selectItem itemValue="-1" itemLabel="Select network"/>
-                        <f:selectItems value="#{affiliateNetworkBean.networkList}" var="network" 
-                                       itemLabel="#{network.value}"
-                                       itemValue="#{network.key}">
-                        </f:selectItems>
-                    </h:selectOneMenu> 
+                    <p:panelGrid styleClass="custom" style="width: 45%; margin: 2em auto 2em auto;">
+                        <p:row>
+                            <p:column>
+                                <h:selectOneMenu id="network" value="#{affiliateNetworkBean.networkId}">
+                                    <p:ajax listener="#{affiliateNetworkBean.onChangeNetwork(null)}" update="@form"/>
+                                    <f:selectItem itemValue="-1" itemLabel="Select network"/>
+                                    <f:selectItems value="#{affiliateNetworkBean.networkList}" var="network" 
+                                                   itemLabel="#{network.value}"
+                                                   itemValue="#{network.key}">
+                                    </f:selectItems>
+                                </h:selectOneMenu> 
+                            </p:column>
+
+                            <p:column>
+                                <p:selectOneMenu id="affiliateSelector" value="#{affiliateNetworkBean.masterId}">
+                                    <p:ajax listener="#{affiliateNetworkBean.onChangeVendor}" 
+                                            update="@form"/>
+                                    <f:selectItem itemLabel="Select affiliate" itemValue="-1"/>
+                                    <f:selectItems value="#{affiliateNetworkBean.unassignedMembers}" var="affiliate"
+                                                   itemLabel="#{affiliate.value}"
+                                                   itemValue="#{affiliate.key}">
+                                    </f:selectItems>
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column>
+                                <p:commandButton id="addVendor" value="Add Affiliate" 
+                                                 style="margin-left: auto; margin-right: auto;"
+                                                 disabled='#{affiliateNetworkBean.masterId.equals("-1")}'>
+                                    <p:ajax listener="#{affiliateNetworkBean.onAddMember}" update="@form"/>
+                                </p:commandButton>
+                            </p:column>
+                            <p:column>
+                                <p:commandButton id="deleteVendor" value="Delete" 
+                                                 actionListener="#{affiliateNetworkBean.onDeleteMember()}"
+                                                 update="@form"
+                                                 disabled="#{!affiliateNetworkBean.selected}"/>                                            
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+
                     <p:dataTable id="members" 
                                  value="#{affiliateNetworkBean.members}"
                                  var="member"
-                                 style="width: 75%;"
                                  rowKey="#{member.value}"
                                  selectionMode="single"
-                                 selection="#{affiliateNetworkBean.selectedItem}">
-                        <p:ajax event="rowSelect" listener="#{affiliateNetworkBean.onRowSelect}" update="deleteVendor"/>
-                        <p:ajax event="rowUnselect" listener="#{affiliateNetworkBean.onRowUnselect}" update="deleteVendor"/>
+                                 selection="#{affiliateNetworkBean.selectedItem}"
+                                 style="width: 80%; margin: auto;">
+                        <p:ajax event="rowSelect" listener="#{affiliateNetworkBean.onRowSelect}" update="@form:deleteVendor"/>
+                        <p:ajax event="rowUnselect" listener="#{affiliateNetworkBean.onRowUnselect}" update="@form:deleteVendor"/>
                         <p:column headerText="ID">
                             <h:outputText value="#{member.key}"/>
                         </p:column>
-                        <p:column headerText="Name">
+                        <p:column headerText="Name" colspan="2">
                             <h:outputText value="#{member.value}"/>
                         </p:column>
-                        <f:facet name="footer">
-                            <p:commandButton id="deleteVendor" value="Delete" 
-                                             actionListener="#{affiliateNetworkBean.onDeleteMember()}"
-                                             update="members,deleteVendor"
-                                             disabled="#{!affiliateNetworkBean.selected}" 
-                                             style="margin-left: 1em; margin-right: 1em;"/>
-                            
-                            <p:selectOneMenu id="affiliateSelector" value="#{affiliateNetworkBean.masterId}">
-                                <p:ajax listener="#{affiliateNetworkBean.onChangeVendor}" update="members,addVendor"/>
-                                <f:selectItem itemLabel="Select affiliate" itemValue="-1"/>
-                                <f:selectItems value="#{affiliateNetworkBean.unassignedMembers}" var="affiliate"
-                                               itemLabel="#{affiliate.value}"
-                                               itemValue="#{affiliate.key}">
-                                </f:selectItems>
-                            </p:selectOneMenu>
 
-                            <p:commandButton id="addVendor" value="Add Affiliate" 
-                                             style="margin-left: auto; margin-right: auto;"
-                                             disabled='#{affiliateNetworkBean.masterId.equals("-1")}'>
-                                <p:ajax listener="#{affiliateNetworkBean.onAddMember}" update="members,deleteVendor"/>
-                            </p:commandButton>
-                        </f:facet>
                     </p:dataTable>
+                    
                 </h:form>
+
             </ui:define>
 
         </ui:composition>
