@@ -35,7 +35,7 @@ public class AffiliateDetailBean implements Serializable {
     private ArrayList<SelectItem> storeList;
     private ArrayList<SelectItem> minPayList;
     private ArrayList<SelectItem> maxPayList;
-    
+
     private UISelectItems selItems;
     private boolean ordersOnly;
 
@@ -43,8 +43,8 @@ public class AffiliateDetailBean implements Serializable {
      * @return the storeList
      */
     public ArrayList<SelectItem> getStoreList() {
-        if(storeList==null || storeList.isEmpty()) {
-            if(affiliateMasterId!=null) {
+        if (storeList == null || storeList.isEmpty()) {
+            if (affiliateMasterId != null) {
                 setStoreList(null);
             }
         }
@@ -63,23 +63,23 @@ public class AffiliateDetailBean implements Serializable {
      */
     public void setStoreList(ArrayList<SelectItem> storeList) {
         RedObject rb = new RedObject("WDE", "Affiliates:Detail");
-        if(this.storeList != null) {
-            if(!this.storeList.isEmpty()) {
+        if (this.storeList != null) {
+            if (!this.storeList.isEmpty()) {
                 this.storeList.clear();
             }
         }
         rb.setProperty("masterId", affiliateMasterId);
-        if(isOrdersOnly()) {
+        if (isOrdersOnly()) {
             rb.setProperty("ordersOnly", "1");
-        }        
+        }
         try {
             rb.callMethod("getAffiliateDetailList");
             String errStat = rb.getProperty("svrStatus");
             String errCode = rb.getProperty("svrCtrlCode");
             String errMsg = rb.getProperty("svrMessage");
-            if(errStat.equals("-1")) {
+            if (errStat.equals("-1")) {
                 FacesContext ctx = FacesContext.getCurrentInstance();
-                String msg = "Error code "+errCode+": "+errMsg;
+                String msg = "Error code " + errCode + ": " + errMsg;
                 ctx.addMessage("msg", new FacesMessage(msg));
                 return;
             }
@@ -96,8 +96,6 @@ public class AffiliateDetailBean implements Serializable {
         }
         this.storeList = storeList;
     }
-    
-    
 
     /**
      * @return the affiliateMasterId
@@ -151,10 +149,10 @@ public class AffiliateDetailBean implements Serializable {
             UniDynArray keys = rb.getPropertyToDynArray("keyList");
             UniDynArray values = rb.getPropertyToDynArray("valueList");
             int vals = keys.dcount(1);
-            for(int val=1; val<=vals; val++) {
-                String key=keys.extract(1, val).toString();
-                String value=values.extract(1, val).toString();
-                minPayList.add(new SelectItem(key,value));
+            for (int val = 1; val <= vals; val++) {
+                String key = keys.extract(1, val).toString();
+                String value = values.extract(1, val).toString();
+                minPayList.add(new SelectItem(key, value));
             }
         } catch (RbException ex) {
             Logger.getLogger(AffiliateDetailBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -186,11 +184,11 @@ public class AffiliateDetailBean implements Serializable {
             UniDynArray keys = rb.getPropertyToDynArray("keyList");
             UniDynArray values = rb.getPropertyToDynArray("valueList");
             int vals = keys.dcount(1);
-            for(int val=1; val<=vals; val++) {
-                String key=keys.extract(1, val).toString();
-                String value=values.extract(1, val).toString();
-                maxPayList.add(new SelectItem(key,value));
-            }            
+            for (int val = 1; val <= vals; val++) {
+                String key = keys.extract(1, val).toString();
+                String value = values.extract(1, val).toString();
+                maxPayList.add(new SelectItem(key, value));
+            }
         } catch (RbException ex) {
             Logger.getLogger(AffiliateDetailBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -202,12 +200,13 @@ public class AffiliateDetailBean implements Serializable {
         rbo.setProperty("id", getAffiliateDetailId());
         try {
             rbo.callMethod("getDetail");
-            String str=rbo.getProperty("storeName");
-            this.storeName=str;
+            String str = rbo.getProperty("storeName");
+            this.storeName = str;
         } catch (RbException ex) {
             Logger.getLogger(AffiliateDetailBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
     /**
      * @return the storeName
      */

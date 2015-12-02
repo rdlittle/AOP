@@ -53,29 +53,29 @@ public class AffiliateDetail implements Serializable {
     }
     
     public final void init() {
-        this.id=new String();
-        this.affiliateMasterId=new String();
-        this.storeName=new String();
-        this.subVendorId=new String();
-        this.createDate=new String();
-        this.storeId=new String();
-        this.tieredCommissionKeys=new String();
-        this.siteCountry=new String();
-        this.defaultCommission=new String();
-        this.defaultCommissionType=new String();
-        this.defaultIBV=new String();
-        this.isActive=true;
-        this.ibvTermsId=new String();
-        this.cbTermsId=new String();
-        this.cbExclude=false;
-        this.minPay=new String();
-        this.maxPay=new String();
-        this.ibvTerms=new String();
-        this.cbTerms=new String();
-        this.displayIBV=true;
-        this.displayCB=true;
-        this.ibvOnGiftCard=false;
-        this.threshhold=new String();        
+        id="";
+        affiliateMasterId="";
+        storeName="";
+        subVendorId="";
+        createDate="";
+        storeId="";
+        tieredCommissionKeys="";
+        siteCountry="";
+        defaultCommission="";
+        defaultCommissionType="";
+        defaultIBV="";
+        isActive=true;
+        ibvTermsId="";
+        cbTermsId="";
+        cbExclude=false;
+        minPay="";
+        maxPay="";
+        ibvTerms="";
+        cbTerms="";
+        displayIBV=true;
+        displayCB=true;
+        ibvOnGiftCard=false;
+        threshhold="";        
     }
     
     public void changeAffiliateMaster(AjaxBehaviorEvent event) {

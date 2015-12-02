@@ -19,11 +19,7 @@ public class JSFHelper {
     private static HashMap<String, Severity> messageMap;
 
     public JSFHelper() {
-        messageMap = new HashMap<>();
-        messageMap.put("Error", FacesMessage.SEVERITY_ERROR);
-        messageMap.put("Warning", FacesMessage.SEVERITY_WARN);
-        messageMap.put("Info", FacesMessage.SEVERITY_INFO);
-        messageMap.put("Fatal", FacesMessage.SEVERITY_FATAL);
+
     }
 
     public static void sendFacesMessage(String errMsg) {
@@ -34,6 +30,9 @@ public class JSFHelper {
         if (errorType.isEmpty()) {
             errorType = "Info";
         }
+        if(messageMap == null) {
+            setMessageMap();
+        }
         if (!messageMap.containsKey(errorType)) {
             errorType = "Error";
         }
@@ -43,6 +42,16 @@ public class JSFHelper {
         facesMsg.setSeverity(messageMap.get(errorType));
         FacesContext fc = FacesContext.getCurrentInstance();
         fc.addMessage(null, facesMsg);
+    }
+
+    private static void setMessageMap() {
+        if (messageMap == null) {
+            messageMap = new HashMap<>();
+            messageMap.put("Error", FacesMessage.SEVERITY_ERROR);
+            messageMap.put("Warning", FacesMessage.SEVERITY_WARN);
+            messageMap.put("Info", FacesMessage.SEVERITY_INFO);
+            messageMap.put("Fatal", FacesMessage.SEVERITY_FATAL);
+        }
     }
 
 }

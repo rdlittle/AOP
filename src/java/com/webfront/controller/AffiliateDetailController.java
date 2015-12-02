@@ -94,7 +94,7 @@ public class AffiliateDetailController implements Serializable {
             newStore.setDisplayCB("1".equals(getRb().getProperty("displayCB")));
             newStore.setThreshhold(getRb().getProperty("threshhold"));
             newStore.setIbvOnGiftCard("1".equals(getRb().getProperty("ibvOnGiftCard")));
-            System.out.println(newStore.toString());
+            System.out.println("AffiliateDetailController.getAffiliateDetail(): "+newStore.toString());
         } catch (RbException rbe) {
             Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, rbe);
         }

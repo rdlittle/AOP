@@ -9,7 +9,7 @@ import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.model.Campaign;
-import com.webfront.model.AffiliateDetail;
+import com.webfront.model.SelectItem;
 import com.webfront.util.JSFHelper;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.application.FacesMessage.Severity;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
@@ -36,8 +35,6 @@ import org.primefaces.event.UnselectEvent;
 @SessionScoped
 public class CampaignBean {
 
-    @ManagedProperty(value = "#{affiliateDetail}")
-    private AffiliateDetail detail;
     private ArrayList<Campaign> list;
     private List<Campaign> list2;
     private Campaign activeCampaign;
@@ -49,15 +46,30 @@ public class CampaignBean {
     private Date campaignEnd;
     private boolean newCampaign;
     private String newCashback;
+    private final ArrayList<SelectItem> campaignScope;
+    private final ArrayList<SelectItem> storeList;
+    private String scope;
 
     public CampaignBean() {
-        this.list = new ArrayList<>();
-        this.activeCampaign = new Campaign();
-        this.affiliateMasterId = new String();
-        this.affiliateDetailId = new String();
-        this.calendar = Calendar.getInstance();
-        this.newCampaign = false;
-        this.list = new ArrayList<>();
+        list = new ArrayList<>();
+        activeCampaign = new Campaign();
+        affiliateMasterId = new String();
+        affiliateDetailId = new String();
+        calendar = Calendar.getInstance();
+        newCampaign = false;
+        list = new ArrayList<>();
+        storeList = new ArrayList<>();
+        campaignScope = new ArrayList<>();
+        campaignScope.add(new SelectItem("C", "Current/Future"));
+        campaignScope.add(new SelectItem("H", "Past"));
+        campaignScope.add(new SelectItem("A", "All"));
+        scope = "C";
+    }
+    
+    public void init() {
+        affiliateMasterId="";
+        affiliateDetailId="";
+        list.clear();
     }
 
     /**
@@ -65,31 +77,76 @@ public class CampaignBean {
      */
     public ArrayList<Campaign> getList() {
         if (list != null && list.isEmpty()) {
-            setList(new ArrayList<Campaign>());
+            setList();
         }
         return list;
     }
 
-    /**
-     * @param campaignList the list to set
+   /**
+     * @return the storeList
      */
-    public void setList(ArrayList<Campaign> campaignList) {
-        if (this.detail != null && !this.detail.getId().isEmpty()) {
+    public ArrayList<SelectItem> getStoreList() {
+        RedObject rb = new RedObject("WDE", "Affiliates:Detail");
+        if (storeList != null) {
+            if (!storeList.isEmpty()) {
+                storeList.clear();
+            }
+        }
+        rb.setProperty("masterId", affiliateMasterId);
+        try {
+            rb.callMethod("getAffiliateDetailList");
+            String errStat = rb.getProperty("svrStatus");
+            String errCode = rb.getProperty("svrCtrlCode");
+            String errMsg = rb.getProperty("svrMessage");
+            if (errStat.equals("-1")) {
+                JSFHelper.sendFacesMessage(errCode+" "+errMsg);
+            } else {
+                UniDynArray keys = rb.getPropertyToDynArray("keyList");
+                UniDynArray values = rb.getPropertyToDynArray("valueList");
+                int vals = keys.dcount(1);
+                for (int val = 1; val <= vals; val++) {
+                    String key = keys.extract(1, val).toString();
+                    String value = values.extract(1, val).toString();
+                    storeList.add(new SelectItem(key, value));
+                }
+            }
+        } catch (RbException ex) {
+            Logger.getLogger(AffiliateDetailBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return storeList;
+    }
+    
+    public void setList() {
+        SimpleDateFormat dFmt = new SimpleDateFormat("MM/dd/yyyy");
+        list.clear();
+        if (affiliateMasterId != null && !affiliateMasterId.isEmpty()) {
+            
             RedObject rb = new RedObject("WDE", "AOP:Cashback");
-            String sid = detail.getId();
+            String sid = affiliateDetailId;
             int idx = sid.indexOf("*");
-            String ssid = sid.substring(idx + 1);
-            rb.setProperty("affiliateMasterId", detail.getAffiliateMasterId());
+            String ssid = "";
+            if (idx != 0) {
+                ssid = sid.substring(idx + 1);
+            }
+            rb.setProperty("affiliateMasterId", affiliateMasterId);
             rb.setProperty("affiliateDetailId", ssid);
+            rb.setProperty("campaignScope", scope);
+            if (campaignStart != null) {
+                String sd = dFmt.format(campaignStart);
+                rb.setProperty("startDate", dFmt.format(campaignStart));
+            }
+            if (campaignEnd != null) {
+                rb.setProperty("endDate", dFmt.format(campaignEnd));
+            }
             try {
                 rb.callMethod("getCampaignHist");
-                String errStat = rb.getProperty("errStat").toString();
-                String errCode = rb.getProperty("errCode").toString();
-                String errMsg = rb.getProperty("errMsg").toString();
+                String errStat = rb.getProperty("svrStatus");
+                String errCode = rb.getProperty("svrCtrlCode");
+                String errMsg = rb.getProperty("svrMessage");
                 if (errStat.equals("-1")) {
-                    JSFHelper.sendFacesMessage(errCode+" "+errMsg);
+                    JSFHelper.sendFacesMessage(errCode + " " + errMsg);
                 } else {
-                    int rows = Integer.valueOf(rb.getProperty("campaignCount").toString());
+                    int rows = Integer.valueOf(rb.getProperty("campaignCount"));
                     if (rows > 0) {
                         UniDynArray idList = rb.getPropertyToDynArray("id");
                         UniDynArray cbBase = rb.getPropertyToDynArray("cbBase");
@@ -102,6 +159,8 @@ public class CampaignBean {
                         UniDynArray user = rb.getPropertyToDynArray("user");
                         UniDynArray status = rb.getPropertyToDynArray("status");
                         UniDynArray seqNums = rb.getPropertyToDynArray("seqNum");
+                        UniDynArray storeIds = rb.getPropertyToDynArray("storeId");
+                        UniDynArray storeNames = rb.getPropertyToDynArray("storeName");
                         for (int row = 1; row <= rows; row++) {
                             Campaign campaign = new Campaign();
                             campaign.setId(idList.extract(1, row).toString());
@@ -115,7 +174,9 @@ public class CampaignBean {
                             campaign.setUser(user.extract(1, row).toString());
                             campaign.setStatus(status.extract(1, row).toString());
                             campaign.setSeqNum(seqNums.extract(1, row).toString());
-                            campaignList.add(campaign);
+                            campaign.setStoreId(storeIds.extract(1, row).toString());
+                            campaign.setStoreName(storeNames.extract(1, row).toString());
+                            list.add(campaign);
                         }
                     }
                 }
@@ -123,21 +184,18 @@ public class CampaignBean {
                 Logger.getLogger(CampaignBean.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        this.list = campaignList;
     }
 
     public void changeCampaign(AjaxBehaviorEvent event) {
-        if (this.detail != null) {
-            if (this.affiliateDetailId == null) {
-                this.affiliateDetailId = this.detail.getId();
-            }
-
-            if (!this.affiliateDetailId.equals(this.detail.getId())) {
-                setList(new ArrayList<Campaign>());
-                this.affiliateDetailId = this.detail.getId();
-                this.newCampaign = false;
-            }
+        if (affiliateMasterId != null) {
+            setList();
         }
+    }
+    
+    public void getCampaignList(String masterId, String detailId) {
+        affiliateMasterId = masterId;
+        affiliateDetailId = detailId;
+        setList();
     }
 
     public void deleteCampaign() {
@@ -146,9 +204,9 @@ public class CampaignBean {
             rb.setProperty("id", this.selectedCampaign.getId());
             try {
                 rb.callMethod("deleteCampaign");
-                String errStat = rb.getProperty("errStat").toString();
-                String errCode = rb.getProperty("errCode").toString();
-                String errMsg = rb.getProperty("errMsg").toString();
+                String errStat = rb.getProperty("errStat");
+                String errCode = rb.getProperty("errCode");
+                String errMsg = rb.getProperty("errMsg");
                 FacesMessage fmsg;
                 Severity severity;
                 if (errStat.equals("-1")) {
@@ -158,7 +216,7 @@ public class CampaignBean {
                     severity = FacesMessage.SEVERITY_INFO;
                     errMsg = "Campaign deleted";
                     list.remove(this.selectedCampaign);
-                    this.selectedCampaign=null;
+                    this.selectedCampaign = null;
                 }
                 fmsg = new FacesMessage(errMsg);
                 fmsg.setSeverity(severity);
@@ -174,19 +232,19 @@ public class CampaignBean {
      * @return the activeCampaign
      */
     public Campaign getActiveCampaign() {
-        if (this.detail != null && !this.detail.getId().isEmpty()) {
+        if (affiliateDetailId != null && !affiliateDetailId.isEmpty()) {
             RedObject rb = new RedObject("WDE", "AOP:Cashback");
-            String sid = detail.getId();
+            String sid = affiliateDetailId;
             int idx = sid.indexOf("*");
             String ssid = sid.substring(idx + 1);
-            rb.setProperty("affiliateMasterId", detail.getAffiliateMasterId());
+            rb.setProperty("affiliateMasterId", affiliateMasterId);
             rb.setProperty("affiliateDetailId", ssid);
             this.activeCampaign = new Campaign();
             try {
                 rb.callMethod("getCampaign");
-                String errStat = rb.getProperty("errStat").toString();
-                String errCode = rb.getProperty("errCode").toString();
-                String errMsg = rb.getProperty("errMsg").toString();
+                String errStat = rb.getProperty("errStat");
+                String errCode = rb.getProperty("errCode");
+                String errMsg = rb.getProperty("errMsg");
                 if (errStat.equals("0")) {
                     this.activeCampaign.setCbBase(rb.getProperty("cbBase"));
                     this.activeCampaign.setCbIncrease(rb.getProperty("cbIncrease"));
@@ -206,6 +264,15 @@ public class CampaignBean {
             }
         }
         return this.activeCampaign;
+    }
+    
+    public void onChangeMasterId(AjaxBehaviorEvent evt) {
+        scope="C";
+        getStoreList();
+    }
+    
+    public void onClickListButton() {
+        setList();
     }
 
     /**
@@ -241,20 +308,6 @@ public class CampaignBean {
      */
     public void setAffiliateDetailId(String affiliateDetailId) {
         this.affiliateDetailId = affiliateDetailId;
-    }
-
-    /**
-     * @return the detailBean
-     */
-    public AffiliateDetail getDetail() {
-        return detail;
-    }
-
-    /**
-     * @param detail the IBVDetail to set
-     */
-    public void setDetail(AffiliateDetail detail) {
-        this.detail = detail;
     }
 
     /**
@@ -316,7 +369,7 @@ public class CampaignBean {
     public void createCampaign() {
         setNewCampaign(true);
     }
-    
+
     public void onCampaignCancel() {
         setNewCampaign(false);
     }
@@ -335,11 +388,11 @@ public class CampaignBean {
             String time = timeFmt.format(Calendar.getInstance().getTime());
             campaign.setStartDate(sDate);
             campaign.setEndDate(eDate);
-            String sid = detail.getId();
+            String sid = affiliateDetailId;
             int idx = sid.indexOf("*");
             String ssid = sid.substring(idx + 1);
             RedObject rb = new RedObject("WDE", "AOP:Cashback");
-            rb.setProperty("affiliateMasterId", this.detail.getAffiliateMasterId());
+            rb.setProperty("affiliateMasterId", affiliateMasterId);
             rb.setProperty("affiliateDetailId", ssid);
             rb.setProperty("startDate", sDate);
             rb.setProperty("endDate", eDate);
@@ -361,7 +414,7 @@ public class CampaignBean {
                     FacesContext ctx = FacesContext.getCurrentInstance();
                     ctx.addMessage("msg", fmsg);
                 } else {
-                    setList(new ArrayList<Campaign>());
+                    setList();
                     setNewCampaign(false);
                 }
             } catch (RbException ex) {
@@ -419,17 +472,6 @@ public class CampaignBean {
         this.list2 = list2;
     }
 
-    /*
-     public void onRowSelect(SelectEvent event) {
-     FacesMessage msg = new FacesMessage("Car Selected", ((Car) event.getObject()).getId());
-     FacesContext.getCurrentInstance().addMessage(null, msg);
-     }
- 
-     public void onRowUnselect(UnselectEvent event) {
-     FacesMessage msg = new FacesMessage("Car Unselected", ((Car) event.getObject()).getId());
-     FacesContext.getCurrentInstance().addMessage(null, msg);
-     }
-     */
     public void onRowSelect(SelectEvent event) {
         selectedCampaign = (Campaign) event.getObject();
     }
@@ -437,4 +479,26 @@ public class CampaignBean {
     public void onRowUnselect(UnselectEvent event) {
 
     }
+
+    /**
+     * @return the campaignScope
+     */
+    public ArrayList<SelectItem> getCampaignScope() {
+        return campaignScope;
+    }
+
+    /**
+     * @return the scope
+     */
+    public String getScope() {
+        return scope;
+    }
+
+    /**
+     * @param scope the scope to set
+     */
+    public void setScope(String scope) {
+        this.scope = scope;
+    }
+
 }

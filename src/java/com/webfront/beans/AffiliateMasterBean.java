@@ -53,7 +53,6 @@ public class AffiliateMasterBean implements Serializable {
         networkId = "";
         commType = "";
         countryCode = "";
-        System.out.println("AffiliateMasterBean()");
     }
 
     public void init() {

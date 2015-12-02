@@ -9,7 +9,9 @@
     <body>
 
         <ui:composition template="./layout.xhtml">
-
+            <f:metadata>
+                <f:viewAction action="#{campaignBean.init()}" onPostback="false"/>
+            </f:metadata>
             <ui:define name="content">
                 <span style="width: 99%; text-align: center; margin: 2em auto;">
                     <h2>Vendor And Store Selection</h2>
@@ -64,7 +66,9 @@
                                                    itemLabel="#{stores.value}" itemValue="#{stores.key}">
                                     </f:selectItems>
                                     <p:ajax listener="#{affiliateDetail.changeStore}" update="@form"/>
-                                    <p:ajax listener="#{campaignBean.changeCampaign}"/>
+                                    <p:ajax 
+                                        listener="#{campaignBean.getCampaignList(affiliateDetailBean.affiliateMasterId,affiliateDetail.id)}">
+                                    </p:ajax>
                                 </p:selectOneMenu>
                             </p:column>
                         </p:row>
@@ -204,7 +208,7 @@
                                                 <f:selectItem itemValue="400000" itemLabel="4000.00"/>
                                                 <f:selectItem itemValue="500000" itemLabel="5000.00"/>
                                             </p:selectOneMenu>
-                                            
+
                                         </p:column>
                                     </p:row>
                                 </p:panelGrid>
@@ -310,10 +314,14 @@
                                 <h:outputText value="#{campaign.seqNum}"/>
                             </p:column>                            
                             <p:column headerText="Start Date">
-                                <h:outputText value="#{campaign.startDate}"/>
+                                <h:outputText value="#{campaign.startDate}">
+                                    <f:convertDateTime pattern="MM/dd/yyyy"/>
+                                </h:outputText>
                             </p:column>
                             <p:column headerText="End Date">
-                                <h:outputText value="#{campaign.endDate}"/>
+                                <h:outputText value="#{campaign.endDate}">
+                                    <f:convertDateTime pattern="MM/dd/yyyy"/>
+                                </h:outputText>
                             </p:column> 
                             <p:column headerText="Base CB">
                                 <h:outputText value="#{campaign.cbBase}"/>

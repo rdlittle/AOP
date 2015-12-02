@@ -6,7 +6,11 @@
 
 package com.webfront.model;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  *
@@ -14,8 +18,6 @@ import java.util.HashMap;
  */
 public class Campaign {
     private String id;
-    private String startDate;
-    private String endDate;
     private String status;
     private String cbBase;
     private String cbIncrease;
@@ -28,7 +30,12 @@ public class Campaign {
     private boolean canStop;
     private boolean canDelete;
     private String seqNum;
-
+    private String storeId;
+    private String storeName;
+    private Date startDate;
+    private Date endDate;
+    final SimpleDateFormat dFmt = new SimpleDateFormat("MM/dd/yyyy");
+    
     public Campaign() {
         statusLabels=new HashMap<>();
         statusLabels.put("0","Not Started");
@@ -54,29 +61,29 @@ public class Campaign {
     /**
      * @return the startDate
      */
-    public String getStartDate() {
+    public Date getStartDate() {
         return startDate;
     }
 
     /**
-     * @param startDate the startDate to set
+     * @param date the startDate to set
      */
-    public void setStartDate(String startDate) {
-        this.startDate = startDate;
+    public void setStartDate(String date) {
+        startDate = toDate(date);
     }
 
     /**
      * @return the endDate
      */
-    public String getEndDate() {
+    public Date getEndDate() {
         return endDate;
     }
 
     /**
-     * @param endDate the endDate to set
+     * @param date the endDate to set
      */
-    public void setEndDate(String endDate) {
-        this.endDate = endDate;
+    public void setEndDate(String date) {
+        endDate = toDate(date);
     }
 
     /**
@@ -243,6 +250,47 @@ public class Campaign {
      */
     public void setSeqNum(String seqNum) {
         this.seqNum = seqNum;
+    }
+
+    /**
+     * @return the storeId
+     */
+    public String getStoreId() {
+        return storeId;
+    }
+
+    /**
+     * @param storeId the storeId to set
+     */
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
+    }
+
+    /**
+     * @return the storeName
+     */
+    public String getStoreName() {
+        return storeName;
+    }
+
+    /**
+     * @param storeName the storeName to set
+     */
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
+    }
+   
+    public Date toDate(String strDate) {
+        Calendar cal = Calendar.getInstance(Locale.getDefault());
+        String sd[] = strDate.split("\\/");
+        int mm = Integer.parseInt(sd[0]);
+        int dd = Integer.parseInt(sd[1]);
+        int yy = Integer.parseInt(sd[2]);
+        if(yy<100) {
+            yy += 2000;
+        }
+        cal.set(yy, mm, dd);
+        return cal.getTime();
     }
 
 }
