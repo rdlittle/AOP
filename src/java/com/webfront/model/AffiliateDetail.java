@@ -6,12 +6,9 @@
 
 package com.webfront.model;
 
-import com.webfront.controller.AffiliateDetailController;
 import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
-import javax.faces.event.AjaxBehaviorEvent;
 
 /**
  *
@@ -20,8 +17,7 @@ import javax.faces.event.AjaxBehaviorEvent;
 @ManagedBean
 @SessionScoped
 public class AffiliateDetail implements Serializable {
-    @ManagedProperty(value="#{affiliateDetailController}")
-    private AffiliateDetailController controller;
+    
     private String id;
     private String affiliateMasterId;
     private String storeName;
@@ -30,8 +26,8 @@ public class AffiliateDetail implements Serializable {
     private String storeId;
     private String tieredCommissionKeys;
     private String siteCountry;
-    private String defaultCommission;
-    private String defaultCommissionType;
+    private String commission;
+    private String commissionType;
     private String defaultIBV;
     private boolean isActive;
     private String ibvTermsId;
@@ -61,8 +57,8 @@ public class AffiliateDetail implements Serializable {
         storeId="";
         tieredCommissionKeys="";
         siteCountry="";
-        defaultCommission="";
-        defaultCommissionType="";
+        commission="";
+        commissionType="";
         defaultIBV="";
         isActive=true;
         ibvTermsId="";
@@ -78,64 +74,6 @@ public class AffiliateDetail implements Serializable {
         threshhold="";        
     }
     
-    public void changeAffiliateMaster(AjaxBehaviorEvent event) {
-        
-    }
-    
-    public void changeDetail(AjaxBehaviorEvent event) {
-    
-    }
-    
-    public void ajaxHandler(AjaxBehaviorEvent event) {
-        
-    }
-    
-    public void save() {
-        controller.setAffiliateDetail(this);
-    }
-    
-    public void changeStore(AjaxBehaviorEvent event) {
-        AffiliateDetail newStore = getController().getAffiliateDetail(id);
-        if(newStore != null) {
-            setAffiliateMasterId(newStore.getAffiliateMasterId());
-            setStoreName(newStore.getStoreName());
-            setSubVendorId(newStore.getSubVendorId());
-            setCreateDate(newStore.getCreateDate());
-            setStoreId(newStore.getStoreId());
-            setIsActive(newStore.isActive);
-            setSiteCountry(newStore.getSiteCountry());
-            setCurrencyType(newStore.getCurrencyType());            
-            setDefaultIBV(newStore.defaultIBV);
-            setDefaultCommission(newStore.getDefaultCommission());
-            setDefaultCommissionType(newStore.getDefaultCommissionType());
-            setIbvTermsId(newStore.getIbvTermsId());
-            setCbTermsId(newStore.getCbTermsId());
-            setCbExclude(newStore.isCbExclude());
-            setTieredCommissionKeys(newStore.getTieredCommissionKeys());
-            setIsTiered(newStore.isTiered());
-            setMinPay(newStore.minPay);
-            setMaxPay(newStore.maxPay);
-            setIbvTerms(newStore.getIbvTerms());
-            setCbTerms(newStore.getCbTerms());
-            setDisplayIBV(newStore.displayIBV);
-            setDisplayCB(newStore.displayCB);
-            setThreshhold(newStore.getThreshhold());
-        }
-    }    
-    /**
-     * @return the controller
-     */
-    public AffiliateDetailController getController() {
-        return controller;
-    }
-
-    /**
-     * @param controller the controller to set
-     */
-    public void setController(AffiliateDetailController controller) {
-        this.controller = controller;
-    }
-
     /**
      * @return the affiliateMasterId
      */
@@ -223,15 +161,18 @@ public class AffiliateDetail implements Serializable {
     /**
      * @return the defaultCommissionId
      */
-    public String getDefaultCommission() {
-        return defaultCommission;
+    public String getCommission() {
+        return commission;
     }
 
     /**
-     * @param defaultCommission the defaultCommission to set
+     * @param commission the commission to set
      */
-    public void setDefaultCommission(String defaultCommission) {
-        this.defaultCommission = defaultCommission;
+    public void setCommission(String commission) {
+        if(commission==null) {
+            commission="";
+        }
+        this.commission = commission;
     }
 
     /**
@@ -332,21 +273,27 @@ public class AffiliateDetail implements Serializable {
      * @param tieredCommissionKeys the tieredCommissionKeys to set
      */
     public void setTieredCommissionKeys(String tieredCommissionKeys) {
+        if(tieredCommissionKeys==null) {
+            tieredCommissionKeys = "";
+        }
         this.tieredCommissionKeys = tieredCommissionKeys;
     }
 
     /**
-     * @return the defaultCommissionType
+     * @return the commissionType
      */
-    public String getDefaultCommissionType() {
-        return defaultCommissionType;
+    public String getCommissionType() {
+        return commissionType;
     }
 
     /**
-     * @param defaultCommissionType the defaultCommissionType to set
+     * @param commissionType the commissionType to set
      */
-    public void setDefaultCommissionType(String defaultCommissionType) {
-        this.defaultCommissionType = defaultCommissionType;
+    public void setCommissionType(String commissionType) {
+        if(commissionType==null) {
+            commissionType="";
+        }
+        this.commissionType = commissionType;
     }
 
     /**
@@ -388,6 +335,9 @@ public class AffiliateDetail implements Serializable {
      * @param minPay the minPay to set
      */
     public void setMinPay(String minPay) {
+        if(minPay==null) {
+            minPay="";
+        }
         this.minPay = minPay;
     }
 
@@ -402,6 +352,9 @@ public class AffiliateDetail implements Serializable {
      * @param maxPay the maxPay to set
      */
     public void setMaxPay(String maxPay) {
+        if(maxPay==null) {
+            maxPay = "";
+        }
         this.maxPay = maxPay;
     }
 
@@ -416,6 +369,9 @@ public class AffiliateDetail implements Serializable {
      * @param ibvTerms the ibvTerms to set
      */
     public void setIbvTerms(String ibvTerms) {
+        if(ibvTerms==null) {
+            ibvTerms="";
+        }
         this.ibvTerms = ibvTerms;
     }
 
@@ -430,6 +386,9 @@ public class AffiliateDetail implements Serializable {
      * @param cbTerms the cbTerms to set
      */
     public void setCbTerms(String cbTerms) {
+        if(cbTerms==null) {
+            cbTerms="";
+        }
         this.cbTerms = cbTerms;
     }
 
@@ -472,6 +431,9 @@ public class AffiliateDetail implements Serializable {
      * @param threshhold the threshhold to set
      */
     public void setThreshhold(String threshhold) {
+        if(threshhold==null) {
+            threshhold="0";
+        }
         this.threshhold = threshhold;
     }
 

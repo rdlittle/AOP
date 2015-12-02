@@ -8,7 +8,11 @@ package com.webfront.beans;
 import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
+import com.webfront.controller.AffiliateDetailController;
+import com.webfront.model.AffiliateDetail;
 import com.webfront.model.SelectItem;
+import com.webfront.model.UVException;
+import com.webfront.util.JSFHelper;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -28,23 +32,33 @@ import javax.faces.event.AjaxBehaviorEvent;
 @SessionScoped
 public class AffiliateDetailBean implements Serializable {
 
-    private String affiliateMasterId;
-    private String affiliateDetailId;
+    private final AffiliateDetailController controller;
+    private String masterId;
+    private String detailId;
     private String storeName;
+    private AffiliateDetail detail;
 
     private ArrayList<SelectItem> storeList;
     private ArrayList<SelectItem> minPayList;
     private ArrayList<SelectItem> maxPayList;
+    private final ArrayList<SelectItem> commTypeList;
 
     private UISelectItems selItems;
     private boolean ordersOnly;
+
+    public AffiliateDetailBean() {
+        this.controller = new AffiliateDetailController();
+        commTypeList = new ArrayList<>();
+        commTypeList.add(new SelectItem("P", "Percentage"));
+        commTypeList.add(new SelectItem("F", "Fixed"));
+    }
 
     /**
      * @return the storeList
      */
     public ArrayList<SelectItem> getStoreList() {
         if (storeList == null || storeList.isEmpty()) {
-            if (affiliateMasterId != null) {
+            if (masterId != null) {
                 setStoreList(null);
             }
         }
@@ -55,7 +69,8 @@ public class AffiliateDetailBean implements Serializable {
         setStoreList(new ArrayList<SelectItem>());
         setMinPayList(new ArrayList<SelectItem>());
         setMaxPayList(new ArrayList<SelectItem>());
-        affiliateDetailId = "";
+        detailId = "";
+        detail = new AffiliateDetail();
     }
 
     /**
@@ -68,7 +83,7 @@ public class AffiliateDetailBean implements Serializable {
                 this.storeList.clear();
             }
         }
-        rb.setProperty("masterId", affiliateMasterId);
+        rb.setProperty("masterId", masterId);
         if (isOrdersOnly()) {
             rb.setProperty("ordersOnly", "1");
         }
@@ -98,31 +113,31 @@ public class AffiliateDetailBean implements Serializable {
     }
 
     /**
-     * @return the affiliateMasterId
+     * @return the masterId
      */
-    public String getAffiliateMasterId() {
-        return affiliateMasterId;
+    public String getMasterId() {
+        return masterId;
     }
 
     /**
-     * @param affiliateMasterId the affiliateMasterId to set
+     * @param masterId the masterId to set
      */
-    public void setAffiliateMasterId(String affiliateMasterId) {
-        this.affiliateMasterId = affiliateMasterId;
+    public void setMasterId(String masterId) {
+        this.masterId = masterId;
     }
 
     /**
-     * @return the affiliateDetailId
+     * @return the detailId
      */
-    public String getAffiliateDetailId() {
-        return affiliateDetailId;
+    public String getDetailId() {
+        return detailId;
     }
 
     /**
-     * @param affiliateDetailId the affiliateDetailId to set
+     * @param detailId the detailId to set
      */
-    public void setAffiliateDetailId(String affiliateDetailId) {
-        this.affiliateDetailId = affiliateDetailId;
+    public void setDetailId(String detailId) {
+        this.detailId = detailId;
     }
 
     /**
@@ -196,14 +211,23 @@ public class AffiliateDetailBean implements Serializable {
     }
 
     public void changeStore(AjaxBehaviorEvent event) {
-        RedObject rbo = new RedObject("WDE", "Affiliates:Detail");
-        rbo.setProperty("id", getAffiliateDetailId());
         try {
-            rbo.callMethod("getDetail");
-            String str = rbo.getProperty("storeName");
-            this.storeName = str;
+            detail = controller.getAffiliateDetail(detailId);
+        } catch(UVException e) {
+            JSFHelper.sendFacesMessage(e.getMessage());
         } catch (RbException ex) {
-            Logger.getLogger(AffiliateDetailBean.class.getName()).log(Level.SEVERE, null, ex);
+            JSFHelper.sendFacesMessage(ex.getMessage());
+        }
+    }
+    
+    public void onSaveDetail() {
+        try {
+            detail.setId(detailId);
+            controller.setAffiliateDetail(detail);
+        } catch (RbException rbe) {
+            JSFHelper.sendFacesMessage(rbe.getMessage());
+        } catch (UVException uve) {
+            JSFHelper.sendFacesMessage(uve.getMessage());
         }
     }
 
@@ -247,5 +271,19 @@ public class AffiliateDetailBean implements Serializable {
      */
     public void setOrdersOnly(boolean ordersOnly) {
         this.ordersOnly = ordersOnly;
+    }
+
+    /**
+     * @return the commTypeList
+     */
+    public ArrayList<SelectItem> getCommTypeList() {
+        return commTypeList;
+    }
+
+    /**
+     * @return the detail
+     */
+    public AffiliateDetail getDetail() {
+        return detail;
     }
 }

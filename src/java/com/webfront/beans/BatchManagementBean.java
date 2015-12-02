@@ -90,7 +90,7 @@ public class BatchManagementBean implements Serializable {
         this.affiliateMaster.changeVendor(event);
         this.masterId = this.affiliateMaster.getID();
         
-        this.detail.setAffiliateMasterId(masterId);
+        this.detail.setMasterId(masterId);
         this.detail.changeMasterId(event);
         this.detail.setStoreList(new ArrayList<SelectItem>());
         this.vendorName = this.affiliateMaster.getName();

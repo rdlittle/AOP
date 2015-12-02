@@ -225,11 +225,11 @@ public class AffiliateOrderBean implements Serializable {
 
     public void changeHandler(AjaxBehaviorEvent event) {
         if (this.detail != null) {
-            if (this.detail.getAffiliateMasterId() != null && !"".equals(this.detail.getAffiliateMasterId())) {
-                this.setAffiliateMasterId(this.detail.getAffiliateMasterId());
+            if (this.detail.getMasterId() != null && !"".equals(this.detail.getMasterId())) {
+                this.setAffiliateMasterId(this.detail.getMasterId());
             }
-            if (this.detail.getAffiliateDetailId() != null && !"".equals(this.detail.getAffiliateDetailId())) {
-                this.setAffiliateDetailId(this.detail.getAffiliateDetailId());
+            if (this.detail.getDetailId() != null && !"".equals(this.detail.getDetailId())) {
+                this.setAffiliateDetailId(this.detail.getDetailId());
                 detail.changeStore(event);
             }
             setOrderList();
