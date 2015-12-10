@@ -22,9 +22,11 @@ public class AoTestDataUnit {
     private String creditType;
     private String errorCodes;
     private String errorLines;
-    private String errorSameLine;
+    private boolean errorSameLine;
     private ArrayList<SelectItem> errorList;
     private boolean hasErrors;
+    private boolean srpSuppress;
+    private boolean commSuppress;
 
     public AoTestDataUnit() {
         id="";
@@ -36,9 +38,11 @@ public class AoTestDataUnit {
         creditType="";
         errorCodes = "";
         errorLines = "0";
-        errorSameLine = "1";
+        errorSameLine = false;
         errorList = new ArrayList<>();
         hasErrors = false;
+        srpSuppress = false;
+        commSuppress = false;
     }
     
     public boolean getHasErrors() {
@@ -178,14 +182,14 @@ public class AoTestDataUnit {
     /**
      * @return the errorSameLine
      */
-    public String getErrorSameLine() {
+    public boolean getErrorSameLine() {
         return errorSameLine;
     }
 
     /**
      * @param errorSameLine the errorSameLine to set
      */
-    public void setErrorSameLine(String errorSameLine) {
+    public void setErrorSameLine(boolean errorSameLine) {
         this.errorSameLine = errorSameLine;
     }
 
@@ -201,5 +205,33 @@ public class AoTestDataUnit {
      */
     public void setErrorList(ArrayList<SelectItem> errorList) {
         this.errorList = errorList;
+    }
+
+    /**
+     * @return the srpSuppress
+     */
+    public boolean isSrpSuppress() {
+        return srpSuppress;
+    }
+
+    /**
+     * @return the commSuppress
+     */
+    public boolean isCommSuppress() {
+        return commSuppress;
+    }
+
+    /**
+     * @param srpSuppress the srpSuppress to set
+     */
+    public void setSrpSuppress(boolean srpSuppress) {
+        this.srpSuppress = srpSuppress;
+    }
+
+    /**
+     * @param commSuppress the commSuppress to set
+     */
+    public void setCommSuppress(boolean commSuppress) {
+        this.commSuppress = commSuppress;
     }
 }

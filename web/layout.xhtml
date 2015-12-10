@@ -33,7 +33,7 @@
                         <p:menuitem value="Batch listing" url="/faces/batchManagementInputForm.xhtml"/>
                         <p:menuitem value="Error listing" url="/faces/affiliateErrorListing.xhtml"/>
                     </p:submenu>
-                    <p:submenu label="Order Management">
+                    <p:submenu label="Order Processing">
                         <p:menuitem value="Process a report" url="/faces/aopUploader.xhtml"/>
                         <p:menuitem value="Processing queue" url="/faces/aopQueue.xhtml"/>
                     </p:submenu>   
@@ -41,13 +41,17 @@
                         <p:menuitem value="Check reconcilliation" url="/faces/checkReconFileUploader.xhtml"/>                        
                         <p:menuitem value="Payment queue" url="/faces/paymentQueue.xhtml"/>
                     </p:submenu>
+                    <p:submenu label="Rewards Management">
+                        <p:menuitem value="FNBO Reference Inquiry" url="/faces/fnboRefInquiry.xhtml"/>
+                    </p:submenu>
                     <p:submenu label="Testing" expanded="false">
                         <p:menuitem value="Source Descriptor" url="/faces/aoTestSourceDesc.xhtml"/>
                         <p:menuitem value="Units" url="/faces/aoTestUnit.xhtml"/>
                         <p:menuitem value="Groups" url="/faces/aoTestGroup.xhtml"/>
                         <p:menuitem value="Create Test Orders" url="/faces/testingBatchSetupForm.xhtml"/>
                         <p:menuitem value="Run Test Suites" url="/faces/unitTestSuiteForm.xhtml"/>                        
-                        <p:menuitem value="View Test Results" url="/faces/unitTestLog.xhtml"/>                        
+                        <p:menuitem value="View Test Results" url="/faces/unitTestLog.xhtml"/>   
+                        <p:menuitem value="Calc Test" url="/faces/calcPage.xhtml"/>   
                     </p:submenu>
                 </p:menu>
             </p:layoutUnit>

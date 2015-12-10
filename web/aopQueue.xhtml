@@ -67,7 +67,7 @@
                             <h:outputText value="#{queueItem.fileName}"/>
                         </p:column>                        
                     </p:dataTable>
-                    <p:poll id="poll" interval="30" listener="#{aopQueueBean.rePoll}" update="aopQueue" autoStart="false" process="@this"/>
+                    <p:poll id="poll" interval="30" listener="#{aopQueueBean.rePoll}" update="aopQueue" autoStart="true" process="@this"/>
                     
                 </h:form>
             </ui:define>

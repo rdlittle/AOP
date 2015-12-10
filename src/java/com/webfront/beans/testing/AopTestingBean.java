@@ -180,9 +180,6 @@ public class AopTestingBean implements Serializable {
         if (selectedDataUnit.getErrorLines() == null) {
             selectedDataUnit.setErrorLines("");
         }
-        if (selectedDataUnit.getErrorSameLine() == null) {
-            selectedDataUnit.setErrorSameLine("");
-        }
         rbo.setProperty("unitId", "");
         rbo.setProperty("unitDesc", selectedDataUnit.getDescription());
         rbo.setProperty("unitTransType", selectedDataUnit.getTransType());
@@ -192,7 +189,9 @@ public class AopTestingBean implements Serializable {
         rbo.setProperty("unitCreditType", selectedDataUnit.getCreditType());
         rbo.setProperty("errorCodes", selectedDataUnit.getErrorCodes());
         rbo.setProperty("errorLines", selectedDataUnit.getErrorLines());
-        rbo.setProperty("errorSameLine", selectedDataUnit.getErrorSameLine());
+        rbo.setProperty("errorSameLine", selectedDataUnit.getErrorSameLine() ? "1" : "0");
+        rbo.setProperty("suppressSrp", selectedDataUnit.isSrpSuppress() ? "1" : "0");
+        rbo.setProperty("suppressComm", selectedDataUnit.isCommSuppress() ? "1" : "0");
         try {
             rbo.callMethod("putAopTestDataUnit");
             errStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
@@ -485,6 +484,8 @@ public class AopTestingBean implements Serializable {
                 UniDynArray unitErrorCodes = rbo.getPropertyToDynArray("errorCodes");
                 UniDynArray unitErrorLines = rbo.getPropertyToDynArray("errorLines");
                 UniDynArray unitSameLine = rbo.getPropertyToDynArray("errorSameLine");
+                UniDynArray unitSrpSuppress = rbo.getPropertyToDynArray("suppressSrp");
+                UniDynArray unitCommSuppress = rbo.getPropertyToDynArray("suppressComm");
                 int vals = Integer.parseInt(rbo.getProperty("unitCount"));
                 for (int val = 1; val <= vals; val++) {
                     AoTestDataUnit unit = new AoTestDataUnit();
@@ -497,6 +498,8 @@ public class AopTestingBean implements Serializable {
                     unit.setCreditType(unitCreditType.extract(1, val).toString());
                     unit.setErrorCodes(unitErrorCodes.extract(1, 1, val).toString());
                     unit.setErrorLines(unitErrorLines.extract(1, val).toString());
+                    unit.setSrpSuppress(unitSrpSuppress.extract(1, val).toString().equals("1") ? true : false);
+                    unit.setCommSuppress(unitCommSuppress.extract(1, val).toString().equals("1") ? true : false);
                     dataUnitList.add(unit);
                     unitList.add(new SelectItem(unit.getId(), unit.getDescription()));
                 }

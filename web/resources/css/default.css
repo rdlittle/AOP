@@ -81,3 +81,8 @@ a:link:hover, a:visited:hover  {
 .ui-spinner .ui-spinner-input {
     width: 50px;
 }
+
+.ui-datatable tbody td.wrap {
+    white-space: normal;
+    word-wrap: break-word;
+}

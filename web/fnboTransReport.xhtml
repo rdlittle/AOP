@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./layout.xhtml">
+            <f:metadata>
+                <f:viewParam name="memberId" value="#{fnboBean.memberId}" />
+            </f:metadata>
+            <ui:define name="banner">
+                banner
+            </ui:define>
+
+            <ui:define name="content">
+                <span style="width: 99%; text-align: center; margin: 2em auto 3em auto;">
+                    <h2>FNBO Transaction Report</h2>
+                </span>
+                <p:panelGrid style="width: 30%; margin: auto;">
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="Member Id"/>
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{fnboBean.memberId}"/>
+                        </p:column>                        
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="Member Name"/>
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{fnboBean.transItem.cardholderName}"/>                    
+                        </p:column>                        
+                    </p:row>
+                </p:panelGrid>
+                <p:dataTable id="table" value="#{fnboBean.transList}" var="t"
+                             rowKey="#{t.id}" 
+                             rows="20"
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="10,20,30"                             
+                             style="width: 90%; margin: auto;">
+                    <p:column headerText="Transaction#" style="width: 10%;">
+                        <h:outputText value="#{t.id}"/>
+                    </p:column>
+                    <p:column headerText="Date" style="width: 5%;">
+                        <h:outputText value="#{t.transDate}"/>
+                    </p:column>
+                    <p:column headerText="ARN" style="width: 5%;">
+                        <h:outputText value="#{t.arn}"/>
+                    </p:column>
+                    <p:column headerText="Card type" style="width: 3%;">
+                        <h:outputText value="#{t.cardType}"/>
+                    </p:column>
+                    <p:column headerText="Merch Type" style="width: 3%;">
+                        <h:outputText value="#{t.merchType}"/>
+                    </p:column>                        
+                    <p:column headerText="Merch Desc" style="width: 10%;">
+                        <h:outputText value="#{t.merchDesc}"/>
+                    </p:column>
+                    <p:column headerText="Type" style="width: 3%;">
+                        <h:outputText value="#{t.transCode}"/>
+                    </p:column>                    
+                    <p:column headerText="Trans Amount" style="width: 5%; text-align: right;">
+                        <h:outputText value="#{t.transAmt}"/>
+                    </p:column>
+                </p:dataTable>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

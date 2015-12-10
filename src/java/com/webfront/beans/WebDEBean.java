@@ -44,13 +44,13 @@ public final class WebDEBean implements Serializable {
         todayInternal = 1;
         setTodayInternal(1);
         setRbo(new RedObject("WDE", "AOP:Forms"));
-        setAffiliateMasterList(new LinkedList<SelectItem>());
-        setNetworkList(new ArrayList<SelectItem>());
-        setCurrencyTypes(new LinkedList<SelectItem>());
-        setCountryCodes(new LinkedList<SelectItem>());
-        setMappedFields(new LinkedList<SelectItem>());
-        setAccessMethods(new ArrayList<SelectItem>());
-        setFileFormats(new ArrayList<SelectItem>());
+        setAffiliateMasterList(new LinkedList<>());
+        setNetworkList(new ArrayList<>());
+        setCurrencyTypes(new LinkedList<>());
+        setCountryCodes(new LinkedList<>());
+        setMappedFields(new LinkedList<>());
+        setAccessMethods(new ArrayList<>());
+        setFileFormats(new ArrayList<>());
     }
 
     /**
