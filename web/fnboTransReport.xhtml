@@ -20,13 +20,13 @@
                 <span style="width: 99%; text-align: center; margin: 2em auto 3em auto;">
                     <h2>FNBO Transaction Report</h2>
                 </span>
-                <p:panelGrid style="width: 30%; margin: auto;">
+                <p:panelGrid style="width: 25%; margin-left: auto; margin-right: auto; margin-bottom: 2em; margin-top: 1em;">
                     <p:row>
                         <p:column>
-                            <h:outputText value="Member Id"/>
+                            <h:outputText value='#{fnboBean.searchType eq "ARN" ? "ARN" : "Member Id"}'/>
                         </p:column>
                         <p:column>
-                            <h:outputText value="#{fnboBean.memberId}"/>
+                            <h:outputText value='#{fnboBean.searchType eq "ARN" ? fnboBean.arn : fnboBean.memberId}'/>
                         </p:column>                        
                     </p:row>
                     <p:row>
@@ -36,6 +36,14 @@
                         <p:column>
                             <h:outputText value="#{fnboBean.transItem.cardholderName}"/>                    
                         </p:column>                        
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="Transaction Total"/>
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{fnboBean.transTotal}"/>
+                        </p:column>
                     </p:row>
                 </p:panelGrid>
                 <p:dataTable id="table" value="#{fnboBean.transList}" var="t"
@@ -51,8 +59,8 @@
                     <p:column headerText="Date" style="width: 5%;">
                         <h:outputText value="#{t.transDate}"/>
                     </p:column>
-                    <p:column headerText="ARN" style="width: 5%;">
-                        <h:outputText value="#{t.arn}"/>
+                    <p:column headerText='#{fnboBean.searchType eq "ARN" ? "Member Id" : "ARN"}' style="width: 5%;">
+                        <h:outputText value='#{fnboBean.searchType eq "ARN" ? t.memberId : t.arn}'/>
                     </p:column>
                     <p:column headerText="Card type" style="width: 3%;">
                         <h:outputText value="#{t.cardType}"/>

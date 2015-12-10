@@ -32,27 +32,17 @@ public class FnboBean implements Serializable {
     private String transId = "";
     private String memberId = "";
     private String arn = "";
+    private String searchType;
     private ArrayList<FnboTrans> transList;
+    private String transTotal;
 
     /**
      * Creates a new instance of FnboBean
      */
     public FnboBean() {
-//        System.out.println("fnboBean.FnboBean()");
         transId = "";
         transItem = new FnboTrans();
         transList = new ArrayList<>();
-    }
-
-    /**
-     * @return the transItem
-     */
-    public FnboTrans getTransItem() {
-//        System.out.println("fnboBean.getTransItem() "+transId+" ["+transItem.toString()+"]");
-//        if(transItem==null) {
-//            System.out.println("fnboBean.getTransItem(): transItem is null ");
-//        }
-        return transItem;
     }
 
     /**
@@ -64,9 +54,6 @@ public class FnboBean implements Serializable {
             rbo.setProperty("transId", transId);
             try {
                 rbo.callMethod("getBankFnboTrans");
-//                System.out.println("fnboBean.lookupTransItem: "+transId);
-//                System.out.println(rbo.getPnames());
-//                System.out.println(rbo.getPvalues());
                 String eStat = rbo.getProperty("svrStatus");
                 int errStatus = 0;
                 if (!eStat.isEmpty()) {
@@ -80,7 +67,6 @@ public class FnboBean implements Serializable {
                     FacesMessage msg = new FacesMessage(errCode + ": " + errMessage);
                     ctx.addMessage(null, msg);
                 } else {
-//                    System.out.println("fnboBean.lookupTransItem() got success from rbo.callMethod");
                     FnboTrans trans = new FnboTrans();
                     trans.setId(rbo.getProperty("transId"));
                     trans.setTransDate(rbo.getProperty("transDate"));
@@ -97,7 +83,6 @@ public class FnboBean implements Serializable {
                         FacesMessage msg = new FacesMessage("Transaction not found");
                         ctx.addMessage(null, msg);
                     }
-//                    System.out.println("fnboBean.lookupTransItem() invoking setTransItem("+trans.toString()+"");
                     setTransItem(trans);
                     memberId = trans.getMemberId();
                     arn = trans.getArn();
@@ -110,9 +95,19 @@ public class FnboBean implements Serializable {
 
     public String onCreateReport(ActionEvent event) {
         RedObject rbo;
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        String src = (String) ctx.getExternalContext().getRequestParameterMap().get("javax.faces.source");
+        if ("form:byArn".equals(src)) {
+            setSearchType("ARN");
+        } else {
+            setSearchType("Member Id");
+        }
         rbo = new RedObject("WDE", "Bank:Fnbo");
-        rbo.setProperty("memberId", getMemberId());
-        rbo.setProperty("arn", getArn());
+        if (searchType.equals("ARN")) {
+            rbo.setProperty("arn", getArn());
+        } else {
+            rbo.setProperty("memberId", getMemberId());
+        }
         try {
             rbo.callMethod("getBankFnboTransReport");
             int svrStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
@@ -121,6 +116,8 @@ public class FnboBean implements Serializable {
             if (svrStatus == -1) {
                 JSFHelper.sendFacesMessage(svrCtrlCode + ": " + svrMessage, "Error");
             } else {
+                setTransTotal("0.00");
+                Float totalAmt = new Float(0);
                 UniDynArray trans = rbo.getPropertyToDynArray("transId");
                 trans.insert(2, rbo.getPropertyToDynArray("transDate"));
                 trans.insert(3, rbo.getPropertyToDynArray("arn"));
@@ -148,8 +145,13 @@ public class FnboBean implements Serializable {
                     if (t == 1) {
                         setTransItem(fTrans);
                     }
+                    if(fTrans.getTransAmt().isEmpty()) {
+                        fTrans.setTransAmt("0.00");
+                    }
+                    Float amt = Float.parseFloat(fTrans.getTransAmt());
+                    totalAmt += amt;
+                    setTransTotal(totalAmt.toString());
                 }
-
                 return "/fnboTransReport.xhtml?faces-redirect=true";
             }
         } catch (RbException ex) {
@@ -158,14 +160,18 @@ public class FnboBean implements Serializable {
         return "";
     }
 
+    /**
+     * @return the transItem
+     */
+    public FnboTrans getTransItem() {
+        return transItem;
+    }
+    
     public void setTransItem(FnboTrans item) {
-//        System.out.println("fnboBean.setTransItem("+transId+"): ["+item.toString()+"]");
         transItem = item;
     }
 
     public void onTransItemButtonClick() {
-//        System.out.println("fnboBean.onTransItemButtonClick: "+transId);
-//        System.out.println("fnboBean.onTransItemButtonClick: invoking lookupTransItem()");
         lookupTransItem();
     }
 
@@ -173,7 +179,6 @@ public class FnboBean implements Serializable {
      * @return the transId
      */
     public String getTransId() {
-//        System.out.println("fnboBean.getTransId: "+transId);
         return transId;
     }
 
@@ -181,7 +186,6 @@ public class FnboBean implements Serializable {
      * @param transId the transId to set
      */
     public void setTransId(String transId) {
-//        System.out.println("fnboBean.setTransId: "+transId);
         this.transId = transId;
     }
 
@@ -225,6 +229,34 @@ public class FnboBean implements Serializable {
      */
     public void setArn(String arn) {
         this.arn = arn;
+    }
+
+    /**
+     * @return the searchType
+     */
+    public String getSearchType() {
+        return searchType;
+    }
+
+    /**
+     * @param searchType the searchType to set
+     */
+    public void setSearchType(String searchType) {
+        this.searchType = searchType;
+    }
+
+    /**
+     * @return the transTotal
+     */
+    public String getTransTotal() {
+        return transTotal;
+    }
+
+    /**
+     * @param transTotal the transTotal to set
+     */
+    public void setTransTotal(String transTotal) {
+        this.transTotal = transTotal;
     }
 
 }

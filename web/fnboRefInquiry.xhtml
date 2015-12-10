@@ -45,15 +45,18 @@
                                     <h:outputText value="ARN"/>
                                 </p:column>
                                 <p:column>
-                                    <h:outputText value="#{fnboBean.transItem.arn}"/>                        
-                                </p:column>                            
+                                    <p:commandLink id="byArn" action="#{fnboBean.onCreateReport(evt)}" 
+                                                   value="#{fnboBean.arn}">
+                                        <h:outputText value="#{fnboBean.transItem.arn}"/>
+                                    </p:commandLink>                                
+                                </p:column>
                             </p:row>
                             <p:row>
                                 <p:column>
                                     <h:outputText value="Member Id"/>
                                 </p:column>
                                 <p:column>
-                                    <p:commandLink action="#{fnboBean.onCreateReport(evt)}" 
+                                    <p:commandLink id="byMemberId" action="#{fnboBean.onCreateReport(evt)}" 
                                                    value="#{fnboBean.memberId}">
                                         <h:outputText value="#{fnboBean.transItem.memberId}"/>
                                     </p:commandLink>
