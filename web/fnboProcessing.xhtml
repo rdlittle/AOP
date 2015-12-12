@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./layout.xhtml">
+            <f:metadata>
+                <f:viewAction action="#{fnboBean.setQueueList()}" onPostback="false"/>
+            </f:metadata>
+
+            <ui:define name="banner">
+                banner
+            </ui:define>
+
+            <ui:define name="content">
+                <span style="width: 99%; text-align: center; margin: 2em auto 3em auto;">
+                    <h2>FNBO Processing</h2>
+                </span>
+                <h:form>
+                    <p:poll id="poll" interval="15" listener="#{fnboBean.onRepollQueue()}" update="@form" 
+                            autoStart="true" process="@this"/>
+                    <p:panel style="margin-left: 2em;">
+                        <p:commandButton id="processQueue" action="#{fnboBean.onProcessQueue()}"
+                                         disabled="#{!fnboBean.processed}"
+                                         value='#{fnboBean.processed ? "Process" : "Running"}'/>
+                        <p:dataTable id="table" value="#{fnboBean.queueList}" var="item">
+                            <f:facet name="header">
+                                <h:outputText value="Processing Queue"/>
+                            </f:facet>
+                            <p:column headerText="Item name">
+                                <h:outputText value="#{item}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:panel>
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

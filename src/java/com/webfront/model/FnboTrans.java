@@ -5,34 +5,45 @@
  */
 package com.webfront.model;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
 /**
  *
  * @author rlittle
  */
 public class FnboTrans {
+
     private String id;
-    private String transDate;
     private String arn;
     private String memberId;
     private String cardType;
-    private String transAmt;
+    private Float transAmt;
     private String merchType;
     private String merchDesc;
     private String transCode;
     private String cardholderName;
+    private Date transDate;
+
+    final DecimalFormat decFormat = new DecimalFormat("###0.00");
+    final SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yy");
 
     public FnboTrans() {
-        id="";
-        transDate = "";
+        id = "";
+        transDate = null;
         arn = "";
         memberId = "";
         cardType = "";
-        transAmt = "";
+        transAmt = null;
         merchType = "";
         merchDesc = "";
         transCode = "";
         cardholderName = "";
     }
+
     /**
      * @return the id
      */
@@ -50,15 +61,30 @@ public class FnboTrans {
     /**
      * @return the transDate
      */
-    public String getTransDate() {
+    public String getTransDateAsString() {
+        if(transDate==null) {
+            return "";
+        }
+        return dateFormat.format(transDate);
+    }
+    
+    public Date getTransDate() {
         return transDate;
     }
 
     /**
-     * @param transDate the transDate to set
+     * @param td
      */
-    public void setTransDate(String transDate) {
-        this.transDate = transDate;
+    public void setTransDate(String td) {
+        Calendar cal = Calendar.getInstance(Locale.getDefault());
+        String[] dateSeg = td.split("/");
+        int mm = Integer.parseInt(dateSeg[0]);
+        int dd = Integer.parseInt(dateSeg[1]);
+        int yy = Integer.parseInt(dateSeg[2]);
+        cal.set(Calendar.MONTH, mm-1);
+        cal.set(Calendar.DAY_OF_MONTH, dd);
+        cal.set(Calendar.YEAR, yy + 2000);
+        this.transDate = cal.getTime();
     }
 
     /**
@@ -104,9 +130,16 @@ public class FnboTrans {
     }
 
     /**
-     * @return the transAmt
+     * @return the transAmt as a String value
      */
-    public String getTransAmt() {
+    public String getTransAmtAsString() {
+        if (transAmt==null) {
+            return "";
+        }
+        return decFormat.format(transAmt);
+    }
+    
+    public Float getTransAmt() {
         return transAmt;
     }
 
@@ -114,7 +147,7 @@ public class FnboTrans {
      * @param transAmt the transAmt to set
      */
     public void setTransAmt(String transAmt) {
-        this.transAmt = transAmt;
+        this.transAmt = Float.valueOf(transAmt);
     }
 
     /**
@@ -124,9 +157,9 @@ public class FnboTrans {
         if (merchType.isEmpty()) {
             return "";
         }
-        if(merchType.equals("M")) {
+        if (merchType.equals("M")) {
             return "MA/Shop";
-        } 
+        }
         return "Regular";
     }
 
@@ -155,10 +188,10 @@ public class FnboTrans {
      * @return the transCode
      */
     public String getTransCode() {
-        if(transCode.isEmpty()) {
+        if (transCode.isEmpty()) {
             return "";
         }
-        if(transCode.equals("06")) {
+        if (transCode.equals("06")) {
             return "Credit";
         }
         return "Debit";
@@ -184,5 +217,5 @@ public class FnboTrans {
     public void setCardholderName(String cardholderName) {
         this.cardholderName = cardholderName;
     }
-    
+
 }

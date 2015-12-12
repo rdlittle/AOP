@@ -11,10 +11,14 @@ import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.model.FnboTrans;
 import com.webfront.util.JSFHelper;
 import java.io.Serializable;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -24,7 +28,7 @@ import javax.faces.event.ActionEvent;
  *
  * @author rlittle
  */
-@SessionScoped
+@ApplicationScoped
 @Named(value = "fnboBean")
 public class FnboBean implements Serializable {
 
@@ -35,6 +39,12 @@ public class FnboBean implements Serializable {
     private String searchType;
     private ArrayList<FnboTrans> transList;
     private String transTotal;
+    private Date startDate;
+    private Date endDate;
+    private boolean maOnly;
+    private String queueCount;
+    private ArrayList<String> queueList;
+    private boolean processed;
 
     /**
      * Creates a new instance of FnboBean
@@ -43,6 +53,7 @@ public class FnboBean implements Serializable {
         transId = "";
         transItem = new FnboTrans();
         transList = new ArrayList<>();
+        queueList = new ArrayList<>();
     }
 
     /**
@@ -94,13 +105,21 @@ public class FnboBean implements Serializable {
     }
 
     public String onCreateReport(ActionEvent event) {
+        SimpleDateFormat dateFmt = new SimpleDateFormat("MM/dd/yy");
         RedObject rbo;
         FacesContext ctx = FacesContext.getCurrentInstance();
-        String src = (String) ctx.getExternalContext().getRequestParameterMap().get("javax.faces.source");
-        if ("form:byArn".equals(src)) {
-            setSearchType("ARN");
-        } else {
-            setSearchType("Member Id");
+        Map<String, String> requestMap = ctx.getExternalContext().getRequestParameterMap();
+        String src = "";
+        transList.clear();
+        if (requestMap.containsKey("javax.faces.source")) {
+            src = (String) requestMap.get("javax.faces.source");
+        }
+        if (!"form:fnboInquiryButton".equals(src)) {
+            if ("form:byArn".equals(src)) {
+                setSearchType("ARN");
+            } else {
+                setSearchType("Member Id");
+            }
         }
         rbo = new RedObject("WDE", "Bank:Fnbo");
         if (searchType.equals("ARN")) {
@@ -108,6 +127,15 @@ public class FnboBean implements Serializable {
         } else {
             rbo.setProperty("memberId", getMemberId());
         }
+        if (startDate != null) {
+            String sDate = dateFmt.format(startDate);
+            rbo.setProperty("startDate", dateFmt.format(startDate));
+        }
+        if (endDate != null) {
+            String eDate = dateFmt.format(endDate);
+            rbo.setProperty("endDate", dateFmt.format(endDate));
+        }
+        rbo.setProperty("maOnly", maOnly ? "1" : "0");
         try {
             rbo.callMethod("getBankFnboTransReport");
             int svrStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
@@ -116,6 +144,7 @@ public class FnboBean implements Serializable {
             if (svrStatus == -1) {
                 JSFHelper.sendFacesMessage(svrCtrlCode + ": " + svrMessage, "Error");
             } else {
+                DecimalFormat fmt = new DecimalFormat("#,##0.00");
                 setTransTotal("0.00");
                 Float totalAmt = new Float(0);
                 UniDynArray trans = rbo.getPropertyToDynArray("transId");
@@ -145,12 +174,12 @@ public class FnboBean implements Serializable {
                     if (t == 1) {
                         setTransItem(fTrans);
                     }
-                    if(fTrans.getTransAmt().isEmpty()) {
+                    if (fTrans.getTransAmt() == null) {
                         fTrans.setTransAmt("0.00");
                     }
-                    Float amt = Float.parseFloat(fTrans.getTransAmt());
+                    Float amt = fTrans.getTransAmt();
                     totalAmt += amt;
-                    setTransTotal(totalAmt.toString());
+                    setTransTotal(fmt.format(totalAmt));
                 }
                 return "/fnboTransReport.xhtml?faces-redirect=true";
             }
@@ -160,13 +189,87 @@ public class FnboBean implements Serializable {
         return "";
     }
 
+    public String onInquiryFormSubmit() {
+        if (!transId.isEmpty()) {
+            searchType = "Transaction";
+            lookupTransItem();
+            return "/fnboTrans.xhtml?faces-redirect=true";
+        } else if (!arn.isEmpty()) {
+            searchType = "ARN";
+            return (onCreateReport(null));
+        } else if (!memberId.isEmpty()) {
+            searchType = "Member Id";
+            return (onCreateReport(null));
+        }
+        return "";
+    }
+
+    public void onProcessQueue() {
+        try {
+            RedObject rbo;
+            rbo = new RedObject("WDE", "Bank:Fnbo");
+            rbo.callMethod("setBankFnboPhantom");
+            int svrStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
+            String svrCtrlCode = rbo.getProperty("svrCtrlCode");
+            String svrMessage = rbo.getProperty("svrMessage");
+            if (svrStatus == -1) {
+                JSFHelper.sendFacesMessage(svrCtrlCode + ": " + svrMessage, "Error");
+            }
+        } catch (RbException ex) {
+            Logger.getLogger(FnboBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void onResetInputForm() {
+        transItem = null;
+        transId = "";
+        memberId = "";
+        arn = "";
+        searchType = "";
+        startDate = null;
+        endDate = null;
+        maOnly = false;
+    }
+    
+    public void onRepollQueue() {
+        setQueueList();
+    }
+
+    public void setQueueList() {
+        queueList.clear();
+        try {
+            RedObject rbo;
+            rbo = new RedObject("WDE", "Bank:Fnbo");
+            rbo.callMethod("getBankFnboQueue");
+            int svrStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
+            String svrCtrlCode = rbo.getProperty("svrCtrlCode");
+            String svrMessage = rbo.getProperty("svrMessage");
+            if (svrStatus == -1) {
+                JSFHelper.sendFacesMessage(svrCtrlCode + ": " + svrMessage, "Error");
+            } else {
+                UniDynArray uda = rbo.getPropertyToDynArray("queueCount");
+                uda.insert(2, rbo.getPropertyToDynArray("queueList"));
+                String runFlag = rbo.getProperty("isRunning");
+                queueCount = uda.extract(1).toString();
+                setProcessed(!queueCount.equals("0"));
+                setProcessed(!runFlag.equals("1"));
+                int items = Integer.parseInt(queueCount);
+                for(int i=1; i<=items; i++) {
+                    queueList.add(uda.extract(2,i).toString());
+                }
+            }
+        } catch (RbException ex) {
+            Logger.getLogger(FnboBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     /**
      * @return the transItem
      */
     public FnboTrans getTransItem() {
         return transItem;
     }
-    
+
     public void setTransItem(FnboTrans item) {
         transItem = item;
     }
@@ -257,6 +360,83 @@ public class FnboBean implements Serializable {
      */
     public void setTransTotal(String transTotal) {
         this.transTotal = transTotal;
+    }
+
+    /**
+     * @return the startDate
+     */
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    /**
+     * @param startDate the startDate to set
+     */
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    /**
+     * @return the endDate
+     */
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    /**
+     * @param endDate the endDate to set
+     */
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    /**
+     * @return the maOnly
+     */
+    public boolean isMaOnly() {
+        return maOnly;
+    }
+
+    /**
+     * @param maOnly the maOnly to set
+     */
+    public void setMaOnly(boolean maOnly) {
+        this.maOnly = maOnly;
+    }
+
+    /**
+     * @return the queueCount
+     */
+    public String getQueueCount() {
+        return queueCount;
+    }
+
+    /**
+     * @param queueCount the queueCount to set
+     */
+    public void setQueueCount(String queueCount) {
+        this.queueCount = queueCount;
+    }
+
+    /**
+     * @return the queueList
+     */
+    public ArrayList<String> getQueueList() {
+        return queueList;
+    }
+
+    /**
+     * @return the processed
+     */
+    public boolean isProcessed() {
+        return processed;
+    }
+
+    /**
+     * @param processed the processed to set
+     */
+    public void setProcessed(boolean processed) {
+        this.processed = processed;
     }
 
 }
