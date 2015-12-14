@@ -26,8 +26,8 @@
                             autoStart="true" process="@this"/>
                     <p:panel style="margin-left: 2em;">
                         <p:commandButton id="processQueue" action="#{fnboBean.onProcessQueue()}"
-                                         disabled="#{!fnboBean.processed}"
-                                         value='#{fnboBean.processed ? "Process" : "Running"}'/>
+                                         disabled="#{fnboBean.running || !fnboBean.hasItems}"
+                                         value='#{fnboBean.btnProcLabel}'/>
                         <p:dataTable id="table" value="#{fnboBean.queueList}" var="item">
                             <f:facet name="header">
                                 <h:outputText value="Processing Queue"/>

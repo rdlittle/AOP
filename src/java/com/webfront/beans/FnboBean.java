@@ -10,6 +10,7 @@ import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.model.FnboTrans;
 import com.webfront.util.JSFHelper;
+import com.webfront.util.MVUtils;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -43,8 +44,10 @@ public class FnboBean implements Serializable {
     private Date endDate;
     private boolean maOnly;
     private String queueCount;
-    private ArrayList<String> queueList;
-    private boolean processed;
+    private final ArrayList<String> queueList;
+    private boolean running;
+    private boolean hasItems;
+    private String btnProcLabel;
 
     /**
      * Creates a new instance of FnboBean
@@ -157,6 +160,8 @@ public class FnboBean implements Serializable {
                 trans.insert(8, rbo.getPropertyToDynArray("merchDesc"));
                 trans.insert(9, rbo.getPropertyToDynArray("transCode"));
                 trans.insert(10, rbo.getPropertyToDynArray("cardHolderName"));
+                startDate = MVUtils.oConvDate(rbo.getProperty("startDate"));
+                endDate = MVUtils.oConvDate(rbo.getProperty("endDate"));
                 int transCount = trans.dcount(1);
                 for (int t = 1; t <= transCount; t++) {
                     FnboTrans fTrans = new FnboTrans();
@@ -214,6 +219,9 @@ public class FnboBean implements Serializable {
             String svrMessage = rbo.getProperty("svrMessage");
             if (svrStatus == -1) {
                 JSFHelper.sendFacesMessage(svrCtrlCode + ": " + svrMessage, "Error");
+            } else {
+                setBtnProcLabel("Running");
+                setRunning(true);
             }
         } catch (RbException ex) {
             Logger.getLogger(FnboBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -251,11 +259,20 @@ public class FnboBean implements Serializable {
                 uda.insert(2, rbo.getPropertyToDynArray("queueList"));
                 String runFlag = rbo.getProperty("isRunning");
                 queueCount = uda.extract(1).toString();
-                setProcessed(!queueCount.equals("0"));
-                setProcessed(!runFlag.equals("1"));
                 int items = Integer.parseInt(queueCount);
                 for(int i=1; i<=items; i++) {
                     queueList.add(uda.extract(2,i).toString());
+                }
+                hasItems = (items > 0);
+                running = (runFlag.equals("1"));
+                if(running) {
+                    setBtnProcLabel("Running");
+                } else {
+                    if(hasItems) {
+                        setBtnProcLabel("Process");
+                    } else {
+                        setBtnProcLabel("No Items");
+                    }
                 }
             }
         } catch (RbException ex) {
@@ -269,7 +286,15 @@ public class FnboBean implements Serializable {
     public FnboTrans getTransItem() {
         return transItem;
     }
-
+    
+    public boolean getHasItems() {
+        return hasItems;
+    }
+    
+    public void setHasItems(boolean b) {
+        hasItems = b;
+    }
+    
     public void setTransItem(FnboTrans item) {
         transItem = item;
     }
@@ -428,15 +453,29 @@ public class FnboBean implements Serializable {
     /**
      * @return the processed
      */
-    public boolean isProcessed() {
-        return processed;
+    public boolean isRunning() {
+        return running;
     }
 
     /**
      * @param processed the processed to set
      */
-    public void setProcessed(boolean processed) {
-        this.processed = processed;
+    public void setRunning(boolean processed) {
+        this.running = processed;
+    }
+
+    /**
+     * @return the btnProcLabel
+     */
+    public String getBtnProcLabel() {
+        return btnProcLabel;
+    }
+
+    /**
+     * @param btnProcLabel the btnProcLabel to set
+     */
+    public void setBtnProcLabel(String btnProcLabel) {
+        this.btnProcLabel = btnProcLabel;
     }
 
 }

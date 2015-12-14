@@ -7,7 +7,10 @@ package com.webfront.util;
 
 import asjava.uniclientlibs.UniDynArray;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  *
@@ -76,6 +79,18 @@ public class MVUtils {
             attr++;
         }
         return uda;        
+    }
+    
+    public static Date oConvDate(String date) {
+        Calendar cal = Calendar.getInstance(Locale.getDefault());
+        String[] dateSeg = date.split("/");
+        int mm = Integer.parseInt(dateSeg[0]);
+        int dd = Integer.parseInt(dateSeg[1]);
+        int yy = Integer.parseInt(dateSeg[2]);
+        cal.set(Calendar.MONTH, mm-1);
+        cal.set(Calendar.DAY_OF_MONTH, dd);
+        cal.set(Calendar.YEAR, yy + 2000);
+        return cal.getTime();
     }
     
 }
