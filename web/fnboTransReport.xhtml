@@ -71,10 +71,14 @@
                                     </p:row>
                                     <p:row>
                                         <p:column>
-                                            <p:calendar showButtonPanel="true" id="startDate" value="#{fnboBean.startDate}"/>
+                                            <p:calendar showButtonPanel="true" id="startDate" value="#{fnboBean.startDate}">
+                                                <p:ajax event="dateSelect" listener="#{fnboBean.onSelectStartDate(event)}"/>
+                                            </p:calendar>
                                         </p:column>
                                         <p:column>
-                                            <p:calendar showButtonPanel="true" id="endDate" value="#{fnboBean.endDate}"/>
+                                            <p:calendar showButtonPanel="true" id="endDate" 
+                                                        mindate="#{fnboBean.startDate}"
+                                                        value="#{fnboBean.endDate}"/>
                                         </p:column>
                                     </p:row>
                                 </p:panelGrid>

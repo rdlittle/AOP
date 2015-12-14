@@ -9,12 +9,15 @@ import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.model.FnboTrans;
+import com.webfront.util.DateUtils;
 import com.webfront.util.JSFHelper;
 import com.webfront.util.MVUtils;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.logging.Level;
@@ -24,6 +27,7 @@ import javax.inject.Named;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import org.primefaces.event.SelectEvent;
 
 /**
  *
@@ -48,6 +52,8 @@ public class FnboBean implements Serializable {
     private boolean running;
     private boolean hasItems;
     private String btnProcLabel;
+    private final LocalDate fnboStartDate = LocalDate.of(2015, 7, 28);
+    private final Date rightNow = Calendar.getInstance().getTime();
 
     /**
      * Creates a new instance of FnboBean
@@ -238,9 +244,37 @@ public class FnboBean implements Serializable {
         endDate = null;
         maOnly = false;
     }
-    
+
     public void onRepollQueue() {
         setQueueList();
+    }
+
+    public void onSelectEndDate(SelectEvent event) {
+        if (endDate != null) {
+            if (startDate == null || startDate.after(endDate)) {
+                LocalDate lsDate = DateUtils.ofUtilDate(endDate);
+                lsDate = lsDate.minusMonths(1);
+                startDate = DateUtils.ofLocalDate(lsDate);
+            }
+        }
+    }
+
+    public void onSelectStartDate(SelectEvent event) {
+        LocalDate today = LocalDate.now();
+        if (startDate != null) {
+            if (startDate.before(DateUtils.ofLocalDate(fnboStartDate))) {
+                startDate = DateUtils.ofLocalDate(fnboStartDate);
+            }
+            if (endDate == null || endDate.before(startDate)) {
+                LocalDate ld = DateUtils.ofUtilDate(startDate);
+                ld = ld.plusMonths(1);
+                if(ld.isAfter(today)) {
+                    endDate = DateUtils.ofLocalDate(today);
+                } else {
+                    endDate = DateUtils.ofLocalDate(ld);
+                }
+            }
+        }
     }
 
     public void setQueueList() {
@@ -260,19 +294,17 @@ public class FnboBean implements Serializable {
                 String runFlag = rbo.getProperty("isRunning");
                 queueCount = uda.extract(1).toString();
                 int items = Integer.parseInt(queueCount);
-                for(int i=1; i<=items; i++) {
-                    queueList.add(uda.extract(2,i).toString());
+                for (int i = 1; i <= items; i++) {
+                    queueList.add(uda.extract(2, i).toString());
                 }
                 hasItems = (items > 0);
                 running = (runFlag.equals("1"));
-                if(running) {
+                if (running) {
                     setBtnProcLabel("Running");
+                } else if (hasItems) {
+                    setBtnProcLabel("Process");
                 } else {
-                    if(hasItems) {
-                        setBtnProcLabel("Process");
-                    } else {
-                        setBtnProcLabel("No Items");
-                    }
+                    setBtnProcLabel("No Items");
                 }
             }
         } catch (RbException ex) {
@@ -286,15 +318,15 @@ public class FnboBean implements Serializable {
     public FnboTrans getTransItem() {
         return transItem;
     }
-    
+
     public boolean getHasItems() {
         return hasItems;
     }
-    
+
     public void setHasItems(boolean b) {
         hasItems = b;
     }
-    
+
     public void setTransItem(FnboTrans item) {
         transItem = item;
     }
@@ -359,6 +391,13 @@ public class FnboBean implements Serializable {
         this.arn = arn;
     }
 
+    public Date getFnboStartDate() {
+        return DateUtils.ofLocalDate(fnboStartDate);
+    }
+    
+    public Date getRightNow() {
+        return rightNow;
+    }
     /**
      * @return the searchType
      */

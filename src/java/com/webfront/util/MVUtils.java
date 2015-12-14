@@ -6,6 +6,10 @@
 package com.webfront.util;
 
 import asjava.uniclientlibs.UniDynArray;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import static java.time.temporal.ChronoUnit.DAYS;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -87,10 +91,36 @@ public class MVUtils {
         int mm = Integer.parseInt(dateSeg[0]);
         int dd = Integer.parseInt(dateSeg[1]);
         int yy = Integer.parseInt(dateSeg[2]);
+        if(yy<2000) {
+            yy+=2000;
+        }
         cal.set(Calendar.MONTH, mm-1);
         cal.set(Calendar.DAY_OF_MONTH, dd);
-        cal.set(Calendar.YEAR, yy + 2000);
+        cal.set(Calendar.YEAR, yy);
         return cal.getTime();
+    }
+    
+    public static String oConvDate(int internalDate, String format) {
+        LocalDate pickStart = LocalDate.of(1968, 1, 1);
+        LocalDate javaStart = LocalDate.of(1970, 1, 1);
+        long offset = pickStart.until(javaStart, DAYS);
+        long days = (long) internalDate - offset - 1;
+        String yearDigits = "yyyy";
+        String separator = format.replaceFirst("D\\d", "");
+        separator = separator.replaceAll("\\\\", "\\/");
+        if(format.startsWith("D2")) {
+            yearDigits = "yy";
+        }
+        format = "MM"+separator+"dd"+separator+yearDigits;
+        SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+        return dateFormat.format(DateUtils.ofLocalDate(javaStart.plusDays(days)));
+    }
+    
+    public static int iConvDate(String date) {
+        LocalDate oDate = DateUtils.ofUtilDate(oConvDate(date));
+        LocalDate pickStart = LocalDate.of(1968, 1, 1);
+        long days = pickStart.until(oDate,DAYS) + 1;
+        return (int) days;
     }
     
 }
