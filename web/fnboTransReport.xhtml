@@ -21,8 +21,9 @@
                 <span style="width: 99%; text-align: center; margin: 2em auto 3em auto;">
                     <h2>FNBO Transaction Report</h2>
                 </span>
+                
                 <h:form id="form">
-                    <p:panelGrid style="width: 40%; margin-left: auto; margin-right: auto; margin-bottom: 2em; margin-top: 1em;">
+                    <p:panelGrid style="width: 40%; margin-left: auto; margin-right: auto; margin-bottom: 0px; margin-top: 1em;">
                         <p:row>
                             <p:column>
                                 <h:outputText value='#{fnboBean.searchType eq "ARN" ? "ARN" : "Member Id"}'/>
@@ -48,7 +49,7 @@
                             </p:column>
                         </p:row>
                         <p:row>
-                            <p:column style="width: 60%;">
+                            <p:column>
                                 <h:outputText value="MA / Shop.com Only"/>
                             </p:column>
                             <p:column>
@@ -56,47 +57,58 @@
                             </p:column>
                         </p:row>
                         <p:row>
-                            <p:column style="width: 60%;">
+                            <p:column>
                                 <h:outputText value="Date Range"/>
                             </p:column>
                             <p:column>
-                                <p:panelGrid styleClass="custom">
+                                <p:panelGrid styleClass="custom" style="width: 100%; text-align: right;">
                                     <p:row>
-                                        <p:column>
+                                        <p:column style="text-align: center;">
                                             <h:outputText value="Start Date"/>
                                         </p:column>
-                                        <p:column>
+                                        <p:column style="text-align: center;">
                                             <h:outputText value="End Date"/>
                                         </p:column>
                                     </p:row>
                                     <p:row>
                                         <p:column>
-                                            <p:calendar showButtonPanel="true" id="startDate" value="#{fnboBean.startDate}">
-                                                <p:ajax event="dateSelect" listener="#{fnboBean.onSelectStartDate(event)}"/>
+                                            <p:calendar showButtonPanel="true" id="startDate" value="#{fnboBean.startDate}"
+                                                        mindate="#{fnboBean.fnboStartDate}">
+                                                <p:ajax event="dateSelect" listener="#{fnboBean.onSelectStartDate(event)}"
+                                                        update="endDate"/>
                                             </p:calendar>
                                         </p:column>
                                         <p:column>
-                                            <p:calendar showButtonPanel="true" id="endDate" 
+                                            <p:calendar showButtonPanel="true" id="endDate" value="#{fnboBean.endDate}" 
                                                         mindate="#{fnboBean.startDate}"
-                                                        value="#{fnboBean.endDate}"/>
+                                                        maxdate="#{fnboBean.rightNow}">
+                                                <p:ajax event="dateSelect" listener="#{fnboBean.onSelectEndDate(event)}"
+                                                        update="startDate"/>
+                                            </p:calendar>
                                         </p:column>
                                     </p:row>
                                 </p:panelGrid>
                             </p:column>
                         </p:row>
+                    </p:panelGrid>
+
+                    <p:panelGrid styleClass="custom" style="width: 40%; 
+                                 margin-left: auto; margin-right: auto; margin-bottom: 2em; margin-top: 0px;">
                         <p:row>
-                            <p:column colspan="2" style="text-align: center; width: 90%;">
-                                <p:panelGrid styleClass="custom" style=" text-align: center;">
-                                    <p:column style="text-align: center;">
+                            <p:column style="width: 50%;"></p:column>
+                            <p:column style="width: 50%;">
+                                <p:panelGrid styleClass="custom" style="width: 100%; text-align: right;">
+                                    <p:column>
                                         <p:button value="New Search" outcome="/fnboInquiryForm.xhtml?faces-redirect=true"/>
                                     </p:column>
-                                    <p:column style="text-align: center;">
+                                    <p:column>
                                         <p:commandButton id="fnboInquiryButton" action="#{fnboBean.onInquiryFormSubmit()}" value="Narrow Search"/>
                                     </p:column>                                                                
                                 </p:panelGrid>
                             </p:column>
                         </p:row>
                     </p:panelGrid>
+                    
                     <p:dataTable id="table" value="#{fnboBean.transList}" var="trans"
                                  rows="15"
                                  paginator="true"
