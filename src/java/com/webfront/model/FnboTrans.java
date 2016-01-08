@@ -27,6 +27,9 @@ public class FnboTrans {
     private String transCode;
     private String cardholderName;
     private Date transDate;
+    private String orderId;
+    private Float orderSrp;
+    private Float orderCashback;
 
     final DecimalFormat decFormat = new DecimalFormat("###0.00");
     final SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yy");
@@ -42,6 +45,7 @@ public class FnboTrans {
         merchDesc = "";
         transCode = "";
         cardholderName = "";
+        orderId = "";
     }
 
     /**
@@ -139,6 +143,26 @@ public class FnboTrans {
         return decFormat.format(transAmt);
     }
     
+    /**
+     * @return the transAmt as a String value
+     */
+    public String getOrderSrpAsString() {
+        if (orderSrp==null) {
+            return "";
+        }
+        return decFormat.format(orderSrp);
+    }    
+    
+    /**
+     * @return the transAmt as a String value
+     */
+    public String getOrderCashbackAsString() {
+        if (orderCashback==null) {
+            return "";
+        }
+        return decFormat.format(orderCashback);
+    }     
+    
     public Float getTransAmt() {
         return transAmt;
     }
@@ -216,6 +240,48 @@ public class FnboTrans {
      */
     public void setCardholderName(String cardholderName) {
         this.cardholderName = cardholderName;
+    }
+
+    /**
+     * @return the orderId
+     */
+    public String getOrderId() {
+        return orderId;
+    }
+
+    /**
+     * @param orderId the orderId to set
+     */
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    /**
+     * @return the orderSrp
+     */
+    public Float getOrderSrp() {
+        return orderSrp;
+    }
+
+    /**
+     * @param orderSrp the orderSrp to set
+     */
+    public void setOrderSrp(String orderSrp) {
+        this.orderSrp = Float.valueOf(orderSrp);
+    }
+
+    /**
+     * @return the orderCashback
+     */
+    public Float getOrderCashback() {
+        return orderCashback;
+    }
+
+    /**
+     * @param orderCashback the orderCashback to set
+     */
+    public void setOrderCashback(String orderCashback) {
+        this.orderCashback = Float.valueOf(orderCashback);
     }
 
 }

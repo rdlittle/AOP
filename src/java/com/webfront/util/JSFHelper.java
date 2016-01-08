@@ -41,7 +41,7 @@ public class JSFHelper {
         facesMsg.setSummary(errorType);
         facesMsg.setSeverity(messageMap.get(errorType));
         FacesContext fc = FacesContext.getCurrentInstance();
-        fc.addMessage(null, facesMsg);
+        fc.addMessage("msgs", facesMsg);
     }
 
     private static void setMessageMap() {

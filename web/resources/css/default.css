@@ -86,3 +86,43 @@ a:link:hover, a:visited:hover  {
     white-space: normal;
     word-wrap: break-word;
 }
+
+.infoMessage {
+    font-size: 1.25em;
+    background-color: lightskyblue;
+    color: black;
+    width: 40%;
+    margin: auto;
+    padding: .5em;
+    list-style: none;
+}
+
+.warnMessage {
+    font-size: 1.25em;
+    background-color: lemonchiffon;
+    color: black;
+    width: 40%;
+    margin: auto;
+    padding: .5em;
+    list-style: none;
+}
+
+.errorMessage {
+    font-size: 1.25em;
+    background-color: lightcoral;
+    color: black;
+    width: 40%;
+    margin: auto;
+    padding: .5em;
+    list-style: none;
+}
+
+.fatalMessage {
+    font-size: 1.25em;
+    background-color: crimson;
+    color: black;
+    width: 40%;
+    margin: auto;
+    padding: .5em;
+    list-style: none;
+}

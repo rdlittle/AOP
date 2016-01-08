@@ -5,6 +5,7 @@
  */
 package com.webfront.util;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
@@ -35,6 +36,11 @@ public class DateUtils {
         int yy = cal.get(Calendar.YEAR);
         LocalDate ld = LocalDate.of(yy, mm, dd);
         return ld;
+    }
+    
+    public static String asString(Date d) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        return dateFormat.format(d);
     }
     
 }

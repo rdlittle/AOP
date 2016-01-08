@@ -69,7 +69,7 @@
                                      disabled="#{!utSuiteBean.changed}"
                                      update="suiteForm:suiteSelector" style="margin-left: 1.75em;"/>
                     <p:commandButton value="Delete" actionListener="#{utSuiteBean.delete()}"
-                                     disabled='#{utSuiteBean.utSuiteId.equals("")}'
+                                     disabled='#{utSuiteBean.utSuiteId == ""}'
                                      update="@form" style="margin-left: 1.75em;"/>
                     
                     <p:dataTable id="table" value="#{utSuiteBean.testSuite.utSegment}" var="utUnit"

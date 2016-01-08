@@ -5,6 +5,9 @@
  */
 package com.webfront.beans;
 
+import asjava.uniclientlibs.UniDynArray;
+import com.rs.u2.wde.redbeans.RbException;
+import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.controller.AopQueueController;
 import com.webfront.model.AopQueue;
 import com.webfront.model.UVException;
@@ -19,6 +22,7 @@ import javax.faces.context.FacesContext;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.UnselectEvent;
 
 /**
  *
@@ -78,11 +82,35 @@ public class AopQueueBean implements Serializable {
     }
 
     public void onRowSelect(SelectEvent se) {
-        selected = true;
+//        System.out.println("AopQueueBean.onRowSelect(): select is "+selectedItems.isEmpty());
+        selected = !selectedItems.isEmpty();
     }
 
-    public void onRowUnselect(SelectEvent se) {
-        selected = false;
+    public void onRowUnselect(UnselectEvent se) {
+//        System.out.println("AopQueueBean.onRowUnSelect(): select is "+selectedItems.isEmpty());
+        selected = !selectedItems.isEmpty();
+    }
+    
+    public boolean getHasSelection() {
+//        System.out.println("AopQueueBean.getHasSelection(): select is "+selectedItems.isEmpty());
+        return selectedItems.isEmpty();
+    }
+    
+    public void onClickProcess() {
+        setSelected(false);
+        RedObject rbo = new RedObject("WDE","AOP:Queue");
+        UniDynArray uda = new UniDynArray();
+        for(AopQueue q : queueList) {
+            uda.insert(1,-1 , q.getQueueId());
+            uda.insert(2,-1, "1");
+        }
+        rbo.setProperty("queueId", uda.extract(1));
+        rbo.setProperty("queueStatus", uda.extract(2));
+        try {
+            rbo.callMethod("setAopQueueStatus");
+        } catch (RbException ex) {
+            Logger.getLogger(AopQueueBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

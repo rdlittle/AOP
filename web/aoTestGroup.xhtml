@@ -9,6 +9,9 @@
     <body>
 
         <ui:composition template="./layout.xhtml">
+            <f:metadata>
+                <f:viewAction action="#{aopTestBean.init()}" onPostback="false"/>
+            </f:metadata>
 
             <ui:define name="content">
 
@@ -31,7 +34,7 @@
                                                 <f:selectItem itemValue = "-1" itemLabel="Select"/>
                                                 <f:selectItems value='#{aopTestBean.groupList}'/>   
                                                 <p:ajax event="change" listener="#{aopTestBean.onChangeDataGroup()}" 
-                                                        update="itemId,createDate,groupDesc,longText,table,deleteGroup"/>
+                                                        update="editGroup,itemId,createDate,groupDesc,longText,table,deleteGroup"/>
                                             </p:selectOneMenu>
                                         </p:column>
                                     </p:row>
@@ -88,7 +91,7 @@
                         </p:row>
                     </p:panelGrid>
                     <p:dataTable id="table" 
-                                 value="#{aopTestBean.selectedTestDataGroup.units}"
+                                 value="#{aopTestBean.selectedTestDataGroup.unitMap}"
                                  selection="#{aopTestBean.selectedUnitList}"
                                  rowKey="#{unit.id}"
                                  selectionMode="multiple"
@@ -114,7 +117,7 @@
                             <h:outputText value="#{unit.orders}"/>
                         </p:column>
                         <p:column headerText="New batch?" style="width: 5%;">
-                            <h:outputText value="#{aopTestBean.selectedTestDataGroup.newBatch[unit.id]}"/>
+                            <p:selectBooleanCheckbox value="#{aopTestBean.selectedTestDataGroup.newBatch[unit.id]}"/>
                         </p:column>
                         <p:column headerText="Requires" style="width: 5%;">
                             <h:outputText value="#{unit.requires}"/>
@@ -123,7 +126,7 @@
                             <h:outputText value="#{unit.creditType}"/>
                         </p:column>                                    
                         <p:column headerText="Overload Refund" style="width: 5%;">
-                            <h:outputText value="#{aopTestBean.selectedTestDataGroup.overloadRefund[unit.id]}"/>
+                            <p:selectBooleanCheckbox value="#{aopTestBean.selectedTestDataGroup.overloadRefund[unit.id]}"/>
                         </p:column>
                         <f:facet id="footer" name="footer">
 
@@ -141,7 +144,7 @@
                                     <p:ajax event="change" listener="#{aopTestBean.onChangeDataUnit()}" update="table"/>
                                 </p:selectOneMenu>
 
-                                <p:selectOneRadio id="batchTypeSelector" value="">
+                                <p:selectOneRadio id="batchTypeSelector" value="#{aopTestBean.selectedTestDataGroup.batchType}">
                                     <f:selectItem itemValue="0" itemLabel="Same batch"/>
                                     <f:selectItem itemValue="1" itemLabel="Create new batch"/>
                                 </p:selectOneRadio>
@@ -155,9 +158,16 @@
 
                         </f:facet>
                     </p:dataTable>
-                    <p:commandButton id="createGroup" value="Create Group" actionListener="#{aopTestBean.onCreateDataGroup()}"/>
+                    
+                    <p:commandButton id="createGroup" value="Create Group" action="#{aopTestBean.onCreateDataGroup(evt)}"/>
+                    
+                    <p:commandButton id="editGroup" value="Edit Group" action="#{aopTestBean.onEditDataGroup(evt)}"
+                                     disabled='#{aopTestBean.groupId eq "-1"}'
+                                     />
+                    
                     <p:commandButton id="saveButton" value="Save Group" disabled="#{!aopTestBean.selectedTestDataGroup.changed}"
-                                     actionListener="#{aopTestBean.onSaveDataGroup()}" update="@form"/>
+                                     actionListener="#{aopTestBean.onSaveDataGroup(evt)}" update="@form"/>
+                    
                     <p:commandButton id="deleteGroup" value="Delete Group" disabled='#{aopTestBean.groupId eq "-1" || aopTestBean.groupId eq ""}'
                                      actionListener="#{aopTestBean.onDeleteDataGroup()}"
                                      update="@form"/>

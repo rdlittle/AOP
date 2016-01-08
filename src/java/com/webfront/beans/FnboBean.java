@@ -97,6 +97,9 @@ public class FnboBean implements Serializable {
                     trans.setMerchType(rbo.getProperty("merchType"));
                     trans.setMerchDesc(rbo.getProperty("merchDesc"));
                     trans.setTransCode(rbo.getProperty("transCode"));
+                    trans.setOrderSrp(rbo.getProperty("orderSrp"));
+                    trans.setOrderCashback(rbo.getProperty("orderCashback"));
+                    trans.setOrderId(rbo.getProperty("orderId"));
                     if (trans.getId().isEmpty()) {
                         transId = "";
                         FacesContext ctx = FacesContext.getCurrentInstance();
@@ -153,44 +156,56 @@ public class FnboBean implements Serializable {
             if (svrStatus == -1) {
                 JSFHelper.sendFacesMessage(svrCtrlCode + ": " + svrMessage, "Error");
             } else {
+
                 DecimalFormat fmt = new DecimalFormat("#,##0.00");
                 setTransTotal("0.00");
                 Float totalAmt = new Float(0);
                 UniDynArray trans = rbo.getPropertyToDynArray("transId");
-                trans.insert(2, rbo.getPropertyToDynArray("transDate"));
-                trans.insert(3, rbo.getPropertyToDynArray("arn"));
-                trans.insert(4, rbo.getPropertyToDynArray("memberId"));
-                trans.insert(5, rbo.getPropertyToDynArray("cardType"));
-                trans.insert(6, rbo.getPropertyToDynArray("transAmt"));
-                trans.insert(7, rbo.getPropertyToDynArray("merchType"));
-                trans.insert(8, rbo.getPropertyToDynArray("merchDesc"));
-                trans.insert(9, rbo.getPropertyToDynArray("transCode"));
-                trans.insert(10, rbo.getPropertyToDynArray("cardHolderName"));
-                startDate = MVUtils.oConvDate(rbo.getProperty("startDate"));
-                endDate = MVUtils.oConvDate(rbo.getProperty("endDate"));
-                int transCount = trans.dcount(1);
-                for (int t = 1; t <= transCount; t++) {
-                    FnboTrans fTrans = new FnboTrans();
-                    fTrans.setId(trans.extract(1, t).toString());
-                    fTrans.setTransDate(trans.extract(2, t).toString());
-                    fTrans.setArn(trans.extract(3, t).toString());
-                    fTrans.setMemberId(trans.extract(4, t).toString());
-                    fTrans.setCardType(trans.extract(5, t).toString());
-                    fTrans.setTransAmt(trans.extract(6, t).toString());
-                    fTrans.setMerchType(trans.extract(7, t).toString());
-                    fTrans.setMerchDesc(trans.extract(8, t).toString());
-                    fTrans.setTransCode(trans.extract(9, t).toString());
-                    fTrans.setCardholderName(trans.extract(10, t).toString());
-                    transList.add(fTrans);
-                    if (t == 1) {
-                        setTransItem(fTrans);
+                if (trans.dcount(1) == 0) {
+                    JSFHelper.sendFacesMessage("No items found", "Info");
+                    return "";
+                } else {
+                    trans.insert(2, rbo.getPropertyToDynArray("transDate"));
+                    trans.insert(3, rbo.getPropertyToDynArray("arn"));
+                    trans.insert(4, rbo.getPropertyToDynArray("memberId"));
+                    trans.insert(5, rbo.getPropertyToDynArray("cardType"));
+                    trans.insert(6, rbo.getPropertyToDynArray("transAmt"));
+                    trans.insert(7, rbo.getPropertyToDynArray("merchType"));
+                    trans.insert(8, rbo.getPropertyToDynArray("merchDesc"));
+                    trans.insert(9, rbo.getPropertyToDynArray("transCode"));
+                    trans.insert(10, rbo.getPropertyToDynArray("cardHolderName"));
+                    trans.insert(13, rbo.getPropertyToDynArray("orderSrp"));
+                    trans.insert(14, rbo.getPropertyToDynArray("orderCashback"));
+                    trans.insert(15, rbo.getPropertyToDynArray("orderId"));
+                    startDate = MVUtils.oConvDate(rbo.getProperty("startDate"));
+                    endDate = MVUtils.oConvDate(rbo.getProperty("endDate"));
+                    int transCount = trans.dcount(1);
+                    for (int t = 1; t <= transCount; t++) {
+                        FnboTrans fTrans = new FnboTrans();
+                        fTrans.setId(trans.extract(1, t).toString());
+                        fTrans.setTransDate(trans.extract(2, t).toString());
+                        fTrans.setArn(trans.extract(3, t).toString());
+                        fTrans.setMemberId(trans.extract(4, t).toString());
+                        fTrans.setCardType(trans.extract(5, t).toString());
+                        fTrans.setTransAmt(trans.extract(6, t).toString());
+                        fTrans.setMerchType(trans.extract(7, t).toString());
+                        fTrans.setMerchDesc(trans.extract(8, t).toString());
+                        fTrans.setTransCode(trans.extract(9, t).toString());
+                        fTrans.setCardholderName(trans.extract(10, t).toString());
+                        fTrans.setOrderSrp(trans.extract(13, t).toString());
+                        fTrans.setOrderCashback(trans.extract(14, t).toString());
+                        fTrans.setOrderId(trans.extract(15, t).toString());
+                        transList.add(fTrans);
+                        if (t == 1) {
+                            setTransItem(fTrans);
+                        }
+                        if (fTrans.getTransAmt() == null) {
+                            fTrans.setTransAmt("0.00");
+                        }
+                        Float amt = fTrans.getTransAmt();
+                        totalAmt += amt;
+                        setTransTotal(fmt.format(totalAmt));
                     }
-                    if (fTrans.getTransAmt() == null) {
-                        fTrans.setTransAmt("0.00");
-                    }
-                    Float amt = fTrans.getTransAmt();
-                    totalAmt += amt;
-                    setTransTotal(fmt.format(totalAmt));
                 }
                 return "/fnboTransReport.xhtml?faces-redirect=true";
             }
@@ -268,7 +283,7 @@ public class FnboBean implements Serializable {
             if (endDate == null || endDate.before(startDate)) {
                 LocalDate ld = DateUtils.ofUtilDate(startDate);
                 ld = ld.plusMonths(1);
-                if(ld.isAfter(today)) {
+                if (ld.isAfter(today)) {
                     endDate = DateUtils.ofLocalDate(today);
                 } else {
                     endDate = DateUtils.ofLocalDate(ld);
@@ -394,10 +409,11 @@ public class FnboBean implements Serializable {
     public Date getFnboStartDate() {
         return DateUtils.ofLocalDate(fnboStartDate);
     }
-    
+
     public Date getRightNow() {
         return rightNow;
     }
+
     /**
      * @return the searchType
      */

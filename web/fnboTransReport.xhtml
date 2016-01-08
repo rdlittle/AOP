@@ -21,6 +21,7 @@
                 <span style="width: 99%; text-align: center; margin: 2em auto 3em auto;">
                     <h2>FNBO Transaction Report</h2>
                 </span>
+                <p:messages id="msgs" autoUpdate="true" showDetail="true"/>
                 
                 <h:form id="form">
                     <p:panelGrid style="width: 40%; margin-left: auto; margin-right: auto; margin-bottom: 0px; margin-top: 1em;">
@@ -95,8 +96,8 @@
                     <p:panelGrid styleClass="custom" style="width: 40%; 
                                  margin-left: auto; margin-right: auto; margin-bottom: 2em; margin-top: 0px;">
                         <p:row>
-                            <p:column style="width: 50%;"></p:column>
-                            <p:column style="width: 50%;">
+                            <p:column style="width: 30%;"></p:column>
+                            <p:column style="width: 70%;">
                                 <p:panelGrid styleClass="custom" style="width: 100%; text-align: right;">
                                     <p:column>
                                         <p:button value="New Search" outcome="/fnboInquiryForm.xhtml?faces-redirect=true"/>
@@ -115,16 +116,16 @@
                                  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="10,15,20,25,30"                             
                                  style="width: 90%; margin: auto;">
-                        <p:column headerText="Transaction#" style="width: 10%;" sortBy="#{trans.id}">
+                        <p:column headerText="Transaction#" style="width: 9%;" sortBy="#{trans.id}">
                             <h:outputText value="#{trans.id}"/>
                         </p:column>
                         <p:column id="transDateCol" headerText="Date" style="width: 3%; text-align: center;" sortBy="#{trans.transDate}">
                             <h:outputText value="#{trans.transDateAsString}"/>
                         </p:column>
-                        <p:column headerText='#{fnboBean.searchType eq "ARN" ? "Member Id" : "ARN"}' style="width: 5%;">
-                            <h:outputText value='#{fnboBean.searchType eq "ARN" ? trans.memberId : trans.arn}'/>
+                        <p:column headerText='#{fnboBean.searchType eq "ARN" ? "Member Id" : "ARN"}' style="width: 6%;">
+                            <h:outputText value='#{fnboBean.searchType eq "ARN" ? trans.memberId : trans.arn}' style="text-align: left;"/>
                         </p:column>
-                        <p:column headerText="Card type" style="width: 3%; text-align: center;">
+                        <p:column headerText="Card type" style="width: 2%; text-align: center;">
                             <h:outputText value="#{trans.cardType}"/>
                         </p:column>
                         <p:column headerText="Merch Type" style="width: 5%;" sortBy="#{trans.merchType}">
@@ -139,6 +140,15 @@
                         <p:column headerText="Trans Amount" style="width: 5%; text-align: right;" sortBy="#{trans.transAmt}">
                             <h:outputText value="#{trans.transAmtAsString}"/>
                         </p:column>
+                        <p:column headerText="Order#" style="width: 3%; text-align: right;" sortBy="#{trans.orderId}">
+                            <h:outputText value="#{trans.orderId}"/>
+                        </p:column>
+                        <p:column headerText="SRP" style="width: 3%; text-align: right;" sortBy="#{trans.orderSrp}">
+                            <h:outputText value="#{trans.orderSrpAsString}"/>
+                        </p:column>
+                        <p:column headerText="CB" style="width: 3%; text-align: right;" sortBy="#{trans.orderCashback}">
+                            <h:outputText value="#{trans.orderCashbackAsString}"/>
+                        </p:column>                        
                     </p:dataTable>
                 </h:form>  
             </ui:define>

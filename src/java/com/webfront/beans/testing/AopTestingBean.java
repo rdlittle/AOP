@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.enterprise.context.SessionScoped;
@@ -72,6 +73,7 @@ public class AopTestingBean implements Serializable {
     private String utLogTime;
     private int utLogCount;
     private String groupId;
+    private String unitId;
 
 //    @ManagedProperty(value = "#{affiliateMasterBean}")
     private AffiliateMasterBean masterBean;
@@ -111,6 +113,7 @@ public class AopTestingBean implements Serializable {
 
     public AopTestingBean() {
         groupId = "";
+        unitId = "";
         sourceDesc = new AopSourceDesc();
         batchList = new ArrayList<>();
         groupList = new HashMap<>();
@@ -216,7 +219,6 @@ public class AopTestingBean implements Serializable {
     public void readSourceDesc(AjaxBehaviorEvent event) {
         sourceDesc.getCustList().clear();
         try {
-            System.out.println("AopTestBean.readSourceDesc()");
             String commType = getCommissionType();
             if (masterBean != null) {
                 masterBean.setCountryCode(countryCode);
@@ -450,7 +452,7 @@ public class AopTestingBean implements Serializable {
      */
     public ArrayList<AoTestDataUnit> getDataUnitList() {
         if (dataUnitList.isEmpty()) {
-            System.out.println("AopTestingBean.getDataUnitList()");
+//            System.out.println("AopTestingBean.getDataUnitList()");
             readTestDataUnits();
         }
         return dataUnitList;
@@ -464,7 +466,7 @@ public class AopTestingBean implements Serializable {
     }
 
     public void readTestDataUnits() {
-        System.out.println("AopTestingBean.readTestDataUnits()");
+//        System.out.println("AopTestingBean.readTestDataUnits()");
         rbo.setProperty("unitId", "");
         try {
             rbo.callMethod("getAopTestUnit");
@@ -524,8 +526,8 @@ public class AopTestingBean implements Serializable {
                 JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
             } else {
                 LinkedHashMap<String, AoTestDataUnit> unitMap = new LinkedHashMap<>();
-                HashMap<String, String> batchMap = new HashMap<>();
-                HashMap<String, String> overloadMap = new HashMap<>();
+                HashMap<String, Boolean> batchMap = new HashMap<>();
+                HashMap<String, Boolean> overloadMap = new HashMap<>();
                 dataUnitList.clear();
                 selectedTestDataGroup = new AoTestDataGroup();
                 selectedTestDataGroup.setGroupId(groupId);
@@ -545,8 +547,8 @@ public class AopTestingBean implements Serializable {
                 selectedTestDataGroup.setCreateDate(createDates.extract(1, 1).toString());
                 for (int u = 1; u <= unitCount; u++) {
                     String unitId = unitIds.extract(1, 1, u).toString();
-                    String createBatch = "Y".equals(newBatch.extract(1, 1, u).toString()) ? "Y" : "N";
-                    String refundOverload = "Y".equals(overload.extract(1, 1, u).toString()) ? "Y" : "N";
+                    String createBatch = newBatch.extract(1, 1, u).toString();
+                    String refundOverload = overload.extract(1, 1, u).toString();
                     selectedDataUnit = new AoTestDataUnit();
                     selectedDataUnit.setId(unitId);
                     selectedDataUnit.setDescription(unitDescs.extract(1, 1, u).toString());
@@ -555,14 +557,15 @@ public class AopTestingBean implements Serializable {
                     selectedDataUnit.setOrders(unitOrders.extract(1, 1, u).toString());
                     selectedDataUnit.setRequires(unitRequires.extract(1, 1, u).toString());
                     selectedDataUnit.setCreditType(credType.extract(1, 1, u).toString());
-                    batchMap.put(unitId, createBatch);
-                    overloadMap.put(unitId, refundOverload);
+                    batchMap.put(unitId, createBatch.equals("1"));
+                    overloadMap.put(unitId, refundOverload.equals("1"));
                     unitMap.put(unitId, selectedDataUnit);
                 }
                 selectedTestDataGroup.setNewBatch(batchMap);
                 selectedTestDataGroup.setOverloadedRefund(overloadMap);
-                selectedTestDataGroup.setUnits(unitMap);
+                selectedTestDataGroup.setUnitMap(unitMap);
                 selectedTestDataGroup.setLongText(rbo.getProperty("longText"));
+                selectedTestDataGroup.getUnitList().addAll(unitMap.values());
                 selectedDataUnit = new AoTestDataUnit();
             }
         } catch (RbException ex) {
@@ -735,13 +738,19 @@ public class AopTestingBean implements Serializable {
         }
     }
 
-    public String onCreateDataGroup() {
+    public String onCreateDataGroup(ActionEvent event) {
         groupId = "";
         Date date = Calendar.getInstance(Locale.getDefault()).getTime();
         SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
         selectedTestDataGroup = new AoTestDataGroup();
         selectedTestDataGroup.setCreateDate(df.format(date));
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        Map<String, String> map = ctx.getExternalContext().getRequestParameterMap();
         setEdit(true);
+        return "/testGroupSetup.xhtml?faces-redirect=true";
+    }
+
+    public String onEditDataGroup(ActionEvent event) {
         return "/testGroupSetup.xhtml?faces-redirect=true";
     }
 
@@ -753,7 +762,7 @@ public class AopTestingBean implements Serializable {
             errCode = rbo.getProperty("svrCtrlCode");
             errMessage = rbo.getProperty("svrMessage");
             if (errStatus == -1) {
-                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage,"Error");
+                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
             } else {
                 selectedTestDataGroup = new AoTestDataGroup();
                 groupList.remove(groupId);
@@ -766,18 +775,18 @@ public class AopTestingBean implements Serializable {
         }
     }
 
-    public void onSaveDataGroup() {
+    public String onSaveDataGroup(ActionEvent event) {
         rbo.setProperty("groupId", groupId);
         rbo.setProperty("groupDesc", selectedTestDataGroup.getDescription());
         rbo.setProperty("groupDate", selectedTestDataGroup.getCreateDate());
         rbo.setProperty("longText", selectedTestDataGroup.getLongText());
         UniDynArray units = new UniDynArray();
         int val = 1;
-        for (AoTestDataUnit unit : selectedTestDataGroup.getUnits()) {
-            String unitId = unit.getId();
+        for (AoTestDataUnit unit : selectedTestDataGroup.getUnitMap()) {
+            unitId = unit.getId();
             units.insert(1, val, unitId);
-            units.insert(2, val, selectedTestDataGroup.getNewBatch().get(unitId));
-            units.insert(3, val, selectedTestDataGroup.getOverloadRefund().get(unitId));
+            units.insert(2, val, selectedTestDataGroup.getNewBatch());
+            units.insert(3, val, selectedTestDataGroup.getOverloadRefund());
             val++;
         }
         rbo.setProperty("groupUnits", units.extract(1));
@@ -789,15 +798,17 @@ public class AopTestingBean implements Serializable {
             errCode = rbo.getProperty("svrCtrlCode");
             errMessage = rbo.getProperty("svrMessage");
             if (errStatus == -1) {
-                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage,"Error");
+                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
             } else {
                 groupId = rbo.getProperty("groupId");
                 selectedTestDataGroup.setChanged(false);
+                setEdit(false);
                 JSFHelper.sendFacesMessage("Data group successfully saved");
             }
         } catch (RbException ex) {
             Logger.getLogger(AopTestingBean.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return "/aoTestGroup.xhtml?faces-redirect=true";
     }
 
     public void onSaveSourceDesc() {
@@ -838,7 +849,7 @@ public class AopTestingBean implements Serializable {
             errCode = rbo.getProperty("svrCtrlCode");
             errMessage = rbo.getProperty("svrMessage");
             if (errStatus == -1) {
-                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage,"Error");
+                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
             } else {
                 JSFHelper.sendFacesMessage("Saved successfully");
                 sourceDesc.setNewRecord(false);
@@ -846,6 +857,18 @@ public class AopTestingBean implements Serializable {
             }
         } catch (RbException ex) {
             Logger.getLogger(AopTestingBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void onSelectDataUnit() {
+        if (!unitId.isEmpty()) {
+            for (AoTestDataUnit u : dataUnitList) {
+                if(unitId.equals(u.getId())) {
+                    selectedDataUnit = u;
+                    selectedTestDataGroup.setUnit(u);
+                    return;
+                }
+            }
         }
     }
 
@@ -874,7 +897,7 @@ public class AopTestingBean implements Serializable {
             errCode = rb.getProperty("errCode");
             errMessage = rb.getProperty("errMsg");
             if (errStatus == -1) {
-                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage,"Error");
+                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
             } else {
                 UniDynArray ids = rb.getPropertyToDynArray("utLogId");
                 UniDynArray names = rb.getPropertyToDynArray("utName");
@@ -902,7 +925,7 @@ public class AopTestingBean implements Serializable {
             errCode = rb.getProperty("errCode");
             errMessage = rb.getProperty("errMsg");
             if (errStatus == -1) {
-                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage,"Error");
+                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
             } else {
                 UniDynArray utSuiteIdList = rb.getPropertyToDynArray("suiteId");
                 UniDynArray utDescList = rb.getPropertyToDynArray("utDate");
@@ -933,7 +956,7 @@ public class AopTestingBean implements Serializable {
             if (errStatus == -1) {
                 errCode = rbo.getProperty("svrCtrlCode");
                 errMessage = rbo.getProperty("svrmessage");
-                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage,"Error");
+                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
             } else {
                 UniDynArray oList1 = rbo.getPropertyToDynArray("batchId");
                 UniDynArray oList2 = rbo.getPropertyToDynArray("queueId");
@@ -1388,6 +1411,12 @@ public class AopTestingBean implements Serializable {
         this.batchList = batchList;
     }
 
+    public void init() {
+        groupId = "-1";
+        selectedTestDataGroup = new AoTestDataGroup();
+        setEdit(false);
+    }
+
     /**
      * @return the edit
      */
@@ -1537,6 +1566,20 @@ public class AopTestingBean implements Serializable {
      */
     public void setAllCountries(ArrayList<String> allCountries) {
         this.allCountries = allCountries;
+    }
+
+    /**
+     * @return the unitId
+     */
+    public String getUnitId() {
+        return unitId;
+    }
+
+    /**
+     * @param unitId the unitId to set
+     */
+    public void setUnitId(String unitId) {
+        this.unitId = unitId;
     }
 
 }

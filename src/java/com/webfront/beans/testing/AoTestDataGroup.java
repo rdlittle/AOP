@@ -19,10 +19,10 @@ public class AoTestDataGroup {
     private String groupId;
     private String createDate;
     private String description;
-    private HashMap<String,String> newBatch;
-    private HashMap<String,String> overloadRefund;
+    private HashMap<String,Boolean> newBatch;
+    private HashMap<String,Boolean> overloadRefund;
     
-    private LinkedHashMap<String,AoTestDataUnit> units;
+    private LinkedHashMap<String,AoTestDataUnit> unitMap;
     private ArrayList<AoTestDataUnit> unitList;
     private boolean multiBatch;
     private boolean changed;
@@ -32,6 +32,7 @@ public class AoTestDataGroup {
     private AoTestDataUnit selectedUnit;
     private String rowIndex;
     private String longText;
+    private String batchType;
     
     public AoTestDataGroup() {
         groupId = "";
@@ -39,7 +40,7 @@ public class AoTestDataGroup {
         description = "";
         newBatch = new HashMap<>();
         overloadRefund = new HashMap<>();
-        units = new LinkedHashMap<>();
+        unitMap = new LinkedHashMap<>();
         multiBatch = false;
         changed = false;
         row = 0;
@@ -47,20 +48,21 @@ public class AoTestDataGroup {
         unit = new AoTestDataUnit();
         unitList = new ArrayList<>();
         longText = "";
+        batchType = "";
     }
 
     /**
-     * @return the units
+     * @return the unitMap
      */
-    public ArrayList<AoTestDataUnit> getUnits() {
+    public ArrayList<AoTestDataUnit> getUnitMap() {
         ArrayList<AoTestDataUnit> list = new ArrayList<>();
-        list.addAll(units.values());
+        list.addAll(unitMap.values());
         return list;
     }
     
     public void removeUnit(String id) {
-        if(units.containsKey(id)) {
-            units.remove(id);
+        if(unitMap.containsKey(id)) {
+            unitMap.remove(id);
             newBatch.remove(id);
             overloadRefund.remove(id);
         }
@@ -70,18 +72,18 @@ public class AoTestDataGroup {
     public void addRow() {
         setRow(getRow() + 1);
         unit = new AoTestDataUnit();
-        unitList.add(unit);
+        unitMap.put(Integer.toString(getRow()), unit);
         setAddingRow(true);
     }
     
     public void commitRow() {
-        units.put(Integer.toString(getRow()),getUnit());
+        unitMap.put(Integer.toString(getRow()),getUnit());
         setAddingRow(false);
         setChanged(true);
     }
     
     public void addUnit(String id,AoTestDataUnit u) {
-        units.put(id, u);
+        unitMap.put(id, u);
         setChanged(true);
     }
     
@@ -90,7 +92,7 @@ public class AoTestDataGroup {
     }
     
     public void onReset() {
-        units.clear();
+        unitMap.clear();
         unitList.clear();
         row=1;
         unit = new AoTestDataUnit();
@@ -148,18 +150,18 @@ public class AoTestDataGroup {
     /**
      * @return the newBatch
      */
-    public HashMap<String,String> getNewBatch() {
+    public HashMap<String,Boolean> getNewBatch() {
         return newBatch;
     }
     
-    public void setNewBatch(HashMap<String,String> map) {
+    public void setNewBatch(HashMap<String,Boolean> map) {
         this.newBatch=map;
     }
 
     /**
      * @return the overloadRefund
      */
-    public HashMap<String,String> getOverloadRefund() {
+    public HashMap<String,Boolean> getOverloadRefund() {
         return overloadRefund;
     }
     
@@ -167,15 +169,15 @@ public class AoTestDataGroup {
      *
      * @param map the HashMap<String,String> to set
      */
-    public void setOverloadedRefund(HashMap<String,String> map) {
+    public void setOverloadedRefund(HashMap<String,Boolean> map) {
         this.overloadRefund=map;
     }
 
     /**
-     * @param units the units to set
+     * @param unitMap the unitMap to set
      */
-    public void setUnits(LinkedHashMap<String,AoTestDataUnit> units) {
-        this.units = units;
+    public void setUnitMap(LinkedHashMap<String,AoTestDataUnit> unitMap) {
+        this.unitMap = unitMap;
     }
 
     /**
@@ -304,6 +306,20 @@ public class AoTestDataGroup {
      */
     public void setLongText(String longText) {
         this.longText = longText;
+    }
+
+    /**
+     * @return the batchType
+     */
+    public String getBatchType() {
+        return batchType;
+    }
+
+    /**
+     * @param batchType the batchType to set
+     */
+    public void setBatchType(String batchType) {
+        this.batchType = batchType;
     }
     
 }

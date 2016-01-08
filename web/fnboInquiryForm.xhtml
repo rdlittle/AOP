@@ -21,6 +21,7 @@
                 <span style="width: 99%; text-align: center; margin: 2em auto 3em auto;">
                     <h2>FNBO Cardholder Inquiry</h2>
                 </span>
+                
                 <h:form id="form">
                     <p:panelGrid style="width: 40%; margin-left: auto; margin-right: auto; margin-bottom: 0px; margin-top: 1em;">
                         <p:row>
@@ -28,7 +29,7 @@
                                 <h:outputText value='Find by member Id'/>
                             </p:column>
                             <p:column>
-                                <h:inputText value='#{fnboBean.memberId}' style="width: 40%;"/>
+                                <h:inputText value='#{fnboBean.memberId}' style="width: 60%;"/>
                             </p:column>                        
                         </p:row>
 
@@ -98,7 +99,7 @@
                     <p:panelGrid styleClass="custom" style="width: 40%; margin-left: auto; margin-right: auto; margin-bottom: 2em; margin-top: 1em;">
                         <p:row>
                             <p:column colspan="2" style="text-align: right;">
-                                <p:commandButton id="fnboInquiryButton" action="#{fnboBean.onInquiryFormSubmit()}" value="Submit"/>
+                                <p:commandButton id="fnboInquiryButton" action="#{fnboBean.onInquiryFormSubmit()}" value="Submit" update="msgs"/>
                             </p:column>
                         </p:row>
 
@@ -124,6 +125,7 @@
 
                     </p:panelGrid>
                 </h:form>
+                <h:messages id="msgs" showDetail="true" layout="list" infoClass="infoMessage"/>
             </ui:define>
 
         </ui:composition>
