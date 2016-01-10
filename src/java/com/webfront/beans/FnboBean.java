@@ -8,6 +8,7 @@ package com.webfront.beans;
 import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
+import com.webfront.model.CardHolder;
 import com.webfront.model.FnboTrans;
 import com.webfront.util.DateUtils;
 import com.webfront.util.JSFHelper;
@@ -54,6 +55,8 @@ public class FnboBean implements Serializable {
     private String btnProcLabel;
     private final LocalDate fnboStartDate = LocalDate.of(2015, 7, 28);
     private final Date rightNow = Calendar.getInstance().getTime();
+    private final ArrayList<CardHolder> cardHolderList;
+    private CardHolder cardHolder;
 
     /**
      * Creates a new instance of FnboBean
@@ -63,6 +66,9 @@ public class FnboBean implements Serializable {
         transItem = new FnboTrans();
         transList = new ArrayList<>();
         queueList = new ArrayList<>();
+        cardHolderList = new ArrayList<>();
+        cardHolder = new CardHolder();
+        hasItems = false;
     }
 
     /**
@@ -100,6 +106,7 @@ public class FnboBean implements Serializable {
                     trans.setOrderSrp(rbo.getProperty("orderSrp"));
                     trans.setOrderCashback(rbo.getProperty("orderCashback"));
                     trans.setOrderId(rbo.getProperty("orderId"));
+                    trans.setCardholderName(rbo.getProperty("cardHolderName"));
                     if (trans.getId().isEmpty()) {
                         transId = "";
                         FacesContext ctx = FacesContext.getCurrentInstance();
@@ -179,6 +186,7 @@ public class FnboBean implements Serializable {
                     trans.insert(15, rbo.getPropertyToDynArray("orderId"));
                     startDate = MVUtils.oConvDate(rbo.getProperty("startDate"));
                     endDate = MVUtils.oConvDate(rbo.getProperty("endDate"));
+                    trans.insert(16, rbo.getPropertyToDynArray("nameList"));
                     int transCount = trans.dcount(1);
                     for (int t = 1; t <= transCount; t++) {
                         FnboTrans fTrans = new FnboTrans();
@@ -191,7 +199,7 @@ public class FnboBean implements Serializable {
                         fTrans.setMerchType(trans.extract(7, t).toString());
                         fTrans.setMerchDesc(trans.extract(8, t).toString());
                         fTrans.setTransCode(trans.extract(9, t).toString());
-                        fTrans.setCardholderName(trans.extract(10, t).toString());
+                        fTrans.setCardholderName(trans.extract(16, t).toString());
                         fTrans.setOrderSrp(trans.extract(13, t).toString());
                         fTrans.setOrderCashback(trans.extract(14, t).toString());
                         fTrans.setOrderId(trans.extract(15, t).toString());
@@ -213,6 +221,79 @@ public class FnboBean implements Serializable {
             Logger.getLogger(FnboBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "";
+    }
+
+    public void onCardHolderClearForm() {
+        cardHolder = new CardHolder();
+        cardHolderList.clear();
+        hasItems = false;
+    }
+
+    public void onCardHolderLookup() {
+        if (cardHolder != null) {
+            cardHolderList.clear();
+            RedObject rbo;
+            rbo = new RedObject("WDE", "Bank:Member");
+            rbo.setProperty("arn", cardHolder.getArn());
+            rbo.setProperty("memberId", cardHolder.getMemberId());
+            rbo.setProperty("firstName", cardHolder.getFirstName());
+            rbo.setProperty("lastName", cardHolder.getLastName());
+            rbo.setProperty("address1", cardHolder.getAddress1());
+            rbo.setProperty("emailAddress", cardHolder.getEmailAddress());
+            try {
+                rbo.callMethod("getBankFnboMember");
+                int svrStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
+                String svrCtrlCode = rbo.getProperty("svrCtrlCode");
+                String svrMessage = rbo.getProperty("svrMessage");
+                if (svrStatus == -1) {
+                    JSFHelper.sendFacesMessage(svrCtrlCode + ": " + svrMessage, "Error");
+                } else {
+                    int itemCount = Integer.parseInt(rbo.getProperty("itemCount"));
+                    hasItems = itemCount > 0;
+                    UniDynArray oList = new UniDynArray();
+
+                    oList.insert(1, rbo.getPropertyToDynArray("arn"));
+                    oList.insert(2, rbo.getPropertyToDynArray("lastName"));
+                    oList.insert(3, rbo.getPropertyToDynArray("firstName"));
+                    oList.insert(4, rbo.getPropertyToDynArray("middleInitial"));
+                    oList.insert(5, rbo.getPropertyToDynArray("prefix"));
+                    oList.insert(6, rbo.getPropertyToDynArray("suffix"));
+                    oList.insert(7, rbo.getPropertyToDynArray("address1"));
+                    oList.insert(8, rbo.getPropertyToDynArray("address2"));
+                    oList.insert(9, rbo.getPropertyToDynArray("city"));
+                    oList.insert(10, rbo.getPropertyToDynArray("state"));
+                    oList.insert(11, rbo.getPropertyToDynArray("zipCode"));
+                    oList.insert(12, rbo.getPropertyToDynArray("phone1"));
+                    oList.insert(13, rbo.getPropertyToDynArray("memberId"));
+                    oList.insert(14, rbo.getPropertyToDynArray("emailAddress"));
+                    oList.insert(15, rbo.getPropertyToDynArray("acquisitionCode"));
+                    oList.insert(16, rbo.getPropertyToDynArray("fileDate"));
+
+                    for (int i = 1; i <= itemCount; i++) {
+                        CardHolder member = new CardHolder();
+                        member.setArn(oList.extract(1, i).toString());
+                        member.setLastName(oList.extract(2, i).toString());
+                        member.setFirstName(oList.extract(3, i).toString());
+                        member.setMiddleInitial(oList.extract(4, i).toString());
+                        member.setPrefix(oList.extract(5, i).toString());
+                        member.setSuffix(oList.extract(6, i).toString());
+                        member.setAddress1(oList.extract(7, i).toString());
+                        member.setAddress2(oList.extract(8, i).toString());
+                        member.setCity(oList.extract(9, i).toString());
+                        member.setState(oList.extract(10, i).toString());
+                        member.setZipCode(oList.extract(11, i).toString());
+                        member.setPhone1(oList.extract(12, i).toString());
+                        member.setMemberId(oList.extract(13, i).toString());
+                        member.setEmailAddress(oList.extract(14, i).toString());
+                        member.setAcquisitionCode(oList.extract(15, i).toString());
+                        member.setFileDate(oList.extract(16, i).toString());
+                        cardHolderList.add(member);
+                    }
+                }
+            } catch (RbException ex) {
+                Logger.getLogger(FnboBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
     public String onInquiryFormSubmit() {
@@ -531,6 +612,31 @@ public class FnboBean implements Serializable {
      */
     public void setBtnProcLabel(String btnProcLabel) {
         this.btnProcLabel = btnProcLabel;
+    }
+
+    /**
+     * @return the cardHolderList
+     */
+    public ArrayList<CardHolder> getCardHolderList() {
+        return cardHolderList;
+    }
+
+    /**
+     * @return the cardHolder
+     */
+    public CardHolder getCardHolder() {
+        return cardHolder;
+    }
+
+    /**
+     * @param cardHolder the cardHolder to set
+     */
+    public void setCardHolder(CardHolder cardHolder) {
+        this.cardHolder = cardHolder;
+    }
+
+    public boolean getIsEmpty() {
+        return hasItems;
     }
 
 }

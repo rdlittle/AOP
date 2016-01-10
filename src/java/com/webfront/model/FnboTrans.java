@@ -72,6 +72,7 @@ public class FnboTrans {
         return dateFormat.format(transDate);
     }
     
+    
     public Date getTransDate() {
         return transDate;
     }
@@ -178,13 +179,7 @@ public class FnboTrans {
      * @return the merchType
      */
     public String getMerchType() {
-        if (merchType.isEmpty()) {
-            return "";
-        }
-        if (merchType.equals("M")) {
-            return "MA/Shop";
-        }
-        return "Regular";
+        return merchType;
     }
 
     /**

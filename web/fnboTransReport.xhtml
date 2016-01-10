@@ -94,7 +94,7 @@
                     </p:panelGrid>
 
                     <p:panelGrid styleClass="custom" style="width: 40%; 
-                                 margin-left: auto; margin-right: auto; margin-bottom: 2em; margin-top: 0px;">
+                                 margin-left: auto; margin-right: auto; margin-bottom: 1em; margin-top: 0px;">
                         <p:row>
                             <p:column style="width: 30%;"></p:column>
                             <p:column style="width: 70%;">
@@ -115,38 +115,41 @@
                                  paginator="true"
                                  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="10,15,20,25,30"                             
-                                 style="width: 90%; margin: auto;">
-                        <p:column headerText="Transaction#" style="width: 9%;" sortBy="#{trans.id}">
-                            <h:outputText value="#{trans.id}"/>
+                                 style="width: 99%; margin: auto; padding: 0;">
+                        <p:column headerText="Transaction#" style="width: 5%; padding: 3px;" sortBy="#{trans.id}">
+                            <h:outputText value="#{trans.id}" style="text-align: left !important;"/>
                         </p:column>
-                        <p:column id="transDateCol" headerText="Date" style="width: 3%; text-align: center;" sortBy="#{trans.transDate}">
+                        <p:column id="transDateCol" headerText="Date" style="width: 2%; text-align: center;" sortBy="#{trans.transDate}">
                             <h:outputText value="#{trans.transDateAsString}"/>
                         </p:column>
-                        <p:column headerText='#{fnboBean.searchType eq "ARN" ? "Member Id" : "ARN"}' style="width: 6%;">
+                        <p:column headerText='#{fnboBean.searchType eq "ARN" ? "Member Id" : "ARN"}' style="width: 4%;">
                             <h:outputText value='#{fnboBean.searchType eq "ARN" ? trans.memberId : trans.arn}' style="text-align: left;"/>
                         </p:column>
-                        <p:column headerText="Card type" style="width: 2%; text-align: center;">
+                        <p:column headerText="Name" style="width: 5%;">
+                            <h:outputText value="#{trans.cardholderName}" style="text-align: left;"/>
+                        </p:column>
+                        <p:column headerText="Card" style="width: 1%; text-align: center;">
                             <h:outputText value="#{trans.cardType}"/>
                         </p:column>
-                        <p:column headerText="Merch Type" style="width: 5%;" sortBy="#{trans.merchType}">
-                            <h:outputText value="#{trans.merchType}"/>
-                        </p:column>                        
-                        <p:column headerText="Merch Desc" style="width: 10%;" sortBy="#{trans.merchDesc}">
+                        <p:column headerText="Merch" style="width: 8%;" sortBy="#{trans.merchDesc}">
                             <h:outputText value="#{trans.merchDesc}"/>
                         </p:column>
-                        <p:column headerText="Type" style="width: 3%;" sortBy="#{trans.transCode}">
+                        <p:column headerText="M/R" style="width: 1%;" sortBy="#{trans.merchType}">
+                            <h:outputText value="#{trans.merchType}"/>
+                        </p:column>                                                
+                        <p:column headerText="Type" style="width: 2%;" sortBy="#{trans.transCode}">
                             <h:outputText value="#{trans.transCode}"/>
                         </p:column>                    
-                        <p:column headerText="Trans Amount" style="width: 5%; text-align: right;" sortBy="#{trans.transAmt}">
+                        <p:column headerText="Amount" style="width: 3%; text-align: right;" sortBy="#{trans.transAmt}">
                             <h:outputText value="#{trans.transAmtAsString}"/>
                         </p:column>
-                        <p:column headerText="Order#" style="width: 3%; text-align: right;" sortBy="#{trans.orderId}">
+                        <p:column headerText="Order#" style="width: 2%; text-align: right;" sortBy="#{trans.orderId}">
                             <h:outputText value="#{trans.orderId}"/>
                         </p:column>
-                        <p:column headerText="SRP" style="width: 3%; text-align: right;" sortBy="#{trans.orderSrp}">
+                        <p:column headerText="SRP" style="width: 2%; text-align: right;" sortBy="#{trans.orderSrp}">
                             <h:outputText value="#{trans.orderSrpAsString}"/>
                         </p:column>
-                        <p:column headerText="CB" style="width: 3%; text-align: right;" sortBy="#{trans.orderCashback}">
+                        <p:column headerText="CB" style="width: 1%; text-align: right;">
                             <h:outputText value="#{trans.orderCashbackAsString}"/>
                         </p:column>                        
                     </p:dataTable>
