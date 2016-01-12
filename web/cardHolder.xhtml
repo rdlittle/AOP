@@ -9,7 +9,9 @@
     <body>
 
         <ui:composition template="./layout.xhtml">
-
+            <f:metadata>
+                <f:viewAction action="#{fnboBean.onCardHolderClearForm()}" onPostback="false"/>
+            </f:metadata>
             <ui:define name="banner">
                 banner
             </ui:define>
@@ -86,12 +88,21 @@
                                  rendered="#{fnboBean.hasItems}">
                         <p:column headerText="Date" style="width: 3%;">
                             <h:outputText value="#{member.fileDate}"/>
-                        </p:column>                        
-                        <p:column headerText="ARN" style="width: 8%;">
-                            <h:outputText value="#{member.arn}"/>
+                        </p:column>  
+                        <p:column headerText="Promo" style="width: 2%;">
+                            <h:outputText value="#{member.acquisitionCode}"/>
                         </p:column>
-                        <p:column headerText="Member Id" style="width: 5%;">
-                            <h:outputText value="#{member.memberId}"/>
+                        <p:column id="arnColumn" headerText="ARN" style="width: 8%;">
+                            <p:commandLink id="byArn" action="#{fnboBean.onCreateReport(evt)}" 
+                                           value="#{member.arn}">
+                                <h:outputText value="#{member.arn}"/>
+                            </p:commandLink>                             
+                        </p:column>
+                        <p:column id="memberColumn" headerText="Member Id" style="width: 5%;">
+                            <p:commandLink id="byMemberId" action="#{fnboBean.onCreateReport(evt)}" 
+                                           value="#{member.memberId}">
+                                <h:outputText value="#{member.memberId}"/>
+                            </p:commandLink>
                         </p:column>
                         <p:column headerText="Name">
                             <h:outputText value="#{member.fullName}"/>
@@ -109,9 +120,7 @@
                             <h:outputText value="#{member.zipCode}"/>
                         </p:column>                                                  
                         <p:column headerText="Phone1" style="width: 6%;">
-                            <h:outputText value="#{member.phone1}">
-                                
-                            </h:outputText>
+                            <h:outputText value="#{member.phone1}"/>
                         </p:column>
                         <p:column headerText="Email Address">
                             <h:outputText value="#{member.emailAddress}"/>

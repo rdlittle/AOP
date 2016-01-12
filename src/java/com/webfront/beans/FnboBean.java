@@ -57,6 +57,7 @@ public class FnboBean implements Serializable {
     private final Date rightNow = Calendar.getInstance().getTime();
     private final ArrayList<CardHolder> cardHolderList;
     private CardHolder cardHolder;
+    private final ArrayList<CardHolder> selectedCardHolders = new ArrayList<>();
 
     /**
      * Creates a new instance of FnboBean
@@ -134,10 +135,28 @@ public class FnboBean implements Serializable {
             src = (String) requestMap.get("javax.faces.source");
         }
         if (!"form:fnboInquiryButton".equals(src)) {
-            if ("form:byArn".equals(src)) {
+            if (src.indexOf("byArn") > 0) {
                 setSearchType("ARN");
-            } else {
+                for (String key : requestMap.keySet()) {
+                    String value = requestMap.get(key);
+                    if (key.startsWith("form:j_idt")) {
+                        if (!value.isEmpty()) {
+                            arn = value;
+                            break;
+                        }
+                    }
+                }
+            } else if (src.indexOf("byMemberId") > 0) {
                 setSearchType("Member Id");
+                for (String key : requestMap.keySet()) {
+                    String value = requestMap.get(key);
+                    if (key.startsWith("form:j_idt")) {
+                        if (!value.isEmpty()) {
+                            memberId = value;
+                            break;
+                        }
+                    }
+                }
             }
         }
         rbo = new RedObject("WDE", "Bank:Fnbo");
@@ -175,9 +194,9 @@ public class FnboBean implements Serializable {
                     trans.insert(2, rbo.getPropertyToDynArray("transDate"));
                     trans.insert(3, rbo.getPropertyToDynArray("arn"));
                     trans.insert(4, rbo.getPropertyToDynArray("memberId"));
-                    trans.insert(5, rbo.getPropertyToDynArray("cardType"));
+                    trans.insert(5, rbo.getPropertyToDynArray("merchType"));
                     trans.insert(6, rbo.getPropertyToDynArray("transAmt"));
-                    trans.insert(7, rbo.getPropertyToDynArray("merchType"));
+                    trans.insert(7, rbo.getPropertyToDynArray("cardType"));
                     trans.insert(8, rbo.getPropertyToDynArray("merchDesc"));
                     trans.insert(9, rbo.getPropertyToDynArray("transCode"));
                     trans.insert(10, rbo.getPropertyToDynArray("cardHolderName"));
@@ -194,9 +213,9 @@ public class FnboBean implements Serializable {
                         fTrans.setTransDate(trans.extract(2, t).toString());
                         fTrans.setArn(trans.extract(3, t).toString());
                         fTrans.setMemberId(trans.extract(4, t).toString());
-                        fTrans.setCardType(trans.extract(5, t).toString());
+                        fTrans.setMerchType(trans.extract(5, t).toString());
                         fTrans.setTransAmt(trans.extract(6, t).toString());
-                        fTrans.setMerchType(trans.extract(7, t).toString());
+                        fTrans.setCardType(trans.extract(7, t).toString());
                         fTrans.setMerchDesc(trans.extract(8, t).toString());
                         fTrans.setTransCode(trans.extract(9, t).toString());
                         fTrans.setCardholderName(trans.extract(16, t).toString());
@@ -637,6 +656,23 @@ public class FnboBean implements Serializable {
 
     public boolean getIsEmpty() {
         return hasItems;
+    }
+
+    /**
+     * @return the selectedCardHolders
+     */
+    public ArrayList<CardHolder> getSelectedCardHolders() {
+        return selectedCardHolders;
+    }
+
+    /**
+     * @param clist
+     */
+    public void setSelectedCardHolders(ArrayList<CardHolder> clist) {
+        if (clist != null) {
+            this.cardHolderList.clear();
+            this.cardHolderList.addAll(clist);
+        }
     }
 
 }
