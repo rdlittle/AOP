@@ -1,0 +1,161 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <body>
+
+        <ui:composition template="./layout.xhtml">
+
+            <ui:define name="banner">
+                banner
+            </ui:define>
+
+            <ui:define name="content">
+                <f:metadata>
+                    <f:viewAction action="#{fnboBean.onResetInputForm()}" onPostback="false"/>
+                </f:metadata>                
+                <span style="width: 99%; text-align: center; margin: 2em auto 3em auto;">
+                    <h2>FNBO Transaction Search</h2>
+                </span>
+                <h:form id="form">
+                    <p:growl id="msgs" showDetail="true"/>
+
+                    <p:panelGrid style="width: 40%; margin-bottom: 1.5em; margin-left: auto; margin-right: auto;">
+                        <p:row>
+                            <p:column style="width: 30%;">
+                                <h:outputText value="UIK (FNBO.XREF id)"/>
+                            </p:column>
+                            <p:column style="width: 70%;">
+                                <h:inputText id="transId" value="#{fnboBean.transId}" style="width: 95%;"/>
+                            </p:column>                            
+                        </p:row>
+                        <p:row>
+                            <p:column style="width: 30%;">
+                                <h:outputText value="Reference number"/>
+                            </p:column>
+                            <p:column style="width: 70%;">
+                                <h:inputText id="referenceNum" value="#{fnboBean.referenceNum}" style="width: 95%;"/>
+                            </p:column>                            
+                        </p:row>
+                        <p:row>
+                            <p:column colspan="2" style="text-align: right">
+                                <p:commandButton actionListener="#{fnboBean.onTransSearchReset(event)}" value="Reset" update="@form"
+                                                 style="margin-right: 1em;"/>
+                                <p:commandButton actionListener="#{fnboBean.onTransSearch(event)}" value="Search" update="msgs,table"/>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+
+                    <p:ajaxStatus 
+                        style="width: 50px; height: 50px; display:block; 
+                        margin: auto;">
+                        <f:facet name="default">
+                            <h:outputText value="" />
+                        </f:facet>
+
+                        <f:facet name="start">
+                            <p:graphicImage name="/images/loading.gif" width="50" height="50" />
+                        </f:facet>
+
+                        <f:facet name="complete">
+                            <h:outputText value="" />
+                        </f:facet>
+                    </p:ajaxStatus>
+
+
+                    <p:dataTable id="table" value="#{fnboBean.transList}" var="trans"
+                                 rows="15" 
+                                 paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="10,15,20,25,30"                             
+                                 style="width: 99%; margin: auto; padding: 0;">
+                        <p:column style="width: 1%;">
+                            <p:rowToggler/>
+                        </p:column>
+                        <p:column headerText="Transaction#" style="width: 15%; padding: 3px;" sortBy="#{trans.id}">
+                            <p:commandLink actionListener="#{fnboBean.onTransEdit()}" ajax="false" action="#{fnboBean.onTransEdit()}">
+                                <h:outputText value="#{trans.id}" style="text-align: left !important;"/>
+                                <f:param name="transId" value="#{trans.id}"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column id="transDateCol" headerText="Date" style="width: 4%; text-align: center;" sortBy="#{trans.transDate}">
+                            <h:outputText value="#{trans.transDateAsString}"/>
+                        </p:column>
+                        <p:column headerText='#{fnboBean.searchType eq "ARN" ? "Member Id" : "ARN"}' style="width: 8%;">
+                            <h:outputText value='#{fnboBean.searchType eq "ARN" ? trans.memberId : trans.arn}' style="text-align: left;"/>
+                        </p:column>
+                        <p:column headerText="Name" style = "width: 10%;">
+                            <h:outputText value="#{trans.cardholderName}" style="text-align: left;"/>
+                        </p:column>
+                        <p:column headerText="Card" style="width: 2%; text-align: center;">
+                            <h:outputText value="#{trans.cardType}"/>
+                        </p:column>
+                        <p:column headerText="Merch" sortBy="#{trans.merchDesc}" style="width: 15%;">
+                            <h:outputText value="#{trans.merchDesc}"/>
+                        </p:column>
+                        <p:column headerText="M/R" sortBy="#{trans.merchType}" style="width: 3%;">
+                            <h:outputText value="#{trans.merchType}"/>
+                        </p:column>                                                
+                        <p:column headerText="Type" sortBy="#{trans.transCodeDesc}">
+                            <h:outputText value="#{trans.transCodeDesc}"/>
+                        </p:column>                    
+                        <p:column headerText="Trans Amt" style="text-align: right;" sortBy="#{trans.transAmt}">
+                            <h:outputText value="#{trans.transAmtAsString}"/>
+                        </p:column>
+                        <p:column headerText="Original Order" style="text-align: right;">
+                            <h:outputText value="#{trans.originalOrder}"/>
+                        </p:column>
+                        <p:column headerText="Trans Bal" style="text-align: right;">
+                            <h:outputText value="#{trans.transBalance}" style="color: #{trans.transBalance==0?'black':'red'}">
+                                <f:convertNumber minFractionDigits="2"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Award Total" style="text-align: right; padding: 2px;">
+                            <h:outputText value="#{trans.awardTotal}">
+                                <f:convertNumber minFractionDigits="2"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:rowExpansion>
+                            <p:panelGrid style="width: 35%; margin-left: auto;">
+                                <p:row>
+                                    <p:column>
+                                        <h:outputLabel value="Award order 1"/>
+                                    </p:column>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="#{trans.award1.orderNumber}"/>
+                                    </p:column>
+                                    <p:column style="text-align: right; width: 14%;">
+                                        <h:outputText value="#{trans.award1.orderSrp}"/>
+                                    </p:column>
+                                    <p:column style="text-align: right; width: 12%;">
+                                        <h:outputText value="#{trans.award1.awardAmt}" style="text-align: right; padding-right: 0;"/>
+                                    </p:column>  
+                                </p:row>
+                                <p:row rendered="#{trans.awardCount==2}">
+                                    <p:column>
+                                        <h:outputLabel value="Award order 2"/>
+                                    </p:column>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="#{trans.award2.orderNumber}"/>
+                                    </p:column>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="#{trans.award2.orderSrp}"/>
+                                    </p:column>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="#{trans.award2.awardAmt}"/>
+                                    </p:column>                                     
+                                </p:row>
+                            </p:panelGrid>
+                        </p:rowExpansion>
+                    </p:dataTable>                    
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

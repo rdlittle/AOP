@@ -14,57 +14,57 @@
     </h:head>
 
     <h:body>
-        <p:layout fullPage="true">
-            <p:layoutUnit position="north" size="50" resizable="true" closable="true" collapsible="true" styleClass="banner">
-                <ui:insert name="banner">
-
-                </ui:insert>
-            </p:layoutUnit>
-
-            <p:layoutUnit position="west" size="250" header="AOP Menu" collapsible="true">
-                <p:menu toggleable="true" style="width: 100%;">
+        <div id="top" class="banner">
+            <ui:insert name="top">
+                <p:graphicImage url="resources/images/ma-logo.png" />
+            </ui:insert>
+        </div>
+        <div id="left">
+            <h:form>
+                <p:tieredMenu>
                     <p:submenu label="Affiliates">
-                        <p:menuitem value="Networks" url="/faces/affiliateNetworkForm.xhtml"/>
-                        <p:menuitem value="Aggregators" url="/faces/affiliateMasterForm.xhtml"/>
-                        <p:menuitem value="Stores" url="/faces/affiliateStoreForm.xhtml"/>
-                        <p:menuitem value="Campaigns" url="/faces/campaignManager.xhtml"/>
-                        <p:menuitem value="Commissions" url="/faces/tieredCommission.xhtml"/>
+                        <p:menuitem value="Networks" outcome="/affiliateNetworkForm.xhtml"/>
+                        <p:menuitem value="Aggregators" outcome="/affiliateMasterForm.xhtml"/>
+                        <p:menuitem value="Stores" outcome="/affiliateStoreForm.xhtml"/>
+                        <p:menuitem value="Campaigns" outcome="/campaignManager.xhtml"/>
+                        <p:menuitem value="Commissions" outcome="/tieredCommission.xhtml"/>
                     </p:submenu>
                     <p:submenu label="Batch Management">
-                        <p:menuitem value="Batch listing" url="/faces/batchManagementInputForm.xhtml"/>
-                        <p:menuitem value="Error listing" url="/faces/affiliateErrorListing.xhtml"/>
+                        <p:menuitem value="Batch listing" outcome="/batchManagementInputForm.xhtml"/>
+                        <p:menuitem value="Error listing" outcome="/affiliateErrorListing.xhtml"/>
                     </p:submenu>
                     <p:submenu label="Order Processing">
-                        <p:menuitem value="Process a report" url="/faces/aopUploader.xhtml"/>
-                        <p:menuitem value="Processing queue" url="/faces/aopQueue.xhtml"/>
+                        <p:menuitem value="Process a report" outcome="/aopUploader.xhtml"/>
+                        <p:menuitem value="Processing queue" outcome="/aopQueue.xhtml"/>
                     </p:submenu>   
                     <p:submenu label="Payment Processing">
-                        <p:menuitem value="Check reconcilliation" url="/faces/checkReconFileUploader.xhtml"/>                        
-                        <p:menuitem value="Payment queue" url="/faces/paymentQueue.xhtml"/>
+                        <p:menuitem value="Check reconcilliation" outcome="/checkReconFileUploader.xhtml"/>                        
+                        <p:menuitem value="Payment queue" outcome="/paymentQueue.xhtml"/>
                     </p:submenu>
                     <p:submenu label="FNBO">
-                        <p:menuitem value="Find Transaction" url="/faces/fnboTrans.xhtml"/>
-                        <p:menuitem value="Cardholder Activity" url="/faces/fnboInquiryForm.xhtml"/>
-                        <p:menuitem value="Cardholder Search" url="/faces/cardHolder.xhtml"/>
-                        <p:menuitem value="Processing Queue" url="/faces/fnboProcessing.xhtml"/>
+                        <p:menuitem value="Cardholder Activity" outcome="/fnboInquiryForm.xhtml"/>
+                        <p:menuitem value="Cardholder Search" outcome="/cardHolder.xhtml"/>
+                        <p:menuitem value="Transaction Inquiry" outcome="/fnboTrans.xhtml"/>
+                        <p:menuitem value="Transaction Search" outcome="/fnboTransSearch.xhtml"/>                        
+                        <p:menuitem value="Processing Queue" outcome="/fnboProcessing.xhtml"/>
                     </p:submenu>
-                    <p:submenu label="Testing" expanded="false">
-                        <p:menuitem value="Source Descriptor" url="/faces/aoTestSourceDesc.xhtml"/>
-                        <p:menuitem value="Units" url="/faces/aoTestUnit.xhtml"/>
-                        <p:menuitem value="Groups" url="/faces/aoTestGroup.xhtml"/>
-                        <p:menuitem value="Create Test Orders" url="/faces/testingBatchSetupForm.xhtml"/>
-                        <p:menuitem value="Test Data Queue" url="/faces/aopTestDataQueue.xhtml"/>
-                        <p:menuitem value="Run Test Suites" url="/faces/unitTestSuiteForm.xhtml"/>                        
-                        <p:menuitem value="View Test Results" url="/faces/unitTestLog.xhtml"/>   
+                    <p:submenu label="Testing">
+                        <p:menuitem value="Source Descriptor" outcome="/aoTestSourceDesc.xhtml"/>
+                        <p:menuitem value="Units" outcome="/aoTestUnit.xhtml"/>
+                        <p:menuitem value="Groups" outcome="/aoTestGroup.xhtml"/>
+                        <p:menuitem value="Create Test Orders" outcome="/testingBatchSetupForm.xhtml"/>
+                        <p:menuitem value="Test Data Queue" outcome="/aopTestDataQueue.xhtml"/>
+                        <p:menuitem value="Run Test Suites" outcome="/unitTestSuiteForm.xhtml"/>                        
+                        <p:menuitem value="View Test Results" outcome="/unitTestLog.xhtml"/>   
                     </p:submenu>
-                </p:menu>
-            </p:layoutUnit>
+                </p:tieredMenu>
+            </h:form>
+        </div>
 
-            <p:layoutUnit position="center" resizable="true" closable="true" collapsible="true">
-                <ui:insert name="content">Content</ui:insert>
-            </p:layoutUnit>
+        <div id="content">
+            <ui:insert name="content">Content</ui:insert>
+        </div>
 
-        </p:layout>
     </h:body>
 
 </html>

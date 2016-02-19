@@ -9,151 +9,153 @@
     <body>
         <ui:composition template="./layout.xhtml">
 
-            <ui:define name="banner">
-                banner
-            </ui:define>
-
             <ui:define name="content">
-                <f:metadata>
-                    <f:viewAction action="#{fnboBean.onResetInputForm()}" onPostback="false"/>
-                </f:metadata>                
+               
                 <span style="width: 99%; text-align: center; margin: 2em auto 3em auto;">
-                    <h2>FNBO Transaction Inquiry</h2>
+                    <h2>FNBO Transaction Edit</h2>
                 </span>
 
 
-                <h:form id="form">
-                    <p:growl id="msg" showDetail="false"/>
+                <h:form id="form" >
+                    <p:growl id="msgs" showDetail="true"/>
 
-                    <p:panelGrid style="width: 35%; margin: auto;">
+                    <p:panelGrid style="width: 45%; margin: auto;">
                         <p:row>
-                            <p:column style="width: 30%;">
+                            <p:column style="width: 50%;">
                                 <h:outputText value="FNBO.XREF id"/>
                             </p:column>
-                            <p:column style="width: 70%;">
-                                <h:inputText id="transId" value="#{fnboBean.transId}" style="width: 95%;"/>
+                            <p:column style="width: 50%;">
+                                <h:outputLabel value="#{fnboBean.transId}"/>
                             </p:column>                            
                         </p:row>
                         <p:row>
-                            <p:column style="width: 30%;">
+                            <p:column>
                                 <h:outputText value="Trans Date"/>
                             </p:column>
-                            <p:column style="width: 70%;">
+                            <p:column>
                                 <h:outputText value="#{fnboBean.transItem.transDateAsString}"/>
                             </p:column>                            
                         </p:row>
                         <p:row>
-                            <p:column style="width: 30%;">
+                            <p:column>
                                 <h:outputText value="ARN"/>
                             </p:column>
-                            <p:column style="width: 70%;">
+                            <p:column>
                                 <p:commandLink id="byArn" action="#{fnboBean.onCreateReport(evt)}" 
-                                               value="#{fnboBean.arn}">
+                                               value="#{fnboBean.transItem.arn}">
                                     <h:outputText value="#{fnboBean.transItem.arn}"/>
                                     <f:param name="searchTarget" value="#{fnboBean.transItem.arn}"/>
-                                    <f:param name="searchType" value="arn"/>                                      
+                                    <f:param name="searchType" value="arn"/>                                    
                                 </p:commandLink>                                
                             </p:column>
                         </p:row>
                         <p:row>
-                            <p:column style="width: 30%;">
+                            <p:column>
                                 <h:outputText value="Member Id"/>
                             </p:column>
-                            <p:column style="width: 70%;">
+                            <p:column>
                                 <p:commandLink id="byMemberId" action="#{fnboBean.onCreateReport(evt)}" 
-                                               value="#{fnboBean.memberId}">
+                                               value="#{fnboBean.transItem.memberId}">
                                     <h:outputText value="#{fnboBean.transItem.memberId}"/>
                                     <f:param name="searchTarget" value="#{fnboBean.transItem.memberId}"/>
-                                    <f:param name="searchType" value="member"/>                                    
+                                    <f:param name="searchType" value="member"/>
                                 </p:commandLink>
                             </p:column>                            
                         </p:row>
                         <p:row>
-                            <p:column style="width: 30%;">
+                            <p:column>
                                 <h:outputText value="Card Type"/>
                             </p:column>
-                            <p:column style="width: 70%;">
+                            <p:column>
                                 <h:outputText value="#{fnboBean.transItem.cardType}"/>                        
                             </p:column>                            
                         </p:row>
                         <p:row>
-                            <p:column style="width: 30%;">
+                            <p:column>
                                 <h:outputText value="Trans Amount"/>
                             </p:column>
-                            <p:column style="width: 70%;">
+                            <p:column>
                                 <h:outputText value="#{fnboBean.transItem.transAmt}"/>                        
                             </p:column>                            
                         </p:row>
                         <p:row>
-                            <p:column style="width: 30%;">
+                            <p:column>
                                 <h:outputText value="Merch Type"/>
                             </p:column>
-                            <p:column style="width: 70%;">
+                            <p:column>
                                 <h:outputText value="#{fnboBean.transItem.merchType}"/>
                             </p:column>                            
                         </p:row>
                         <p:row>
-                            <p:column style="width: 30%;">
+                            <p:column>
                                 <h:outputText value="Merch Desc"/>
                             </p:column>
-                            <p:column style="width: 70%;">
+                            <p:column>
                                 <h:outputText value="#{fnboBean.transItem.merchDesc}"/>   
                             </p:column>                            
                         </p:row>
                         <p:row>
-                            <p:column style="width: 30%;">
+                            <p:column>
+                                <h:outputText value="Reference number"/>
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{fnboBean.transItem.transRef}"/>   
+                            </p:column>                            
+                        </p:row>                        
+                        <p:row>
+                            <p:column>
                                 <h:outputText value="Trans Type"/>
                             </p:column>
-                            <p:column style="width: 70%;">
+                            <p:column>
                                 <h:outputText value="#{fnboBean.transItem.transCodeDesc}"/>                        
                             </p:column>                            
                         </p:row>
                         <p:row>
-                            <p:column style="width: 30%;">
+                            <p:column>
                                 <h:outputText value="Cardholder Name"/>
                             </p:column>
-                            <p:column style="width: 70%;">
+                            <p:column>
                                 <h:outputText value="#{fnboBean.transItem.cardholderName}"/>
                             </p:column>                                
                         </p:row>
                         <p:row>
-                            <p:column style="width: 30%;">
+                            <p:column>
                                 <h:outputText value="Award Type"/>
                             </p:column>
-                            <p:column style="width: 70%;">
+                            <p:column>
                                 <h:outputText value="#{fnboBean.transItem.awardType}"/>
                             </p:column>                            
                         </p:row>  
                         <p:row>
-                            <p:column style="width: 30%;">
+                            <p:column>
                                 <h:outputText value="File Date"/>
                             </p:column>
-                            <p:column style="width: 70%;">
+                            <p:column>
                                 <h:outputText value="#{fnboBean.transItem.fileDateAsString}"/>
                             </p:column>                            
                         </p:row>
                         <p:row>
-                            <p:column style="width: 30%;">
+                            <p:column>
                                 <h:outputText value="Line#"/>
                             </p:column>
-                            <p:column style="width: 70%;">
+                            <p:column>
                                 <h:outputText value="#{fnboBean.transItem.lineNum}"/>
                             </p:column>                            
                         </p:row>
                         
                         <p:row>
-                            <p:column style="width: 30%;">
+                            <p:column>
                                 <h:outputText value="Award Info"/>
                             </p:column>
                             
-                            <p:column style="width: 70%;">
-                                <p:panelGrid styleClass="custom" style="width: 100%;">
+                            <p:column>
+                                <p:panelGrid style="width: 75%;"> 
                                     <p:row>
-                                        <p:column style="width:25%;"/>
-                                        <p:column style="background-color: silver; text-align: right; border-right: 1px solid black;">
+                                        <p:column style="width: 50%;"/>
+                                        <p:column style="background-color: silver; text-align: right; border-right: 1px solid black; width: 20%;">
                                             <h:outputLabel value="Award 1"/>
                                         </p:column>
-                                        <p:column style="background-color: silver; text-align: right;">
+                                        <p:column style="background-color: silver; text-align: right; width:20%;">
                                             <h:outputLabel value="Award 2"/>  
                                         </p:column>                                        
                                     </p:row>
@@ -162,10 +164,10 @@
                                             <h:outputText value="Order#"/>
                                         </p:column>
                                         <p:column style="text-align: right;">
-                                            <h:outputText value="#{fnboBean.transItem.award1.orderNumber}"/>
+                                            <h:inputText id="orderNum1" value="#{fnboBean.transItem.award1.orderNumber}"/>
                                         </p:column>
                                         <p:column style="text-align: right;">
-                                            <h:outputText value="#{fnboBean.transItem.award2.orderNumber}"/>  
+                                            <h:inputText id="orderNum2" value="#{fnboBean.transItem.award2.orderNumber}"/>  
                                         </p:column>                                                                                
                                     </p:row>
                                     <p:row>
@@ -173,10 +175,10 @@
                                             <h:outputText value="SRP"/>
                                         </p:column>
                                         <p:column style="text-align: right;">
-                                            <h:outputText value="#{fnboBean.transItem.award1.orderSrp}"/>
+                                            <h:inputText id="orderSrp1" value="#{fnboBean.transItem.award1.orderSrp}"/>
                                         </p:column>
                                         <p:column style="text-align: right;">
-                                            <h:outputText value="#{fnboBean.transItem.award2.orderSrp}"/>  
+                                            <h:inputText id="orderSrp2" value="#{fnboBean.transItem.award2.orderSrp}"/>  
                                         </p:column>                                                                                
                                     </p:row>
                                     <p:row>
@@ -184,15 +186,16 @@
                                             <h:outputText value="Amount"/>
                                         </p:column>
                                         <p:column style="text-align: right;">
-                                            <h:outputText value="#{fnboBean.transItem.award1.awardAmt}"/>
+                                            <h:inputText id="awardAmt1" value="#{fnboBean.transItem.award1.awardAmt}">
+                                            </h:inputText>
                                         </p:column>
                                         <p:column style="text-align: right;">
-                                            <h:outputText value="#{fnboBean.transItem.award2.awardAmt}"/>  
+                                            <h:inputText id="awardAmt2" value="#{fnboBean.transItem.award2.awardAmt}"/>  
                                         </p:column>                                                                                
                                     </p:row>
                                     <p:row>
                                         <p:column>
-                                            <h:outputText value="Award Pct"/>
+                                            <h:outputText value="Pct"/>
                                         </p:column>
                                         <p:column style="text-align: right;">
                                             <h:outputText value="#{fnboBean.transItem.award1.awardPct}"/>
@@ -205,9 +208,13 @@
                             </p:column>
                         </p:row>
                         <p:row>
-                            <p:column colspan="2">
-                                <p:commandButton value="Submit" action="#{fnboBean.onTransItemButtonClick()}" 
-                                                 update="form"/>            
+                            <p:column colspan="2" style="text-align: right;">
+                                <p:commandButton value="Search again" 
+                                                 actionListener="#{fnboBean.onTransSearchReset(event)}"
+                                                 action="/faces/fnboTransSearch.xhtml?faces-redirect=true"
+                                                 style="margin-right: 1em;"/>
+                                <p:commandButton value="Submit" actionListener="#{fnboBean.onSaveTransItem()}" 
+                                                 process="@(:input)" update="msgs"/>  
                             </p:column>
                         </p:row>
                     </p:panelGrid>

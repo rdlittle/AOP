@@ -3,7 +3,7 @@
 }
 body {
     background-color: #ffffff;
-    font-size: 12px;
+    font-size: medium;
     font-family: Verdana, "Verdana CE",  Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
     color: #000000;  
     margin: 10px;
@@ -73,9 +73,6 @@ a:link:hover, a:visited:hover  {
 .banner,
 .banner .ui-widget-content {
     background-color: #313338;
-    background-image: url("../images/ma-logo.png");
-    background-repeat: no-repeat;
-    background-position: 10px;
 }
 
 .ui-spinner .ui-spinner-input {
