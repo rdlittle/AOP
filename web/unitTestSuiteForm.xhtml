@@ -18,16 +18,40 @@
                 <span style="width: 99%; text-align: center; margin: 2em auto 3em auto;">
                     <h2>Test Unit Suite Entry &amp; Edit</h2>
                 </span> 
-                <p:messages showDetail="false"/>
+
                 <h:form id="suiteForm">
-                    <p:selectOneMenu id="suiteSelector" value="#{utSuiteBean.utSuiteId}"
-                                     style="margin-left: 1.75em;" >
-                        <f:selectItem itemLabel="Test Suite Id" itemValue=""/>
-                        <f:selectItems value="#{utSuiteBean.suiteIdList}" var="suite" 
-                                       itemLabel="#{suite.value}" itemValue="#{suite.key}">
-                        </f:selectItems>
-                        <p:ajax event="change" listener="#{utSuiteBean.setSuite()}" update="grid,table,@(.ui-button)" process="@this"/>
-                    </p:selectOneMenu>
+                    <p:messages showDetail="false" />
+                    <p:panelGrid styleClass="custom" style="margin-left: 1em;">
+                        <p:column>
+                            <h:outputLabel value="Suite Name"/>
+                            <br/>
+                            <p:selectOneMenu id="suiteSelector" value="#{utSuiteBean.utSuiteId}"
+                                             style="width: 250px; margin-top: .5em;">
+                                <f:selectItem itemLabel="Select" itemValue=""/>
+                                <f:selectItems value="#{utSuiteBean.suiteIdList}" var="suite" 
+                                               itemLabel="#{suite.value}" itemValue="#{suite.key}">
+                                </f:selectItems>
+                                <p:ajax event="change" listener="#{utSuiteBean.setSuite()}" update="@all" process="@this"/>
+                            </p:selectOneMenu>
+                        </p:column>
+                        <p:column style="width: 100px;">
+                            <p:ajaxStatus 
+                                style="width: 50px; height: 50px; display:block; 
+                                margin: auto;">
+                                <f:facet name="default">
+                                    <h:outputText value="" />
+                                </f:facet>
+
+                                <f:facet name="start">
+                                    <p:graphicImage name="/images/loading.gif" width="50" height="50" />
+                                </f:facet>
+
+                                <f:facet name="complete">
+                                    <h:outputText value="" />
+                                </f:facet>
+                            </p:ajaxStatus>                    
+                        </p:column>
+                    </p:panelGrid>
 
                     <p:panelGrid id="grid" style="margin-top: 1em; margin-bottom: 1em; margin-left: 1.8em;">
                         <p:row>
@@ -67,13 +91,16 @@
                     <p:commandButton value="New" actionListener="#{utSuiteBean.newSuite()}" update="@form" style="margin-left: 1.75em;"/>
                     <p:commandButton value="Save" actionListener="#{utSuiteBean.save()}" 
                                      disabled="#{!utSuiteBean.changed}"
-                                     update="suiteForm:suiteSelector" style="margin-left: 1.75em;"/>
+                                     update="@form" style="margin-left: 1.75em;"/>
                     <p:commandButton value="Delete" actionListener="#{utSuiteBean.delete()}"
                                      disabled='#{utSuiteBean.utSuiteId == ""}'
                                      update="@form" style="margin-left: 1.75em;"/>
-                    
+
                     <p:dataTable id="table" value="#{utSuiteBean.testSuite.utSegment}" var="utUnit"
+                                 selection="#{utSuiteBean.selectedRows}"
                                  style="margin-top: 1em; margin-bottom: 1em; margin-left: auto; margin-right: auto; width: 98%;">
+                        <p:ajax event="rowSelect" listener="#{utSuiteBean.onRowSelect(event)}"/>
+                        <p:ajax event="rowUnselect" listener="#{utSuiteBean.onRowUnSelect(event)}"/>
                         <f:facet name="header">
                             <p:commandButton id="addButton" 
                                              actionListener='#{utSuiteBean.newItem()}'
@@ -84,7 +111,8 @@
                                              update="@this"
                                              disabled="#{!utSuiteBean.isNewItem}"
                                              style="margin-right: 30px;"/>
-                            <h:outputLabel for="acct" value="Account: "/>
+                            <p:commandButton id="deleteButton" value="Delete" disabled="#{!utSuiteBean.selected}"/>
+                            <h:outputLabel for="acct" value="Account: " style="margin-left: 2em;"/>
                             <p:inputText id="acct" value='#{utSuiteBean.segment.utAcctName}' disabled="#{!utSuiteBean.isNewItem}"/>
                             <h:outputLabel for="file" value="File: "/>
                             <p:inputText id="file" value='#{utSuiteBean.segment.utFileName}' disabled="#{!utSuiteBean.isNewItem}"/>

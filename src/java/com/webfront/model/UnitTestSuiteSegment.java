@@ -12,20 +12,33 @@ import java.io.Serializable;
  * @author rlittle
  */
 public class UnitTestSuiteSegment implements Serializable {
+
+    private Integer segmentNum;
     private String utAcctName;
     private String utFileName;
     private String utProgName;
 
     public UnitTestSuiteSegment() {
+        segmentNum = null;
         utAcctName = "";
         utFileName = "";
         utProgName = "";
     }
+
     public UnitTestSuiteSegment(String aName, String fName, String pName) {
+        segmentNum = null;
         utAcctName = aName;
         utFileName = fName;
         utProgName = pName;
     }
+
+    public UnitTestSuiteSegment(Integer id, String aName, String fName, String pName) {
+        segmentNum = id;
+        utAcctName = aName;
+        utFileName = fName;
+        utProgName = pName;
+    }
+
     /**
      * @return the utAcctName
      */
@@ -67,5 +80,34 @@ public class UnitTestSuiteSegment implements Serializable {
     public void setUtProgName(String utProgName) {
         this.utProgName = utProgName;
     }
-    
+//
+//    /**
+//     * @return the id
+//     */
+//    public Integer getSegmentNum() {
+//        return segmentNum;
+//    }
+
+    public String getSegmentNum() {
+        if (segmentNum == null) {
+            return "";
+        }
+        return Integer.toString(segmentNum);
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setSegmentNum(Integer id) {
+        if (id != null) {
+            this.segmentNum = id;
+        }
+    }
+
+    public void setSegmentNum(String n) {
+        if (!n.isEmpty()) {
+            this.segmentNum = Integer.parseInt(n);
+        }
+    }
+
 }

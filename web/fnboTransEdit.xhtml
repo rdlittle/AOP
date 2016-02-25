@@ -142,6 +142,14 @@
                                 <h:outputText value="#{fnboBean.transItem.lineNum}"/>
                             </p:column>                            
                         </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Original Order"/>
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{fnboBean.transItem.originalOrder}"/>
+                            </p:column>                            
+                        </p:row>
                         
                         <p:row>
                             <p:column>
@@ -209,11 +217,11 @@
                         </p:row>
                         <p:row>
                             <p:column colspan="2" style="text-align: right;">
-                                <p:commandButton value="Search again" 
+                                <p:commandButton value="New Search" 
                                                  actionListener="#{fnboBean.onTransSearchReset(event)}"
                                                  action="/faces/fnboTransSearch.xhtml?faces-redirect=true"
                                                  style="margin-right: 1em;"/>
-                                <p:commandButton value="Submit" actionListener="#{fnboBean.onSaveTransItem()}" 
+                                <p:commandButton value="Save" actionListener="#{fnboBean.onSaveTransItem()}" 
                                                  process="@(:input)" update="msgs"/>  
                             </p:column>
                         </p:row>

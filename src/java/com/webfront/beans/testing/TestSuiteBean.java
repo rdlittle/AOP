@@ -10,6 +10,7 @@ import com.webfront.beans.WebDE;
 import com.webfront.model.SelectItem;
 import com.webfront.model.UnitTestSuite;
 import com.webfront.model.UnitTestSuiteSegment;
+import com.webfront.util.JSFHelper;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,6 +23,8 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.event.UnselectEvent;
 
 /**
  *
@@ -47,7 +50,7 @@ public class TestSuiteBean implements Serializable {
         utSuiteId = "";
         isNewSuite = false;
         segment = new UnitTestSuiteSegment();
-//        suiteSelector = new SelectOneMenu();
+        selectedRows = new ArrayList<>();
     }
 
     public void newSuite() {
@@ -58,6 +61,7 @@ public class TestSuiteBean implements Serializable {
         testSuite.setUtDate(dfmt.format(d));
         testSuite.setUtTime(tfmt.format(d));
         utSuiteId = "";
+        isNewSuite = true;
         setChanged(true);
     }
 
@@ -78,13 +82,13 @@ public class TestSuiteBean implements Serializable {
         }
     }
 
-    public void save() {
+    public String save() {
         try {
             webde.getInProperties().clear();
             webde.setAccountName("WDE");
             webde.setModuleName("Test");
             webde.setClassName("Suite");
-            webde.getInProperties().put("utSuiteId", new UniDynArray(utSuiteId));
+            webde.getInProperties().put("utSuiteId", new UniDynArray(utSuiteId==null ? "" : utSuiteId));
             webde.getInProperties().put("utTitle", new UniDynArray(testSuite.getUtTitle()));
             webde.getInProperties().put("utDesc", new UniDynArray(testSuite.getUtDesc()));
             webde.getInProperties().put("utDate", new UniDynArray(testSuite.utDateAsString()));
@@ -103,18 +107,22 @@ public class TestSuiteBean implements Serializable {
             webde.call();
             if (webde.getErrStatus() == -1) {
                 String msg = "Error: [" + webde.getErrCode() + "] " + webde.getErrMessage();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", msg));
+               JSFHelper.sendFacesMessage(JSFHelper.MessageType.ERROR,msg,"messages");
             } else {
                 String uid = webde.getObjectMap().get("utSuiteId").toString();
                 String title = testSuite.getUtTitle();
                 if(isNewSuite) {
                     suiteIdList.add(new SelectItem(uid,title));
+                    testSuite = null;
+                    isNewSuite = false;
                 }
             }
         } catch (Exception ex) {
             Logger.getLogger(TestSuiteBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         setChanged(false);
+        JSFHelper.sendFacesMessage("messages", "Saved", "Info");
+        return "/unitTestSuiteForm.xhtml";
     }
 
     public void delete() {
@@ -174,7 +182,7 @@ public class TestSuiteBean implements Serializable {
                         String a = segAccount.extract(1, seg).toString();
                         String f = segFile.extract(1, seg).toString();
                         String p = segProg.extract(1, seg).toString();
-                        testSuite.addUtSegment(new UnitTestSuiteSegment(a, f, p));
+                        testSuite.addUtSegment(new UnitTestSuiteSegment(seg, a, f, p));
                     }
                     setChanged(false);
                 }
@@ -234,6 +242,18 @@ public class TestSuiteBean implements Serializable {
             Logger.getLogger(TestSuiteBean.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public void onRowSelect(SelectEvent event) {
+        
+    }
+    
+    public void onRowUnSelect(UnselectEvent event) {
+        
+    }   
+    
+    public boolean isSelected() {
+        return !selectedRows.isEmpty();
     }
 
     /**

@@ -263,6 +263,7 @@ public class FnboBean implements Serializable {
             fTrans.setTransAmt(trans.extract(6, t).toString());
             fTrans.setCardType(trans.extract(7, t).toString());
             fTrans.setMerchDesc(trans.extract(8, t).toString());
+            fTrans.setTransRef(trans.extract(17, t).toString());
             fTrans.setTransCode(trans.extract(9, t).toString());
             fTrans.setCardholderName(trans.extract(16, t).toString());
             fTrans.setAwardType(trans.extract(18, t).toString());

@@ -63,7 +63,7 @@ public class AffiliateMasterController implements Serializable {
             affiliateMaster.setActive(rbo.getProperty("isActive").equals("1"));
             affiliateMaster.setNextDetailId(rbo.getProperty("nextDetailId"));
             affiliateMaster.setFieldMap(this.populateFieldMap(ID));
-            affiliateMaster.setFieldMapList(new ArrayList<SelectItem>());
+            affiliateMaster.setFieldMapList(new ArrayList<>());
             ArrayList<SelectItem> list = new ArrayList<>();
             for (Integer i : affiliateMaster.getFieldMap().keySet()) {
                 String colName = affiliateMaster.getFieldMap().get(i).getColumnName();
