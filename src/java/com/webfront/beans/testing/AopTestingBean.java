@@ -13,8 +13,6 @@ import com.webfront.beans.AffiliateMasterBean;
 import com.webfront.model.AopSourceDesc;
 import com.webfront.model.Customer;
 import com.webfront.model.SelectItem;
-import com.webfront.model.UnitTestLog;
-import com.webfront.model.UnitTestLogData;
 import com.webfront.model.UnitTestSuite;
 import com.webfront.util.JSFHelper;
 import com.webfront.util.MVUtils;
@@ -42,10 +40,6 @@ import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.DualListModel;
-import org.primefaces.model.chart.Axis;
-import org.primefaces.model.chart.AxisType;
-import org.primefaces.model.chart.ChartSeries;
-import org.primefaces.model.chart.HorizontalBarChartModel;
 
 /**
  *
@@ -75,7 +69,6 @@ public class AopTestingBean implements Serializable {
     private String groupId;
     private String unitId;
 
-//    @ManagedProperty(value = "#{affiliateMasterBean}")
     private AffiliateMasterBean masterBean;
 
     @ManagedProperty(value = "#{affiliateDetailBean}")
@@ -83,9 +76,6 @@ public class AopTestingBean implements Serializable {
 
     private ArrayList<SelectItem> storeList;
     private ArrayList<SelectItem> idList;
-    private final ArrayList<SelectItem> nameList;
-    private final ArrayList<String> dateList;
-    private ArrayList<String> timeList;
     private final ArrayList<SelectItem> suiteIdList;
     private ArrayList<SelectItem> unitList;
     private final ArrayList<SelectItem> errorList;
@@ -98,13 +88,9 @@ public class AopTestingBean implements Serializable {
     private DualListModel<String> countryPickList;
     private ArrayList<String> allCountries;
 
-    private UnitTestLog log;
     int errStatus;
     String errMessage;
     String errCode;
-    private HorizontalBarChartModel chartModel;
-    private ChartSeries passSeries;
-    private ChartSeries failSeries;
     private ArrayList<String> batchList;
     private boolean edit;
     private boolean rowSelected;
@@ -121,9 +107,6 @@ public class AopTestingBean implements Serializable {
         selectedUnitList = new ArrayList<>();
         storeList = new ArrayList<>();
         idList = new ArrayList<>();
-        nameList = new ArrayList<>();
-        dateList = new ArrayList<>();
-        timeList = new ArrayList<>();
         testSuite = new UnitTestSuite();
         suiteIdList = new ArrayList<>();
         dataUnitList = new ArrayList<>();
@@ -131,25 +114,11 @@ public class AopTestingBean implements Serializable {
         errorList = new ArrayList<>();
         countryList = new ArrayList<>();
         commTypeList = new ArrayList<>();
-        log = new UnitTestLog();
         userName = "";
         countryCode = "";
         commissionType = "";
         commTypeMap = new HashMap<>();
         rbo = new RedObject("WDE", "AOP:Testing");
-        chartModel = new HorizontalBarChartModel();
-        passSeries = new ChartSeries();
-        passSeries.setLabel("Pass");
-        passSeries.getData().put("%", 0);
-        failSeries = new ChartSeries();
-        failSeries.setLabel("Fail");
-        failSeries.getData().put("%", 0);
-        chartModel.addSeries(passSeries);
-        chartModel.addSeries(failSeries);
-        chartModel.setStacked(true);
-        Axis axisx = chartModel.getAxis(AxisType.X);
-        axisx.setMax(100);
-        axisx.setLabel("Pass/Fail");
         edit = false;
         selectedDataUnit = new AoTestDataUnit();
         selectedTestDataGroup = new AoTestDataGroup();
@@ -503,8 +472,8 @@ public class AopTestingBean implements Serializable {
                     unit.setCreditType(unitCreditType.extract(1, val).toString());
                     unit.setErrorCodes(unitErrorCodes.extract(1, 1, val).toString());
                     unit.setErrorLines(unitErrorLines.extract(1, val).toString());
-                    unit.setSrpSuppress(unitSrpSuppress.extract(1, val).toString().equals("1") ? true : false);
-                    unit.setCommSuppress(unitCommSuppress.extract(1, val).toString().equals("1") ? true : false);
+                    unit.setSrpSuppress(unitSrpSuppress.extract(1, val).toString().equals("1"));
+                    unit.setCommSuppress(unitCommSuppress.extract(1, val).toString().equals("1"));
                     dataUnitList.add(unit);
                     unitList.add(new SelectItem(unit.getId(), unit.getDescription()));
                 }
@@ -586,171 +555,6 @@ public class AopTestingBean implements Serializable {
         }
     }
 
-    public void onChangeUtLogDate(AjaxBehaviorEvent vce) {
-        RedObject rb = new RedObject("WDE", "Test:Unit");
-        rb.setProperty("utName", utLogName);
-        rb.setProperty("utDate", utLogDate);
-        try {
-            rb.callMethod("getUnitTest");
-            if (errStatus == -1) {
-                errCode = rb.getProperty("svrCtrlCode");
-                errMessage = rb.getProperty("svrmessage");
-                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
-            } else {
-                UniDynArray uda = rb.getPropertyToDynArray("utTime");
-                this.timeList.clear();
-                int timeCount = Integer.parseInt(rb.getProperty("utTimeCount"));
-                for (int t = 1; t <= timeCount; t++) {
-                    String time = uda.extract(1, t).toString();
-                    if (!this.timeList.contains(time)) {
-                        this.timeList.add(time);
-                    }
-                }
-            }
-        } catch (RbException ex) {
-            Logger.getLogger(AopTestingBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void onChangeUtLogName() {
-        try {
-            idList.clear();
-            dateList.clear();
-            timeList.clear();
-            log.getFailList().clear();
-            log.getPassList().clear();
-            utLogDate = null;
-            utLogTime = null;
-            if (utLogName.isEmpty()) {
-                return;
-            }
-            RedObject rb = new RedObject("WDE", "Test:Unit");
-            rb.setProperty("utName", utLogName);
-            rb.callMethod("getUnitTest");
-            errStatus = Integer.parseInt(rb.getProperty("errStat"));
-            errCode = rb.getProperty("errCode");
-            errMessage = rb.getProperty("errMsg");
-            passSeries.set("%", 0);
-            failSeries.set("%", 0);
-            if (errStatus == -1) {
-                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
-            } else {
-                UniDynArray ids = rb.getPropertyToDynArray("utLogId");
-                UniDynArray names = rb.getPropertyToDynArray("utName");
-
-                UniDynArray uda = rb.getPropertyToDynArray("utLogDateInt");
-                uda.insert(2, rb.getPropertyToDynArray("utDate"));
-                uda.insert(3, rb.getPropertyToDynArray("utLogTimeInt"));
-                uda.insert(4, rb.getPropertyToDynArray("utTime"));
-                int dateCount = Integer.parseInt(rb.getProperty("utDateCount"));
-
-                int logCount = Integer.parseInt(rb.getProperty("utLogCount"));
-                for (int i = 1; i <= logCount; i++) {
-                    String id = ids.extract(1, i).toString();
-                    String name = names.extract(1, i).toString();
-                    idList.add(new SelectItem(id, id));
-                    nameList.add(new SelectItem(id, name));
-                }
-
-                for (int d = 1; d <= dateCount; d++) {
-                    String id = uda.extract(1, d).toString();
-                    String date = uda.extract(2, d).toString();
-                    dateList.add(date);
-                }
-
-            }
-        } catch (RbException ex) {
-            Logger.getLogger(AopTestingBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void onChangeUtLogTime() {
-        if (utLogName == null || utLogName.isEmpty()) {
-            return;
-        }
-        if (utLogDate == null || utLogDate.isEmpty()) {
-            return;
-        }
-        if (utLogTime == null || utLogTime.isEmpty()) {
-            return;
-        }
-        passSeries.set("%", 0);
-        failSeries.set("%", 0);
-        chartModel.clear();
-        log.getFailList().clear();
-        log.getPassList().clear();
-        try {
-            RedObject rb = new RedObject("WDE", "Test:Unit");
-            rb.setProperty("utLogId", utLogId == null ? "" : utLogId);
-            rb.setProperty("utName", utLogName);
-            rb.setProperty("utDate", utLogDate);
-            rb.setProperty("utTime", utLogTime);
-            rb.callMethod("getUnitTestLog");
-            errStatus = Integer.parseInt(rb.getProperty("svrStatus"));
-            errCode = rb.getProperty("svrCtrlCode");
-            errMessage = rb.getProperty("svrMessage");
-            if (errStatus == -1) {
-                JSFHelper.sendFacesMessage("messages", "Error: [" + errCode + "] " + errMessage, "Error");
-            } else {
-                log = new UnitTestLog();
-                log.setLogId(rb.getProperty("utLogId"));
-                log.setLogName(rb.getProperty("utName"));
-                log.setLogDate(rb.getProperty("utDate"));
-                log.setLogTime(rb.getProperty("utTime"));
-                log.setTotal(rb.getProperty("utLogCount"));
-                log.setPassCount(rb.getProperty("utPass"));
-                log.setFailCount(rb.getProperty("utFail"));
-                log.setPassRate(rb.getProperty("utPassRate"));
-                log.setFailRate(rb.getProperty("utFailRate"));
-                UniDynArray passList = rb.getPropertyToDynArray("utPassNum");
-                UniDynArray passDesc = rb.getPropertyToDynArray("utPassDesc");
-                UniDynArray passExpect = rb.getPropertyToDynArray("utPassExpect");
-                UniDynArray passResult = rb.getPropertyToDynArray("utPassResult");
-                UniDynArray failList = rb.getPropertyToDynArray("utFailNum");
-                UniDynArray failDesc = rb.getPropertyToDynArray("utFailDesc");
-                UniDynArray failExpect = rb.getPropertyToDynArray("utFailExpect");
-                UniDynArray failResult = rb.getPropertyToDynArray("utFailResult");
-                int passCount = Integer.parseInt(log.getPassCount());
-                int failCount = Integer.parseInt(log.getFailCount());
-                if (passCount > 0) {
-                    for (int p = 1; p <= passCount; p++) {
-                        String num = passList.extract(1, p).toString();
-                        String desc = passDesc.extract(1, p).toString();
-                        String expect = passExpect.extract(1, p).toString();
-                        String result = passResult.extract(1, p).toString();
-                        UnitTestLogData logData = new UnitTestLogData();
-                        logData.setNum(num);
-                        logData.setDesc(desc);
-                        logData.setExpect(expect.equals("utPass") ? "pass" : "fail");
-                        logData.setResult(result.equals("utPass") ? "pass" : "fail");
-                        log.getPassList().add(logData);
-                    }
-                }
-                if (failCount > 0) {
-                    for (int p = 1; p <= failCount; p++) {
-                        String num = failList.extract(1, p).toString();
-                        String desc = failDesc.extract(1, p).toString();
-                        String expect = failExpect.extract(1, p).toString();
-                        String result = failResult.extract(1, p).toString();
-                        UnitTestLogData logData = new UnitTestLogData();
-                        logData.setNum(num);
-                        logData.setDesc(desc);
-                        logData.setExpect(expect.equals("utPass") ? "pass" : "fail");
-                        logData.setResult(result.equals("utPass") ? "pass" : "fail");
-                        log.getFailList().add(logData);
-                    }
-                }
-                passSeries.set("%", Float.valueOf(log.getPassRate()));
-                failSeries.set("%", Float.valueOf(log.getFailRate()));
-                chartModel.addSeries(passSeries);
-                chartModel.addSeries(failSeries);
-            }
-
-        } catch (RbException ex) {
-            Logger.getLogger(AopTestingBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
     public void onChangeTransType() {
         System.out.println("AopTestingBean.onChangeTransType(): " + selectedDataUnit.getTransType());
     }
@@ -821,47 +625,6 @@ public class AopTestingBean implements Serializable {
         } catch (RbException ex) {
             Logger.getLogger(AopTestingBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    public String onDeleteLog() {
-        if (!utLogName.isEmpty() && !utLogDate.isEmpty() && !utLogTime.isEmpty()) {
-            RedObject rb = new RedObject("WDE", "Test:Log");
-            rb.setProperty("utName", utLogName);
-            rb.setProperty("utDate", utLogDate);
-            rb.setProperty("utTime", utLogTime);
-            try {
-                rb.callMethod("deleteTestLog");
-                errStatus = Integer.parseInt(rb.getProperty("svrStatus"));
-                errCode = rb.getProperty("svrCtrlCode");
-                errMessage = rb.getProperty("svrMessage");
-                if (errStatus == -1) {
-                    JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
-                } else {
-                    if (timeList.contains(utLogTime)) {
-                        timeList.remove(utLogTime);
-                        utLogTime = "";
-                    }
-                    utLogCount = Integer.parseInt(rb.getProperty("utLogCount"));
-                    if (utLogCount == 0) {
-                        SelectItem se = new SelectItem(utLogName, utLogName);
-                        if (nameList.contains(se)) {
-                            nameList.remove(se);
-                        }
-                        if (dateList.contains(utLogDate)) {
-                            dateList.remove(utLogDate);
-                        }
-                        utLogDate = "";
-                    }
-//                    chartModel.clear();
-                    log.getFailList().clear();
-                    log.getPassList().clear();
-                    JSFHelper.sendFacesMessage("Test log successfully deleted");
-                }
-            } catch (RbException ex) {
-                Logger.getLogger(AopTestingBean.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        return "/unitTestLog.xhtml?faces-redirect=true";
     }
 
     public String onSaveDataGroup(ActionEvent event) {
@@ -971,42 +734,6 @@ public class AopTestingBean implements Serializable {
 
     public void onSelectErrorCode(ValueChangeEvent vce) {
         selectedDataUnit.setHasErrors();
-    }
-
-    public void refresh() {
-        setNameList(null);
-        setDateList(null);
-        setTimeList(null);
-    }
-
-    /**
-     * @param list the nameList to set
-     */
-    public void setNameList(ArrayList<SelectItem> list) {
-//        this.nameList.clear();
-        try {
-            RedObject rb = new RedObject("WDE", "Test:Unit");
-            rb.setProperty("utName", "");
-            rb.callMethod("getUnitTest");
-            errStatus = Integer.parseInt(rb.getProperty("errStat"));
-            errCode = rb.getProperty("errCode");
-            errMessage = rb.getProperty("errMsg");
-            if (errStatus == -1) {
-                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
-            } else {
-                UniDynArray ids = rb.getPropertyToDynArray("utLogId");
-                UniDynArray names = rb.getPropertyToDynArray("utName");
-                int logCount = Integer.parseInt(rb.getProperty("utLogCount"));
-                for (int i = 1; i <= logCount; i++) {
-                    SelectItem se = new SelectItem(ids.extract(1, i).toString(), names.extract(1, i).toString());
-                    if (!this.nameList.contains(se)) {
-                        this.nameList.add(se);
-                    }
-                }
-            }
-        } catch (RbException ex) {
-            Logger.getLogger(AopTestingBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     /**
@@ -1268,79 +995,6 @@ public class AopTestingBean implements Serializable {
     }
 
     /**
-     * @return the nameList
-     */
-    public ArrayList<SelectItem> getNameList() {
-        setNameList(null);
-        return nameList;
-    }
-
-    /**
-     * @return the dateList
-     */
-    public ArrayList<String> getDateList() {
-        return dateList;
-    }
-
-    /**
-     * @param dates
-     */
-    public void setDateList(ArrayList<SelectItem> dates) {
-        if (this.utLogName.isEmpty()) {
-            return;
-        }
-        RedObject rb = new RedObject("WDE", "Test:Unit");
-        rb.setProperty("utName", utLogName);
-        try {
-            rb.callMethod("getUnitTest");
-            errStatus = Integer.parseInt(rb.getProperty("svrStatus"));
-            if (errStatus == -1) {
-                errCode = rb.getProperty("svrCtrlCode");
-                errMessage = rb.getProperty("svrmessage");
-                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
-            } else {
-                UniDynArray uda = rb.getPropertyToDynArray("utLogDateInt");
-                uda.insert(2, rb.getPropertyToDynArray("utDate"));
-                uda.insert(3, rb.getPropertyToDynArray("utLogTimeInt"));
-                uda.insert(4, rb.getPropertyToDynArray("utTime"));
-                int dateCount = Integer.parseInt(rb.getProperty("utDateCount"));
-                int timeCount = Integer.parseInt(rb.getProperty("utTimeCount"));
-                for (int d = 1; d <= dateCount; d++) {
-                    String date = uda.extract(2, d).toString();
-                    if (!this.dateList.contains(date)) {
-                        this.dateList.add(date);
-                    }
-                }
-                for (int t = 1; t <= timeCount; t++) {
-                    String time = uda.extract(4, t).toString();
-                    if (!this.timeList.contains(time)) {
-                        this.timeList.add(time);
-                    }
-                }
-            }
-        } catch (RbException ex) {
-            Logger.getLogger(AopTestingBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
-
-    /**
-     * @return the timeList
-     */
-    public ArrayList<String> getTimeList() {
-        return timeList;
-    }
-
-    /**
-     * @param timeList the timeList to set
-     */
-    public void setTimeList(ArrayList<String> timeList) {
-        if (timeList != null) {
-            this.timeList = timeList;
-        }
-    }
-
-    /**
      * @return the utSuiteId
      */
     public String getUtSuiteId() {
@@ -1422,62 +1076,6 @@ public class AopTestingBean implements Serializable {
      */
     public void setUtLogCount(int utLogCount) {
         this.utLogCount = utLogCount;
-    }
-
-    /**
-     * @return the logList
-     */
-    public UnitTestLog getLog() {
-        return log;
-    }
-
-    /**
-     * @param log the UnitTestLog to set
-     */
-    public void setLog(UnitTestLog log) {
-        this.log = log;
-    }
-
-    /**
-     * @return the chartModel
-     */
-    public HorizontalBarChartModel getChartModel() {
-        return chartModel;
-    }
-
-    /**
-     * @param chartModel the chartModel to set
-     */
-    public void setChartModel(HorizontalBarChartModel chartModel) {
-        this.chartModel = chartModel;
-    }
-
-    /**
-     * @return the passSeries
-     */
-    public ChartSeries getPassSeries() {
-        return passSeries;
-    }
-
-    /**
-     * @param passSeries the passSeries to set
-     */
-    public void setPassSeries(ChartSeries passSeries) {
-        this.passSeries = passSeries;
-    }
-
-    /**
-     * @return the failSeries
-     */
-    public ChartSeries getFailSeries() {
-        return failSeries;
-    }
-
-    /**
-     * @param failSeries the failSeries to set
-     */
-    public void setFailSeries(ChartSeries failSeries) {
-        this.failSeries = failSeries;
     }
 
     /**
@@ -1716,8 +1314,4 @@ public class AopTestingBean implements Serializable {
         this.unitId = unitId;
     }
 
-    public boolean isLogSelected() {
-        boolean logSelected = (!utLogName.isEmpty() && !utLogDate.isEmpty() && !utLogTime.isEmpty());
-        return logSelected;
-    }
 }

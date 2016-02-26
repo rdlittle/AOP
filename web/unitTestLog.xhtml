@@ -20,7 +20,7 @@
                 </span>                
                 
                 <h:form id="form">
-                    <p:messages id="messages" showDetail="true"/>
+                    <p:messages id="messages" showDetail="false"/>
                     <p:panelGrid styleClass="custom" 
                                  style="margin-left: auto; margin-top: 2em; margin-right: auto; margin-left: auto;">
                         <p:row>
@@ -28,39 +28,41 @@
                                 <p:outputLabel for="utName" value="Test name"/>
                             </p:column>
                             <p:column>
-                                <p:selectOneMenu id="utName" value="#{aopTestBean.utLogName}" >
+                                <p:selectOneMenu id="utName" value="#{testLogBean.utLogName}">
                                     <f:selectItem itemLabel="Select unit test name" itemValue=""/>
-                                    <f:selectItems value="#{aopTestBean.nameList}" var="selItem"
-                                                   itemLabel="#{selItem.value}" itemValue="#{selItem.key}">
+                                    <f:selectItems value="#{testLogBean.nameList}" var="selItem"
+                                                   itemLabel="#{selItem}" itemValue="#{selItem}">
                                     </f:selectItems>
-                                    <p:ajax listener="#{aopTestBean.onChangeUtLogName()}" update="messages,utDate,utTime"/>
+                                    <p:ajax listener="#{testLogBean.onChangeUtLogName()}" update="messages,utDate,utTime"/>
                                 </p:selectOneMenu>
                             </p:column>
                             <p:column>
                                 <p:outputLabel for="utDate" value="Date" style="margin-right: 1em;"/>
                             </p:column>
                             <p:column>
-                                <p:selectOneMenu id="utDate" value="#{aopTestBean.utLogDate}">
-                                    <p:ajax event="change" listener="#{aopTestBean.onChangeUtLogDate(event)}"
+                                <p:selectOneMenu id="utDate" value="#{testLogBean.utLogDate}">
+                                    <p:ajax event="change" listener="#{testLogBean.onChangeUtLogDate(event)}"
                                             update="messages,utTime" process="@this"/>
-                                    <f:selectItem itemLabel="Select date" itemValue=""/>
-                                    <f:selectItems value="#{aopTestBean.dateList}" var="date"/>
+                                    <f:selectItem itemLabel="Select" itemValue=""/>
+                                    <f:selectItems value="#{testLogBean.dateList}" var="logDate"
+                                                   itemLabel="#{logDate}" itemValue="#{logDate}"/>
                                 </p:selectOneMenu>
                             </p:column>
                             <p:column>
                                 <p:outputLabel for="utTime" value="Time" style="margin-right: 1em;"/>
                             </p:column>
                             <p:column>
-                                <p:selectOneMenu id="utTime" value="#{aopTestBean.utLogTime}">
-                                    <p:ajax listener="#{aopTestBean.onChangeUtLogTime()}" process="@this"
+                                <p:selectOneMenu id="utTime" value="#{testLogBean.utLogTime}">
+                                    <p:ajax listener="#{testLogBean.onChangeUtLogTime()}" process="@this"
                                             update="chart,resultPanel,resultPanel:passData,resultPanel:failData,deleteButton"/>
-                                    <f:selectItem itemLabel="Select time" itemValue="-1"/>
-                                    <f:selectItems value="#{aopTestBean.timeList}" var="time"/>
+                                    <f:selectItem itemLabel="Select time" itemValue=""/>
+                                    <f:selectItems value="#{testLogBean.timeList}" var="time"
+                                                   itemLabel="#{time}" itemValue="#{time}"/>
                                 </p:selectOneMenu>
                             </p:column>
                             <p:column>
-                                <p:commandButton id="deleteButton" value="Delete" actionListener="#{aopTestBean.onDeleteLog()}"
-                                                 disabled="#{!aopTestBean.logSelected}" 
+                                <p:commandButton id="deleteButton" value="Delete" actionListener="#{testLogBean.onDeleteLog()}"
+                                                 disabled="#{!testLogBean.logSelected}" 
                                                  update="utName,utDate,utTime,chart,resultPanel,resultPanel:passData,resultPanel:failData,deleteButton"/>
                             </p:column>                            
                         </p:row>
@@ -82,16 +84,16 @@
                         </f:facet>
                     </p:ajaxStatus>
                     
-                    <p:chart id="chart" type="bar" model="#{aopTestBean.chartModel}" transient="true"
+                    <p:chart id="chart" type="bar" model="#{testLogBean.chartModel}" transient="true"
                              style="width: 800px; height: 100px;
                              margin-top: 2em; margin-right: auto; margin-bottom: 1em; margin-left: auto;"/>
                     
                     <h:outputLabel value="Total number of tests: " style="margin-right: 1em;"/>
-                    <h:outputLabel value="#{aopTestBean.log.total}"/>
+                    <h:outputLabel value="#{testLogBean.utLog.total}"/>
 
                     <p:accordionPanel id="resultPanel" multiple="true">
-                        <p:tab title="Number of tests failed: #{aopTestBean.log.failCount}">
-                            <p:dataTable id="failData" value="#{aopTestBean.log.failList}" var="logEntry" 
+                        <p:tab title="Number of tests failed: #{testLogBean.utLog.failCount}">
+                            <p:dataTable id="failData" value="#{testLogBean.utLog.failList}" var="logEntry" 
                                          style="margin: auto;">
                                 <p:column headerText="Test #" style="width: 3%;">
                                     <h:outputText value="#{logEntry.num}"/>
@@ -107,8 +109,8 @@
                                 </p:column>                        
                             </p:dataTable>                    
                         </p:tab>
-                        <p:tab title="Number of tests passed: #{aopTestBean.log.passCount}">
-                            <p:dataTable id="passData" value="#{aopTestBean.log.passList}" var="logEntry" 
+                        <p:tab title="Number of tests passed: #{testLogBean.utLog.passCount}">
+                            <p:dataTable id="passData" value="#{testLogBean.utLog.passList}" var="logEntry" 
                                          style="margin: auto; margin-bottom: 2em;">
                                 <p:column headerText="Test #" style="width: 3%;">
                                     <h:outputText value="#{logEntry.num}"/>
