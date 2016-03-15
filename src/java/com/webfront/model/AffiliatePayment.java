@@ -13,6 +13,7 @@ public class AffiliatePayment {
     private String id;
     private String checkId;
     private String networkId;
+    private String affiliateMasterId;
     private String checkDate;
     private String postDate;
     private String checkAmount;
@@ -156,6 +157,20 @@ public class AffiliatePayment {
      */
     public void setBalance(String balance) {
         this.balance = balance;
+    }
+
+    /**
+     * @return the affiliateMasterId
+     */
+    public String getAffiliateMasterId() {
+        return affiliateMasterId;
+    }
+
+    /**
+     * @param affiliateMasterId the affiliateMasterId to set
+     */
+    public void setAffiliateMasterId(String affiliateMasterId) {
+        this.affiliateMasterId = affiliateMasterId;
     }
     
 }

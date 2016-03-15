@@ -5,12 +5,15 @@
  */
 package com.webfront.beans;
 
+import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.controller.AopQueueController;
+import com.webfront.model.AffiliateMaster;
 import com.webfront.model.AffiliatePayment;
 import com.webfront.model.AopQueue;
 import com.webfront.model.UVException;
+import com.webfront.util.JSFHelper;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
@@ -46,7 +50,7 @@ public class AffiliatePaymentBean {
     private String balance;
     private UploadedFile fileName;
     private AffiliatePayment selectedItem;
-    private final ArrayList<AffiliatePayment> paymentList;
+    private ArrayList<AffiliatePayment> paymentList;
     @ManagedProperty(value = "#{uploadBean}")
     UploadBean uploader;
     public final RedObject rbo = new RedObject("WDE", "Affiliates:Payment");
@@ -54,15 +58,15 @@ public class AffiliatePaymentBean {
 
     public AffiliatePaymentBean() {
         selectedItem = new AffiliatePayment();
-        paymentList = new ArrayList<>();
         id = "";
         checkId = "";
         networkId = "";
         vendorId = "";
         checkAmount = "";
         checkDate = Calendar.getInstance(Locale.getDefault()).getTime();
+        paymentList = new ArrayList<>();
     }
-
+    
     public void setUploader(UploadBean ub) {
         this.uploader = ub;
     }
@@ -123,12 +127,48 @@ public class AffiliatePaymentBean {
      * @param paymentList the paymentList to set
      */
     public void setPaymentList(ArrayList<AffiliatePayment> paymentList) {
+        Map<String,Object> map = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+        if(map.containsKey("affiliateMaster")) {
+            vendorId = ((AffiliateMaster)map.get("affiliateMaster")).getID();
+        }
         try {
             this.paymentList.clear();
             rbo.setProperty("networkId", selectedItem.getNetworkId());
+            rbo.setProperty("vendorId", vendorId.isEmpty() ? "" : vendorId);
             rbo.setProperty("checkId", checkId);
             rbo.setProperty("paymentId", getId());
             rbo.callMethod("getPayment");
+            int svrStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
+            if (svrStatus == -1) {
+                String errCode = rbo.getProperty("svrCtrlCode");
+                String errMessage = rbo.getProperty("svrMessage");
+                JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
+            } else {
+                UniDynArray uda = rbo.getPropertyToDynArray("paymentId");
+                uda.insert(2, rbo.getPropertyToDynArray("checkDate"));
+                uda.insert(3, rbo.getPropertyToDynArray("userName"));
+                uda.insert(4, rbo.getPropertyToDynArray("releasedAmount"));
+                uda.insert(5, rbo.getPropertyToDynArray("balance"));
+                uda.insert(6, rbo.getPropertyToDynArray("checkId"));
+                uda.insert(7, rbo.getPropertyToDynArray("networkId"));
+                uda.insert(8, rbo.getPropertyToDynArray("postDate"));
+                uda.insert(9, rbo.getPropertyToDynArray("vendorId"));
+                int pCount = uda.dcount(1);
+                for (int val = 1; val <= pCount; val++) {
+                    AffiliatePayment p = new AffiliatePayment();
+                    p.setId(uda.extract(1, val).toString());
+                    p.setAffiliateMasterId(vendorId);
+                    p.setCheckDate(uda.extract(2, val).toString());
+                    p.setUserName(uda.extract(3, val).toString());
+                    p.setReleasedAmount(uda.extract(4, val).toString());
+                    p.setBalance(uda.extract(5, val).toString());
+                    p.setCheckId(uda.extract(6, val).toString());
+                    p.setNetworkId(uda.extract(7, val).toString());
+                    p.setPostDate(uda.extract(8, val).toString());
+                    p.setAffiliateMasterId(uda.extract(9, val).toString());
+                    this.paymentList.add(p);
+                }
+            }
         } catch (RbException ex) {
             Logger.getLogger(AffiliatePaymentBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -227,7 +267,7 @@ public class AffiliatePaymentBean {
     public Date getCheckDate() {
         return checkDate;
     }
-    
+
     public String checkDateToString() {
         SimpleDateFormat dfmt = new SimpleDateFormat("MM/dd/yyyy");
         return dfmt.format(checkDate);

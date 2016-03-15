@@ -8,12 +8,13 @@ import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.model.AffiliateOrder;
-import com.webfront.model.SelectItem;
 import com.webfront.model.AffiliateDetail;
 import com.webfront.model.AffiliateMaster;
+import com.webfront.model.AffiliatePayment;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -25,6 +26,8 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
+import org.primefaces.context.RequestContext;
+import org.primefaces.event.SelectEvent;
 
 /**
  *
@@ -75,7 +78,7 @@ public class BatchManagementBean implements Serializable {
         batchType = "NP";
         errorsOnly = false;
     }
-    
+
     @PostConstruct
     public void init() {
         detail.setOrdersOnly(true);
@@ -89,11 +92,27 @@ public class BatchManagementBean implements Serializable {
     public void changeValue(AjaxBehaviorEvent event) {
         this.affiliateMaster.changeVendor(event);
         this.masterId = this.affiliateMaster.getID();
-        
+
         this.detail.setMasterId(masterId);
         this.detail.changeMasterId(event);
-        this.detail.setStoreList(new ArrayList<SelectItem>());
+        this.detail.setStoreList(new ArrayList<>());
         this.vendorName = this.affiliateMaster.getName();
+    }
+
+    public void onCheckNumClicked() {
+        Map<String, Object> options = new HashMap<>();
+        options.put("resizable", false);
+        options.put("draggable", false);
+        options.put("modal", true);
+        RequestContext.getCurrentInstance().openDialog("checkSelector", options, null);
+    }
+
+    public void onCheckSelected(SelectEvent selEvent) {
+        AffiliatePayment payment = (AffiliatePayment) selEvent.getObject();
+    }
+
+    public void selectCheckFromDialog(AffiliatePayment pay) {
+        RequestContext.getCurrentInstance().closeDialog(pay);
     }
 
     public void doSearch() {

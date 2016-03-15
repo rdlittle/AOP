@@ -43,6 +43,9 @@ public class AffiliateDetail implements Serializable {
     private boolean displayCB;
     private boolean ibvOnGiftCard;
     private String threshhold;
+    private boolean sabpExempt;
+    private boolean zeroCommAllowed;
+    private boolean cipExempt;
 
     public AffiliateDetail() {
         this.init();
@@ -71,7 +74,10 @@ public class AffiliateDetail implements Serializable {
         displayIBV=true;
         displayCB=true;
         ibvOnGiftCard=false;
-        threshhold="";        
+        threshhold="";  
+        sabpExempt = false;
+        zeroCommAllowed = false;
+        cipExempt = false;
     }
     
     /**
@@ -449,6 +455,48 @@ public class AffiliateDetail implements Serializable {
      */
     public void setIbvOnGiftCard(boolean ibvOnGiftCard) {
         this.ibvOnGiftCard = ibvOnGiftCard;
+    }
+
+    /**
+     * @return the sabpExempt
+     */
+    public boolean isSabpExempt() {
+        return sabpExempt;
+    }
+
+    /**
+     * @param sabpExempt the sabpExempt to set
+     */
+    public void setSabpExempt(boolean sabpExempt) {
+        this.sabpExempt = sabpExempt;
+    }
+
+    /**
+     * @return the zeroCommAllowed
+     */
+    public boolean isZeroCommAllowed() {
+        return zeroCommAllowed;
+    }
+
+    /**
+     * @param zeroCommAllowed the zeroCommAllowed to set
+     */
+    public void setZeroCommAllowed(boolean zeroCommAllowed) {
+        this.zeroCommAllowed = zeroCommAllowed;
+    }
+
+    /**
+     * @return the cipExempt
+     */
+    public boolean isCipExempt() {
+        return cipExempt;
+    }
+
+    /**
+     * @param cipExempt the cipExempt to set
+     */
+    public void setCipExempt(boolean cipExempt) {
+        this.cipExempt = cipExempt;
     }
     
 }

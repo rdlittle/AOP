@@ -267,6 +267,9 @@ public class TestLogBean {
                         utLogDate = "";
                     }
 //                    chartModel.clear();
+                    for(ChartSeries cs : chartModel.getSeries()) {
+                        cs.getData().put("%", 0);
+                    }
                     getUtLog().getFailList().clear();
                     getUtLog().getPassList().clear();
                     JSFHelper.sendFacesMessage("Test log successfully deleted");

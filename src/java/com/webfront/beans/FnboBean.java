@@ -61,6 +61,9 @@ public class FnboBean implements Serializable {
     private CardHolder cardHolder;
     private final ArrayList<CardHolder> selectedCardHolders = new ArrayList<>();
     String searchTarget;
+    private boolean created;
+    private boolean clearable;
+    private boolean submitted;
 
     /**
      * Creates a new instance of FnboBean
@@ -74,6 +77,9 @@ public class FnboBean implements Serializable {
         cardHolder = new CardHolder();
         hasItems = false;
         referenceNum = "";
+        created = false;
+        clearable = false;
+        submitted = false;
     }
 
     /**
@@ -146,6 +152,32 @@ public class FnboBean implements Serializable {
                 Logger.getLogger(FnboBean.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+
+    public String onTransReprocess() {
+        RedObject rbo = new RedObject("WDE", "Bank:Fnbo");
+        if(cardHolder.getMemberId().isEmpty() || cardHolder.getArn().isEmpty()) {
+            JSFHelper.sendFacesMessage("Missing info", "Error");
+            return "";
+        }
+        rbo.setProperty("arn", cardHolder.getArn());
+        rbo.setProperty("memberId", cardHolder.getMemberId());        
+        try {
+            rbo.callMethod("putBankFnboReprocess");
+            int svrStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
+            String svrCtrlCode = rbo.getProperty("svrCtrlCode");
+            String svrMessage = rbo.getProperty("svrMessage");
+            if (svrStatus == -1) {
+                JSFHelper.sendFacesMessage(svrCtrlCode + ": " + svrMessage, "Error");
+            } else {
+                JSFHelper.sendFacesMessage("Reprocess OK", "Info");
+                submitted = false;
+                return "/fnboProcessing.xhtml?faces-redirect=true";
+            }
+        } catch (RbException ex) {
+            Logger.getLogger(FnboBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "";
     }
 
     public String onTransSearch(ActionEvent event) {
@@ -299,6 +331,31 @@ public class FnboBean implements Serializable {
         cardHolder = new CardHolder();
         cardHolderList.clear();
         hasItems = false;
+        created = false;
+        clearable = false;
+        submitted = false;
+    }
+
+    public void onCardHolderCreate() {
+        RedObject rbo;
+        rbo = new RedObject("WDE", "Bank:Member");
+        rbo.setProperty("memberId", cardHolder.getMemberId());
+        rbo.setProperty("arn", cardHolder.getArn());
+        rbo.setProperty("cardType", cardHolder.getCardType());
+        try {
+            rbo.callMethod("postBankFnboArn");
+            int svrStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
+            String svrCtrlCode = rbo.getProperty("svrCtrlCode");
+            String svrMessage = rbo.getProperty("svrMessage");
+            if (svrStatus == -1) {
+                JSFHelper.sendFacesMessage(svrCtrlCode + ": " + svrMessage, "Error");
+            } else {
+                JSFHelper.sendFacesMessage("Cardholder created", "Info");
+                submitted = true;
+            }
+        } catch (RbException ex) {
+            Logger.getLogger(FnboBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void onCardHolderLookup() {
@@ -839,6 +896,56 @@ public class FnboBean implements Serializable {
      */
     public void setReferenceNum(String referenceNum) {
         this.referenceNum = referenceNum;
+    }
+
+    /**
+     * @return the created
+     */
+    public boolean isCreated() {
+        created = (!cardHolder.getArn().isEmpty() && !cardHolder.getMemberId().isEmpty() && !cardHolder.getCardType().isEmpty());
+        clearable = (!cardHolder.getArn().isEmpty() || !cardHolder.getMemberId().isEmpty() || !cardHolder.getCardType().isEmpty());
+        return created;
+    }
+
+    /**
+     * @param created the created to set
+     */
+    public void setCreated(boolean created) {
+        this.created = created;
+    }
+
+    public void onTextEdit() {
+        created = (!cardHolder.getArn().isEmpty() && !cardHolder.getMemberId().isEmpty() && !cardHolder.getCardType().isEmpty());
+        clearable = (!cardHolder.getArn().isEmpty() || !cardHolder.getMemberId().isEmpty() || !cardHolder.getCardType().isEmpty());
+    }
+
+    /**
+     * @return the clearable
+     */
+    public boolean isClearable() {
+
+        return clearable;
+    }
+
+    /**
+     * @param clearable the clearable to set
+     */
+    public void setClearable(boolean clearable) {
+        this.clearable = clearable;
+    }
+
+    /**
+     * @return the submitted
+     */
+    public boolean isSubmitted() {
+        return submitted;
+    }
+
+    /**
+     * @param submitted the submitted to set
+     */
+    public void setSubmitted(boolean submitted) {
+        this.submitted = submitted;
     }
 
 }

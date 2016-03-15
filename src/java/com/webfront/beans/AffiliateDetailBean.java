@@ -66,9 +66,9 @@ public class AffiliateDetailBean implements Serializable {
     }
 
     public void changeMasterId(AjaxBehaviorEvent event) {
-        setStoreList(new ArrayList<SelectItem>());
-        setMinPayList(new ArrayList<SelectItem>());
-        setMaxPayList(new ArrayList<SelectItem>());
+        setStoreList(new ArrayList<>());
+        setMinPayList(new ArrayList<>());
+        setMaxPayList(new ArrayList<>());
         detailId = "";
         detail = new AffiliateDetail();
     }

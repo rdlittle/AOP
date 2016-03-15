@@ -32,6 +32,7 @@ public class CardHolder {
     private String suffix;
     private String acquisitionCode;
     private String fileDate;
+    private String cardType;
 
     public CardHolder() {
         arn = "";
@@ -50,6 +51,7 @@ public class CardHolder {
         suffix = "";
         acquisitionCode = "";
         fileDate = "";
+        cardType = "";
     }
 
     /**
@@ -314,6 +316,20 @@ public class CardHolder {
      */
     public void setFileDate(String fileDate) {
         this.fileDate = fileDate;
+    }
+
+    /**
+     * @return the cardType
+     */
+    public String getCardType() {
+        return cardType;
+    }
+
+    /**
+     * @param cardType the cardType to set
+     */
+    public void setCardType(String cardType) {
+        this.cardType = cardType;
     }
 
 }

@@ -42,8 +42,11 @@
                         <p:menuitem value="Payment queue" outcome="/paymentQueue.xhtml"/>
                     </p:submenu>
                     <p:submenu label="FNBO">
-                        <p:menuitem value="Cardholder Activity" outcome="/fnboInquiryForm.xhtml"/>
-                        <p:menuitem value="Cardholder Search" outcome="/cardHolder.xhtml"/>
+                        <p:submenu label="Cardholder">
+                            <p:menuitem value="Create" outcome="/fnboArnEntry.xhtml"/>
+                            <p:menuitem value="Report" outcome="/fnboInquiryForm.xhtml"/>
+                            <p:menuitem value="Search" outcome="/cardHolder.xhtml"/>
+                        </p:submenu>
                         <p:menuitem value="Transaction Inquiry" outcome="/fnboTrans.xhtml"/>
                         <p:menuitem value="Transaction Search" outcome="/fnboTransSearch.xhtml"/>                        
                         <p:menuitem value="Processing Queue" outcome="/fnboProcessing.xhtml"/>
