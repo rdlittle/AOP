@@ -6,6 +6,11 @@
 
 package com.webfront.model;
 
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.convert.Converter;
+import javax.faces.convert.FacesConverter;
+
 /**
  *
  * @author rlittle
@@ -78,5 +83,27 @@ public class AffiliateMapping {
         this.exclude = exclude;
     }
 
-    
+//    @FacesConverter(forClass = AffiliateMapping.class)
+//    public class MappingConverter implements Converter {
+//
+//        @Override
+//        public Object getAsObject(FacesContext context, UIComponent component, String value) {
+//            if(value==null) {
+//                return new AffiliateMapping();
+//            }
+//            AffiliateMaster master = (AffiliateMaster) context.getApplication().getELResolver().
+//                getValue(context.getELContext(), null, "AffiliateMaster");
+//            AffiliateMapping item = master.getFieldMap().get(value);
+//            return item;
+//        }
+//
+//        @Override
+//        public String getAsString(FacesContext context, UIComponent component, Object value) {
+//            if(value == null) {
+//                return "";
+//            }
+//            return ((AffiliateMapping) value).getColumnName();
+//        }
+        
+//    }
 }

@@ -10,6 +10,7 @@ import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.controller.AopQueueController;
 import com.webfront.model.AopQueue;
+import com.webfront.model.Queue;
 import com.webfront.model.UVException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ public class AopQueueBean implements Serializable {
     /**
      * @return the queueList
      */
-    public ArrayList<AopQueue> getQueueList() {
+    public ArrayList<? extends Queue> getQueueList() {
         if (this.queueList.isEmpty()) {
             setQueueList();
         }
@@ -64,7 +65,7 @@ public class AopQueueBean implements Serializable {
 
     public void setQueueList() {
         this.queueList.clear();
-        this.queueList = controller.getQueueList(queueType);
+        this.queueList = (ArrayList<AopQueue>) controller.getQueueList(queueType);
     }
 
     public void onCellEdit(CellEditEvent evt) {

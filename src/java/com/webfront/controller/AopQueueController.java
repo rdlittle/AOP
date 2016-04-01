@@ -11,6 +11,7 @@ import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.beans.AopQueueBean;
 import com.webfront.model.AopQueue;
 import com.webfront.model.ErrorObject;
+import com.webfront.model.Queue;
 import com.webfront.model.UVException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -26,7 +27,7 @@ public class AopQueueController {
 
     private final RedObject rb = new RedObject("WDE", "AOP:Queue");
     private AopQueue queueItem;
-    private final ArrayList<AopQueue> queueList;
+    private final ArrayList<Queue> queueList;
     public ErrorObject errObj;
 
     public AopQueueController() {
@@ -68,52 +69,43 @@ public class AopQueueController {
                 int vals = Integer.parseInt(rb.getProperty("queueCount"));
                 if (vals > 0) {
                     this.queueList.clear();
+                    UniDynArray queueIdList = rb.getPropertyToDynArray("queueId");
                     UniDynArray affiliateMasterList = rb.getPropertyToDynArray("affiliateMasterId");
                     UniDynArray fileNameList = rb.getPropertyToDynArray("fileName");
-                    UniDynArray pathList = rb.getPropertyToDynArray("path");
-                    UniDynArray errorCountList = rb.getPropertyToDynArray("errorCount");
-                    UniDynArray processStatusList = rb.getPropertyToDynArray("processStatus");
-                    UniDynArray excludeFlagList = rb.getPropertyToDynArray("excludeFlag");
-                    UniDynArray uploadDateList = rb.getPropertyToDynArray("uploadDate");
+                    UniDynArray uploadDateList = rb.getPropertyToDynArray("createDate");
+                    UniDynArray queueStatusList = rb.getPropertyToDynArray("queueStatus");                    
                     UniDynArray userNameList = rb.getPropertyToDynArray("userName");
                     UniDynArray lineCountList = rb.getPropertyToDynArray("lineCount");
                     UniDynArray orderCountList = rb.getPropertyToDynArray("orderCount");
-                    UniDynArray uploadTimeList = rb.getPropertyToDynArray("uploadTime");
-                    UniDynArray queueStatus = rb.getPropertyToDynArray("queueStatus");
+                    UniDynArray errorCountList = rb.getPropertyToDynArray("errorCount");
+                    UniDynArray uploadTimeList = rb.getPropertyToDynArray("createTime");
+                    UniDynArray checkIdList = rb.getPropertyToDynArray("checkId");                    
                     UniDynArray checkAmountList = rb.getPropertyToDynArray("checkAmount");
-                    UniDynArray networkIdList = rb.getPropertyToDynArray("networkId");
-                    UniDynArray networkNameList = rb.getPropertyToDynArray("networkName");
-                    UniDynArray networkCountryList = rb.getPropertyToDynArray("networkCountry");
-                    UniDynArray checkIdList = rb.getPropertyToDynArray("checkId");
-                    UniDynArray queueIdList = rb.getPropertyToDynArray("queueId");
                     UniDynArray queueTypeList = rb.getPropertyToDynArray("queueType");
                     UniDynArray errorReportList = rb.getPropertyToDynArray("errorReport");
                     UniDynArray successReportList = rb.getPropertyToDynArray("successReport");
 
                     for (int val = 1; val <= vals; val++) {
-                        AopQueue aopQueue = new AopQueue();
-                        aopQueue.setAffiliateMasterId(affiliateMasterList.extract(1, val).toString());
-                        aopQueue.setFileName(fileNameList.extract(1, val).toString());
-                        aopQueue.setPath(pathList.extract(1, val).toString());
-                        aopQueue.setErrors(errorCountList.extract(1, val).toString());
-                        aopQueue.setStatus(processStatusList.extract(1, val).toString());
-                        aopQueue.setExclude("1".equals(excludeFlagList.extract(1, val).toString()));
-                        aopQueue.setUploadDate(uploadDateList.extract(1, val).toString());
-                        aopQueue.setUserName(userNameList.extract(1, val).toString());
-                        aopQueue.setLineCount(lineCountList.extract(1, val).toString());
-                        aopQueue.setOrderCount(orderCountList.extract(1, val).toString());
-                        aopQueue.setUploadTime(uploadTimeList.extract(1, val).toString());
-                        aopQueue.setQueueStatus(queueStatus.extract(1, val).toString());
-                        aopQueue.setCheckAmount(checkAmountList.extract(1, val).toString());
-                        aopQueue.setNetworkdId(networkIdList.extract(1, val).toString());
-                        aopQueue.setNetworkName(networkNameList.extract(1, val).toString());
-                        aopQueue.setNetworkCountry(networkCountryList.extract(1, val).toString());
-                        aopQueue.setCheckId(checkIdList.extract(1, val).toString());
-                        aopQueue.setQueueId(queueIdList.extract(1, val).toString());
-                        aopQueue.setQueueType(queueTypeList.extract(1, val).toString());
-                        aopQueue.setErrorReport(errorReportList.extract(1, val).toString());
-                        aopQueue.setSuccessReport(successReportList.extract(1, val).toString());
-                        this.queueList.add(aopQueue);
+                        Queue item = new AopQueue();
+                        item.setId(queueIdList.extract(1, val).toString());                        
+                        item.setVendorCode(affiliateMasterList.extract(1, val).toString());
+                        item.setFileName(fileNameList.extract(1, val).toString());
+                        item.setErrorCount(errorCountList.extract(1, val).toString());
+                        item.setQueueStatus(queueStatusList.extract(1, val).toString());
+                        item.setCreateDate(uploadDateList.extract(1, val).toString());
+                        item.setCreateTime(uploadTimeList.extract(1, val).toString());
+                        item.setUserName(userNameList.extract(1, val).toString());
+                        item.setItemCount(lineCountList.extract(1, val).toString());
+                        item.setQueueType(queueTypeList.extract(1, val).toString());
+                        item.setErrorReport(errorReportList.extract(1, val).toString());
+                        item.setSuccessReport(successReportList.extract(1, val).toString());
+//                        item.setOrderCount(orderCountList.extract(1, val).toString());                        
+                        item.setCheckAmount(checkAmountList.extract(1, val).toString());
+//                        item.setNetworkdId(networkIdList.extract(1, val).toString());
+//                        item.setNetworkName(networkNameList.extract(1, val).toString());
+//                        item.setNetworkCountry(networkCountryList.extract(1, val).toString());
+                        item.setCheckId(checkIdList.extract(1, val).toString());                        
+                        this.queueList.add(item);
                     }
                 }
             }
@@ -123,7 +115,7 @@ public class AopQueueController {
         }
     }
 
-    public ArrayList<AopQueue> getQueueList(String queueType) {
+    public ArrayList<? extends Queue> getQueueList(String queueType) {
         setQueueList(queueType);
         return this.queueList;
     }

@@ -42,13 +42,16 @@
                         <p:menuitem value="Payment queue" outcome="/paymentQueue.xhtml"/>
                     </p:submenu>
                     <p:submenu label="FNBO">
-                        <p:submenu label="Cardholder">
+                        <p:submenu label="Cardholders">
                             <p:menuitem value="Create" outcome="/fnboArnEntry.xhtml"/>
                             <p:menuitem value="Report" outcome="/fnboInquiryForm.xhtml"/>
                             <p:menuitem value="Search" outcome="/cardHolder.xhtml"/>
                         </p:submenu>
-                        <p:menuitem value="Transaction Inquiry" outcome="/fnboTrans.xhtml"/>
-                        <p:menuitem value="Transaction Search" outcome="/fnboTransSearch.xhtml"/>                        
+                        <p:submenu label="Transactions">
+                            <p:menuitem value="Inquiry" outcome="/fnboTrans.xhtml"/>
+                            <p:menuitem value="Reprocess" outcome="/fnboTransReprocess.xhtml"/>
+                            <p:menuitem value="Search" outcome="/fnboTransSearch.xhtml"/>
+                        </p:submenu>
                         <p:menuitem value="Processing Queue" outcome="/fnboProcessing.xhtml"/>
                     </p:submenu>
                     <p:submenu label="Testing">

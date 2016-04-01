@@ -28,13 +28,13 @@
                                  rowKey="#{queueItem.fileName}" style="width: 98%; margin: auto;">
                         <p:ajax event="cellEdit" listener="#{aopQueueBean.onCellEdit}"/>
                         <p:column headerText="Vendor Master" width="8%">
-                            <h:outputText value="#{queueItem.affiliateMasterId}"/>
+                            <h:outputText value="#{queueItem.vendorCode}"/>
                         </p:column>                    
                         <p:column headerText="Upload Date" style="text-align: center;">
-                            <h:outputText value="#{queueItem.uploadDate}"/>
+                            <h:outputText value="#{queueItem.createDate}"/>
                         </p:column>
                         <p:column headerText="Upload Time" style="text-align: center;">
-                            <h:outputText value="#{queueItem.uploadTime}"/>
+                            <h:outputText value="#{queueItem.createTime}"/>
                         </p:column>                    
                         <p:column headerText="User">
                             <h:outputText value="#{queueItem.userName}"/>
@@ -42,7 +42,7 @@
                         <p:column headerText="Status" width="5%" >
                             <p:cellEditor>
                                 <f:facet name="output">
-                                    <h:outputText value="#{queueItem.statusName}"/>
+                                    <h:outputText value="#{queueItem.queueStatusName}"/>
                                 </f:facet>
                                 <f:facet name="input">
                                     <p:selectOneMenu value="#{queueItem.status}" id="statusSelector">
@@ -54,13 +54,13 @@
                             </p:cellEditor>
                         </p:column>
                         <p:column headerText="Lines" width="5%">
-                            <h:outputText value="#{queueItem.lineCount}"/>
+                            <h:outputText value="#{queueItem.itemCount}"/>
                         </p:column> 
                         <p:column headerText="Orders" width="5%">
                             <h:outputText value="#{queueItem.orderCount}"/>
                         </p:column> 
                         <p:column headerText="Errors" width="5%">
-                            <h:outputText id="errorCount" value="#{queueItem.errors}"/>
+                            <h:outputText id="errorCount" value="#{queueItem.errorCount}"/>
                         </p:column> 
 
                         <p:column headerText="Report Name" width="25%">

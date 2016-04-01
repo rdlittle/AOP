@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <body>
+        <h:form>
+            <p:tieredMenu>
+                <p:submenu label="Affiliates">
+                    <p:menuitem value="Networks" outcome="/affiliateNetworkForm.xhtml"/>
+                    <p:menuitem value="Aggregators" outcome="/affiliateMasterForm.xhtml"/>
+                    <p:menuitem value="Stores" outcome="/affiliateStoreForm.xhtml"/>
+                    <p:menuitem value="Campaigns" outcome="/campaignManager.xhtml"/>
+                    <p:menuitem value="Commissions" outcome="/tieredCommission.xhtml"/>
+                </p:submenu>
+                <p:submenu label="Batch Management">
+                    <p:menuitem value="Batch listing" outcome="/batchManagementInputForm.xhtml"/>
+                    <p:menuitem value="Error listing" outcome="/affiliateErrorListing.xhtml"/>
+                </p:submenu>
+                <p:submenu label="Order Processing">
+                    <p:menuitem value="Process a report" outcome="/aopUploader.xhtml"/>
+                    <p:menuitem value="Processing queue" outcome="/aopQueue.xhtml"/>
+                </p:submenu>   
+                <p:submenu label="Payment Processing">
+                    <p:menuitem value="Check reconcilliation" outcome="/checkReconFileUploader.xhtml"/>                        
+                    <p:menuitem value="Payment queue" outcome="/paymentQueue.xhtml"/>
+                </p:submenu>
+                <p:submenu label="FNBO">
+                    <p:submenu label="Cardholders">
+                        <p:menuitem value="Create" outcome="/fnboArnEntry.xhtml"/>
+                        <p:menuitem value="Report" outcome="/fnboInquiryForm.xhtml"/>
+                        <p:menuitem value="Search" outcome="/cardHolder.xhtml"/>
+                    </p:submenu>
+                    <p:submenu label="Transactions">
+                        <p:menuitem value="Inquiry" outcome="/fnboTrans.xhtml"/>
+                        <p:menuitem value="Reprocess" outcome="/fnboTransReprocess.xhtml"/>
+                        <p:menuitem value="Search" outcome="/fnboTransSearch.xhtml"/>
+                    </p:submenu>
+                    <p:menuitem value="Processing Queue" outcome="/fnboProcessing.xhtml"/>
+                </p:submenu>
+                <p:submenu label="Testing">
+                    <p:menuitem value="Source Descriptor" outcome="/aoTestSourceDesc.xhtml"/>
+                    <p:menuitem value="Units" outcome="/aoTestUnit.xhtml"/>
+                    <p:menuitem value="Groups" outcome="/aoTestGroup.xhtml"/>
+                    <p:menuitem value="Create Test Orders" outcome="/testingBatchSetupForm.xhtml"/>
+                    <p:menuitem value="Test Data Queue" outcome="/aopTestDataQueue.xhtml"/>
+                    <p:menuitem value="Test Suite Entry" outcome="/unitTestSuiteForm.xhtml"/>                        
+                    <p:menuitem value="View Test Results" outcome="/unitTestLog.xhtml"/>   
+                </p:submenu>
+            </p:tieredMenu>
+        </h:form>
+    </body>
+</html>

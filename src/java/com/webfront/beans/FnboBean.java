@@ -8,9 +8,11 @@ package com.webfront.beans;
 import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
+import com.webfront.model.AopQueue;
 import com.webfront.model.Award;
 import com.webfront.model.CardHolder;
 import com.webfront.model.FnboTrans;
+import com.webfront.model.Queue;
 import com.webfront.util.DateUtils;
 import com.webfront.util.JSFHelper;
 import com.webfront.util.MVUtils;
@@ -51,7 +53,7 @@ public class FnboBean implements Serializable {
     private Date endDate;
     private boolean maOnly;
     private String queueCount;
-    private final ArrayList<String> queueList;
+    private final ArrayList<Queue> queueList;
     private boolean running;
     private boolean hasItems;
     private String btnProcLabel;
@@ -156,12 +158,12 @@ public class FnboBean implements Serializable {
 
     public String onTransReprocess() {
         RedObject rbo = new RedObject("WDE", "Bank:Fnbo");
-        if(cardHolder.getMemberId().isEmpty() || cardHolder.getArn().isEmpty()) {
+        if (cardHolder.getMemberId().isEmpty() || cardHolder.getArn().isEmpty()) {
             JSFHelper.sendFacesMessage("Missing info", "Error");
             return "";
         }
         rbo.setProperty("arn", cardHolder.getArn());
-        rbo.setProperty("memberId", cardHolder.getMemberId());        
+        rbo.setProperty("memberId", cardHolder.getMemberId());
         try {
             rbo.callMethod("putBankFnboReprocess");
             int svrStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
@@ -379,44 +381,49 @@ public class FnboBean implements Serializable {
                 } else {
                     int itemCount = Integer.parseInt(rbo.getProperty("itemCount"));
                     hasItems = itemCount > 0;
-                    UniDynArray oList = new UniDynArray();
+                    if (!hasItems) {
+                        JSFHelper.sendFacesMessage("No items found");
+                    } else {
+                        UniDynArray oList = new UniDynArray();
 
-                    oList.insert(1, rbo.getPropertyToDynArray("arn"));
-                    oList.insert(2, rbo.getPropertyToDynArray("lastName"));
-                    oList.insert(3, rbo.getPropertyToDynArray("firstName"));
-                    oList.insert(4, rbo.getPropertyToDynArray("middleInitial"));
-                    oList.insert(5, rbo.getPropertyToDynArray("prefix"));
-                    oList.insert(6, rbo.getPropertyToDynArray("suffix"));
-                    oList.insert(7, rbo.getPropertyToDynArray("address1"));
-                    oList.insert(8, rbo.getPropertyToDynArray("address2"));
-                    oList.insert(9, rbo.getPropertyToDynArray("city"));
-                    oList.insert(10, rbo.getPropertyToDynArray("state"));
-                    oList.insert(11, rbo.getPropertyToDynArray("zipCode"));
-                    oList.insert(12, rbo.getPropertyToDynArray("phone1"));
-                    oList.insert(13, rbo.getPropertyToDynArray("memberId"));
-                    oList.insert(14, rbo.getPropertyToDynArray("emailAddress"));
-                    oList.insert(15, rbo.getPropertyToDynArray("acquisitionCode"));
-                    oList.insert(16, rbo.getPropertyToDynArray("fileDate"));
+                        oList.insert(1, rbo.getPropertyToDynArray("arn"));
+                        oList.insert(2, rbo.getPropertyToDynArray("lastName"));
+                        oList.insert(3, rbo.getPropertyToDynArray("firstName"));
+                        oList.insert(4, rbo.getPropertyToDynArray("middleInitial"));
+                        oList.insert(5, rbo.getPropertyToDynArray("prefix"));
+                        oList.insert(6, rbo.getPropertyToDynArray("suffix"));
+                        oList.insert(7, rbo.getPropertyToDynArray("address1"));
+                        oList.insert(8, rbo.getPropertyToDynArray("address2"));
+                        oList.insert(9, rbo.getPropertyToDynArray("city"));
+                        oList.insert(10, rbo.getPropertyToDynArray("state"));
+                        oList.insert(11, rbo.getPropertyToDynArray("zipCode"));
+                        oList.insert(12, rbo.getPropertyToDynArray("phone1"));
+                        oList.insert(13, rbo.getPropertyToDynArray("memberId"));
+                        oList.insert(14, rbo.getPropertyToDynArray("emailAddress"));
+                        oList.insert(15, rbo.getPropertyToDynArray("acquisitionCode"));
+                        oList.insert(16, rbo.getPropertyToDynArray("fileDate"));
 
-                    for (int i = 1; i <= itemCount; i++) {
-                        CardHolder member = new CardHolder();
-                        member.setArn(oList.extract(1, i).toString());
-                        member.setLastName(oList.extract(2, i).toString());
-                        member.setFirstName(oList.extract(3, i).toString());
-                        member.setMiddleInitial(oList.extract(4, i).toString());
-                        member.setPrefix(oList.extract(5, i).toString());
-                        member.setSuffix(oList.extract(6, i).toString());
-                        member.setAddress1(oList.extract(7, i).toString());
-                        member.setAddress2(oList.extract(8, i).toString());
-                        member.setCity(oList.extract(9, i).toString());
-                        member.setState(oList.extract(10, i).toString());
-                        member.setZipCode(oList.extract(11, i).toString());
-                        member.setPhone1(oList.extract(12, i).toString());
-                        member.setMemberId(oList.extract(13, i).toString());
-                        member.setEmailAddress(oList.extract(14, i).toString());
-                        member.setAcquisitionCode(oList.extract(15, i).toString());
-                        member.setFileDate(oList.extract(16, i).toString());
-                        cardHolderList.add(member);
+                        for (int i = 1; i <= itemCount; i++) {
+                            CardHolder member = new CardHolder();
+                            member.setArn(oList.extract(1, i).toString());
+                            member.setLastName(oList.extract(2, i).toString());
+                            member.setFirstName(oList.extract(3, i).toString());
+                            member.setMiddleInitial(oList.extract(4, i).toString());
+                            member.setPrefix(oList.extract(5, i).toString());
+                            member.setSuffix(oList.extract(6, i).toString());
+                            member.setAddress1(oList.extract(7, i).toString());
+                            member.setAddress2(oList.extract(8, i).toString());
+                            member.setCity(oList.extract(9, i).toString());
+                            member.setState(oList.extract(10, i).toString());
+                            member.setZipCode(oList.extract(11, i).toString());
+                            member.setPhone1(oList.extract(12, i).toString());
+                            member.setMemberId(oList.extract(13, i).toString());
+                            member.setEmailAddress(oList.extract(14, i).toString());
+                            member.setAcquisitionCode(oList.extract(15, i).toString());
+                            member.setFileDate(oList.extract(16, i).toString());
+                            cardHolderList.add(member);
+                        }
+                        cardHolder = cardHolderList.get(0);
                     }
                 }
             } catch (RbException ex) {
@@ -526,7 +533,6 @@ public class FnboBean implements Serializable {
     }
 
     public void setQueueList() {
-        queueList.clear();
         try {
             RedObject rbo;
             rbo = new RedObject("WDE", "Bank:Fnbo");
@@ -539,12 +545,43 @@ public class FnboBean implements Serializable {
             } else {
                 UniDynArray uda = rbo.getPropertyToDynArray("queueCount");
                 uda.insert(2, rbo.getPropertyToDynArray("queueList"));
+                uda.insert(4, rbo.getPropertyToDynArray("vendor"));
+                uda.insert(5, rbo.getPropertyToDynArray("fileName"));
+                uda.insert(6, rbo.getPropertyToDynArray("queueStatus"));
+                uda.insert(7, rbo.getPropertyToDynArray("createDate"));
+                uda.insert(8, rbo.getPropertyToDynArray("createTime"));
+                uda.insert(9, rbo.getPropertyToDynArray("userName"));
+                uda.insert(10, rbo.getPropertyToDynArray("itemCount"));
+                uda.insert(11, rbo.getPropertyToDynArray("errorCount"));
+                uda.insert(12, rbo.getPropertyToDynArray("runDate"));
+                uda.insert(13, rbo.getPropertyToDynArray("runTime"));
+                uda.insert(14, rbo.getPropertyToDynArray("queueType"));
+                uda.insert(15, rbo.getPropertyToDynArray("errorReport"));
+                uda.insert(16, rbo.getPropertyToDynArray("successReport"));
                 String runFlag = rbo.getProperty("isRunning");
                 queueCount = uda.extract(1).toString();
                 int items = Integer.parseInt(queueCount);
+                ArrayList<Queue> copyOfQueueList = new ArrayList<>();
+
                 for (int i = 1; i <= items; i++) {
-                    queueList.add(uda.extract(2, i).toString());
+                    Queue item = new AopQueue();
+                    item.setId(uda.extract(2, i).toString());
+                    item.setVendorCode(uda.extract(4, i).toString());
+                    item.setFileName(uda.extract(5, i).toString());
+                    item.setQueueStatus(uda.extract(6, i).toString());
+                    item.setCreateDate(uda.extract(7, i).toString());
+                    item.setCreateTime(uda.extract(8, i).toString());
+                    item.setUserName(uda.extract(9, i).toString());
+                    item.setItemCount(uda.extract(10, i).toString());
+                    item.setErrorCount(uda.extract(11, i).toString());
+                    item.setRunDate(uda.extract(12, i).toString());
+                    item.setRunTime(uda.extract(13, i).toString());
+                    item.setQueueType(uda.extract(14, i).toString());
+                    copyOfQueueList.add(item);
                 }
+
+                queueList.clear();
+                queueList.addAll(copyOfQueueList);
                 hasItems = (items > 0);
                 running = (runFlag.equals("1"));
                 if (running) {
@@ -810,7 +847,7 @@ public class FnboBean implements Serializable {
     /**
      * @return the queueList
      */
-    public ArrayList<String> getQueueList() {
+    public ArrayList<Queue> getQueueList() {
         return queueList;
     }
 

@@ -31,7 +31,7 @@ public final class WebDEBean implements Serializable {
     private String todayExternal;
     private LinkedList<SelectItem> currencyTypes;
     private LinkedList<SelectItem> countryCodes;
-    private LinkedList<SelectItem> mappedFields;
+    private LinkedList<SelectItem> masterColumnNames;
     private ArrayList<SelectItem> accessMethods;
     private ArrayList<SelectItem> fileFormats;
 
@@ -48,7 +48,7 @@ public final class WebDEBean implements Serializable {
         setNetworkList(new ArrayList<>());
         setCurrencyTypes(new LinkedList<>());
         setCountryCodes(new LinkedList<>());
-        setMappedFields(new LinkedList<>());
+        setMasterColumnNames(new LinkedList<>());
         setAccessMethods(new ArrayList<>());
         setFileFormats(new ArrayList<>());
     }
@@ -155,8 +155,8 @@ public final class WebDEBean implements Serializable {
         return countryCodes;
     }
 
-    public LinkedList<SelectItem> getMappedFields() {
-        return mappedFields;
+    public LinkedList<SelectItem> getMasterColumnNames() {
+        return masterColumnNames;
     }
 
     public ArrayList<SelectItem> getAccessMethods() {
@@ -220,7 +220,7 @@ public final class WebDEBean implements Serializable {
         this.countryCodes = cc;
     }
 
-    public void setMappedFields(LinkedList<SelectItem> mf) {
+    public void setMasterColumnNames(LinkedList<SelectItem> mf) {
         try {
             RedObject rb = new RedObject("WDE", "UTILS:Files");
             rb.setProperty("fileName", "PARAMS");
@@ -244,7 +244,7 @@ public final class WebDEBean implements Serializable {
         } catch (RbException ex) {
             Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        this.mappedFields = mf;
+        this.masterColumnNames = mf;
     }
 
     public void setAccessMethods(ArrayList<SelectItem> list) {

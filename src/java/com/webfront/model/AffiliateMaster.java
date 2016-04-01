@@ -6,6 +6,7 @@
 package com.webfront.model;
 
 import asjava.uniclientlibs.UniDynArray;
+import com.webfront.beans.WebDEBean;
 import com.webfront.controller.AffiliateMasterController;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,6 +17,9 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.ValueChangeEvent;
+import org.primefaces.component.selectonemenu.SelectOneMenu;
+import org.primefaces.event.CellEditEvent;
+import org.primefaces.event.RowEditEvent;
 
 /**
  *
@@ -23,10 +27,12 @@ import javax.faces.event.ValueChangeEvent;
  */
 @ManagedBean
 @SessionScoped
-public final class AffiliateMaster implements Serializable {
+public class AffiliateMaster implements Serializable {
 
     @ManagedProperty(value = "#{affiliateMasterController}")
     private AffiliateMasterController controller;
+    @ManagedProperty(value = "#{WebDEBean}")
+    private WebDEBean webDeBean;
     protected String ID;
     protected String name;
     protected String category;
@@ -45,63 +51,64 @@ public final class AffiliateMaster implements Serializable {
     protected String nextDetailId;
     protected String field1;
     protected String networkId;
-    protected HashMap<Integer, AffiliateMapping> fieldMap;
-    private ArrayList<SelectItem> fieldMapList;
+    protected HashMap<String, String> columnMap;
+    private ArrayList<SelectItem> columns;
     protected boolean newColumn;
     private Integer mfidx;
+    private String rowNumber;
     private UIComponent selector;
-    
+
     public AffiliateMaster() {
 
     }
-    
+
     public AffiliateMaster(UniDynArray am) {
         ID = am.extract(1, 1).toString();
-        name = am.extract(1,2).toString();
-        category = am.extract(1,3).toString();
-        type = am.extract(1,4).toString();
-        prefix = am.extract(1,5).toString();
-        country = am.extract(1,6).toString();
-        currency = am.extract(1,7).toString();
-        mappingId = am.extract(1,8).toString();
-        dataFeedAccessType = am.extract(1,9).toString();
-        dataFeedFormat = am.extract(1,10).toString();
-        dataFeedURL = am.extract(1,11).toString();
-        userName = am.extract(1,12).toString();
-        password = am.extract(1,13).toString();
-        createDate = am.extract(1,14).toString();
-        active = am.extract(1,15).toString().equals("1");
-        nextDetailId = am.extract(1,16).toString();
+        name = am.extract(1, 2).toString();
+        category = am.extract(1, 3).toString();
+        type = am.extract(1, 4).toString();
+        prefix = am.extract(1, 5).toString();
+        country = am.extract(1, 6).toString();
+        currency = am.extract(1, 7).toString();
+        mappingId = am.extract(1, 8).toString();
+        dataFeedAccessType = am.extract(1, 9).toString();
+        dataFeedFormat = am.extract(1, 10).toString();
+        dataFeedURL = am.extract(1, 11).toString();
+        userName = am.extract(1, 12).toString();
+        password = am.extract(1, 13).toString();
+        createDate = am.extract(1, 14).toString();
+        active = am.extract(1, 15).toString().equals("1");
+        nextDetailId = am.extract(1, 16).toString();
         newColumn = false;
+        columns = new ArrayList<>();
+        for (String key : controller.getColumnNames().keySet()) {
+            columns.add(new SelectItem(key, controller.getColumnNames().get(key)));
+        }
     }
 
     public void addNewColumn() {
-        int nextColumn = getFieldMap().size();
+        int nextColumn = getColumnMap().size();
         nextColumn++;
-        AffiliateMapping ibvMapping = new AffiliateMapping();
-        ibvMapping.setId(Integer.toString(nextColumn));
-        getFieldMap().put(nextColumn, ibvMapping);
-        getFieldMapList().add(new SelectItem(Integer.toString(nextColumn), ibvMapping.getColumnName()));
+        getColumnMap().put(Integer.toString(nextColumn), "");
         setNewColumn(true);
+        columns.add(new SelectItem());
     }
-    
+
     public void saveColumn() {
         setNewColumn(false);
     }
 
     public void fieldMapChangeListener(ValueChangeEvent vce) {
-        String clientId=vce.getComponent().getClientId();
-        String junk[]=clientId.split(":");
-        String fieldNumberStr=junk[2];
-        Integer fieldNumber=Integer.valueOf(fieldNumberStr);
-        String value=vce.getNewValue().toString();
-        this.fieldMap.get(fieldNumber+1).setColumnName(value);
-        System.out.println(vce.toString());
+        String clientId = vce.getComponent().getClientId();
+        String junk[] = clientId.split(":");
+        String fieldNumberStr = junk[2];
+        Integer fieldNumber = Integer.valueOf(fieldNumberStr);
+        String value = vce.getNewValue().toString();
     }
-    
+
     public void changeVendor(AjaxBehaviorEvent event) {
         setID(ID);
-        AffiliateMaster rec=getController().getAffiliateMaster(ID);
+        AffiliateMaster rec = getController().getAffiliateMaster(ID);
         setName(rec.getName());
         setCategory(rec.getCategory());
         setNetworkId(rec.getNetworkId());
@@ -118,15 +125,28 @@ public final class AffiliateMaster implements Serializable {
         setCreateDate(rec.getCreateDate());
         setActive(rec.isActive());
         setNextDetailId(rec.getNextDetailId());
-        setFieldMap(rec.getFieldMap());
-        setFieldMapList(rec.getFieldMapList());
+        setColumnMap(rec.getColumnMap());
+        setColumns(new ArrayList<>());
+        HashMap<String,String> map = controller.getColumnNames();
+        columnMap.keySet().stream().map((k) -> {
+            String v = map.get(k);
+            SelectItem se = new SelectItem(k,v);
+            return se;
+        }).forEach((se) -> {
+            columns.add(se);
+        });
+        mfidx = 1;
         setNewColumn(false);
+    }
+
+    public void setColumns(ArrayList<SelectItem> l) {
+        columns = l;
     }
 
     public void saveRecord() {
         getController().setAffiliateMaster(this);
     }
-    
+
     public void ajaxHandler(AjaxBehaviorEvent event) {
         System.out.println("AffiliateMaster.ajaxHandler()");
     }
@@ -148,39 +168,48 @@ public final class AffiliateMaster implements Serializable {
     }
 
     public void changeField(AjaxBehaviorEvent event) {
+        SelectOneMenu uic = (SelectOneMenu) event.getComponent();
+        SelectOneMenu som = (SelectOneMenu) event.getSource();
+        String uicStr = (String) uic.getValue();
+        String somStr = (String) som.getValue();
         System.out.println(event.toString());
         this.setType(type);
     }
 
-    public String getField(Integer i) {
-        if (this.fieldMap != null) {
-            i+=1;
-            if (i <= getFieldMap().size() && i>=0) {
-                return getFieldMap().get(i).getColumnName();
+    public void onFieldNameEdit(CellEditEvent event) {
+        String newValue = (String) event.getNewValue();
+        for(SelectItem se : columns) {
+            String key = se.getKey();
+            String val = se.getValue();
+            if(se.getKey().equals(newValue)) {
+                mfidx = 1;
+                int idx = columns.indexOf(se);
+                String value = controller.getColumnNames().get(newValue);
+                se.setKey(newValue);
+                se.setValue(value);
+                columns.set(idx, se);
             }
         }
-        return "";
     }
     
-    public void setField(Integer i) {
-        System.out.println(i);
-        if (this.fieldMap != null) {
-            i+=1;
-            if (i <= getFieldMap().size() && i>=0) {
-            }
+    public ArrayList<SelectItem> getColumns() {
+        if (columns == null || columns.isEmpty()) {
+            return new ArrayList<>();
         }
+        return columns;
     }
 
-    public void removeField(Integer i) {
-        i+=1;
-        if(i<= getFieldMap().size() && i>0) {
-            HashMap<Integer,AffiliateMapping> map=getFieldMap();
-            ArrayList<SelectItem> list=getFieldMapList();
-            map.remove(i);
-            SelectItem sel=list.get(i-1);
-            list.remove(sel);
-            setFieldMap(map);
-            setFieldMapList(list);
+    public void onRowEdit(RowEditEvent event) {
+
+    }
+
+    public void onRowCancel(RowEditEvent event) {
+
+    }
+
+    public void removeField(SelectItem se) {
+        if(columns.contains(se)) {
+            columns.remove(se);
         }
     }
 
@@ -422,22 +451,15 @@ public final class AffiliateMaster implements Serializable {
         this.field1 = field1;
     }
 
-    public final void setFieldMap(HashMap<Integer, AffiliateMapping> fm) {
-        this.fieldMap = fm;
+    public final void setColumnMap(HashMap<String, String> fm) {
+        this.columnMap = fm;
     }
 
     /**
-     * @return the fieldMap
+     * @return the columnMap
      */
-    public HashMap<Integer, AffiliateMapping> getFieldMap() {
-        return fieldMap;
-    }
-
-    /**
-     * @return the fieldMapList
-     */
-    public ArrayList<SelectItem> getFieldMapList() {
-        return fieldMapList;
+    public HashMap<String, String> getColumnMap() {
+        return columnMap;
     }
 
     /**
@@ -452,13 +474,6 @@ public final class AffiliateMaster implements Serializable {
      */
     public void setNewColumn(boolean newColumn) {
         this.newColumn = newColumn;
-    }
-
-    /**
-     * @param fml
-     */
-    public final void setFieldMapList(ArrayList<SelectItem> fml) {
-        this.fieldMapList = fml;
     }
 
     /**
@@ -515,6 +530,20 @@ public final class AffiliateMaster implements Serializable {
      */
     public void setNetworkId(String networkId) {
         this.networkId = networkId;
+    }
+
+    /**
+     * @return the webDeBean
+     */
+    public WebDEBean getWebDeBean() {
+        return webDeBean;
+    }
+
+    /**
+     * @param webDeBean the webDeBean to set
+     */
+    public void setWebDeBean(WebDEBean webDeBean) {
+        this.webDeBean = webDeBean;
     }
 
 }

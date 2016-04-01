@@ -22,7 +22,7 @@
                     <h2>FNBO Processing</h2>
                 </span>
                 <h:form>
-                    <p:poll id="poll" interval="15" listener="#{fnboBean.onRepollQueue()}" update="@form" 
+                    <p:poll id="poll" interval="7" listener="#{fnboBean.onRepollQueue()}" update="@form" 
                             autoStart="true" process="@this"/>
                     <p:panel style="margin-left: 2em;">
                         <p:commandButton id="processQueue" action="#{fnboBean.onProcessQueue()}"
@@ -32,9 +32,24 @@
                             <f:facet name="header">
                                 <h:outputText value="Processing Queue"/>
                             </f:facet>
-                            <p:column headerText="Item name">
-                                <h:outputText value="#{item}"/>
+                            <p:column headerText="Id">
+                                <h:outputText value="#{item.id}"/>
                             </p:column>
+                            <p:column headerText="Status" style="width: 8%;">
+                                <h:outputText value="#{item.queueStatusName}"/>
+                            </p:column>
+                            <p:column headerText="Date" style="width: 5%;">
+                                <h:outputText value="#{item.createDate}"/>
+                            </p:column>
+                            <p:column headerText="Time" style="width: 5%;">
+                                <h:outputText value="#{item.createTime}"/>
+                            </p:column>
+                            <p:column headerText="Lines" style="width: 5%;">
+                                <h:outputText value="#{item.itemCount}"/>
+                            </p:column>
+                            <p:column headerText="Errors" style="width: 5%;">
+                                <h:outputText value="#{item.errorCount}"/>
+                            </p:column>                            
                         </p:dataTable>
                     </p:panel>
                 </h:form>

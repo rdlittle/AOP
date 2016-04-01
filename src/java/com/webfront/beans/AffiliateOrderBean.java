@@ -54,7 +54,7 @@ public class AffiliateOrderBean implements Serializable {
     public String uploadReport() {
         boolean result;
         getUploader().setFile(getFile());
-        result = uploader.upload();
+        result = uploader.upload(); // Uploads file to /usr/local/dmcdev/AFFILIATE.UPLOAD/
         if (!result) {
             return "";
         }

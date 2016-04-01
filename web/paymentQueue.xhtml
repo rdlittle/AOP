@@ -38,22 +38,22 @@
                             <h:outputText value="#{queueItem.checkAmount}"/>
                         </p:column>                        
                         <p:column headerText="Date" style="text-align: center;" width="3%">
-                            <h:outputText value="#{queueItem.uploadDate}"/>
+                            <h:outputText value="#{queueItem.createDate}"/>
                         </p:column>
                         <p:column headerText="Time" style="text-align: center;" width="3%">
-                            <h:outputText value="#{queueItem.uploadTime}"/>
+                            <h:outputText value="#{queueItem.createTime}"/>
                         </p:column>                    
                         <p:column headerText="User" style="text-align: center;" width="3%">
                             <h:outputText value="#{queueItem.userName}"/>
                         </p:column>
                         <p:column headerText="Status" style="text-align: center;" width="10%">
-                            <h:outputText value="#{queueItem.statusName}"/>
+                            <h:outputText value="#{queueItem.queueStatusName}"/>
                         </p:column>
                         <p:column headerText="Orders" style="text-align: center;" width="3%">
                             <h:outputText value="#{queueItem.orderCount}"/>
                         </p:column> 
                         <p:column headerText="Errors" style="text-align: center;" width="3%">
-                            <h:outputText value="#{queueItem.errors}"/>
+                            <h:outputText value="#{queueItem.errorCount}"/>
                         </p:column> 
                         <p:column headerText="Reports" style="text-align: left;" width="15%">
                             <p:commandLink ajax="false" value="#{queueItem.successReport}" action="#{aopQueueBean.downLoader.setDownload}" 
