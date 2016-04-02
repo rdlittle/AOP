@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <body>
+        <ui:composition template="../../layout.xhtml">
+            <ui:define name="content">
+                <h:form id="form1" enctype="multipart/form-data">
+                    <span style="width: 99%; text-align: center; margin: 2em auto;">
+                        <h2>Affiliate Order Processing</h2>
+                    </span>
+                    <p:messages id="msg" showDetail="true"/>
+                    <p:panelGrid columns="2" styleClass="custom" style="width: 50%; margin: auto;">
+                        <h:inputHidden id="userId" value="#{webDEBean.userId}"/>
+                        <h:outputText value = ""/>
+                        <h:outputText value="Vendor"/>
+                        <p:selectOneMenu value="#{affiliateOrderBean.affiliateMasterId}" style="width: 400px;">
+                            <f:selectItems id="vendorID" value="#{webDEBean.affiliateMasterList}" var="vendor" 
+                                           itemLabel="#{vendor.value}"
+                                           itemValue="#{vendor.key}">
+                            </f:selectItems>
+                        </p:selectOneMenu>
+                        
+                        <h:outputText value="Select File"/>
+                        <p:fileUpload mode="simple" value="#{affiliateOrderBean.file}" />
+                    
+                        <p:commandButton value="Submit" ajax="false" action="#{affiliateOrderBean.uploadReport}" />
+                        <h:outputText value=""/>
+                    </p:panelGrid>
+                    
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

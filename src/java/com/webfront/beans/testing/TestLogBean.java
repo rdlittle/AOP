@@ -278,7 +278,7 @@ public class TestLogBean {
                 Logger.getLogger(TestLogBean.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        return "/unitTestLog.xhtml?faces-redirect=true";
+        return "/affiliate/testing/unitTestLog.xhtml?faces-redirect=true";
     }
 
     /**

@@ -1,0 +1,231 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <body>
+        <ui:composition template="../../layout.xhtml">
+            <ui:define name="content">
+                <span style="width: 99%; text-align: center; margin: 2em auto;">
+                    <h2>Affiliate Order Batch Management</h2>
+                </span>
+                <h:messages id="msgs" />
+                <h:form id="mgmtForm" enctype="multipart/form-data">
+                    <p:panel style="border: none; margin: auto; width: 49%;">
+                        <span style="width: 10%; float: right; font-size: large; margin-bottom: 2em;">
+                            <h:outputText value="#{webDEBean.todayExternal}" />
+                        </span>
+                        <p:selectOneRadio value="#{batchManagementBean.errorsOnly}" layout="grid" columns="1" 
+                                          style="width: 20%; margin: 2em auto 1em auto;">
+                            <f:selectItem itemLabel="All Orders" itemValue="false"/>
+                            <f:selectItem itemLabel="Errors Only" itemValue="true"/>
+                        </p:selectOneRadio>
+                    </p:panel>
+                    <p:panel style="border: none; margin: auto; width: 100%;">
+                        <h:inputHidden id="internalDate" value="#{webDEBean.todayInternal}"/>
+                        <h:inputHidden id="externalDate" value="#{webDEBean.todayExternal}"/>
+                        <p:panelGrid columns="3" styleClass="custom" style="width: 75%; margin: auto;">
+                            <p:panelGrid styleClass="custom">
+                                <p:row>
+                                    <p:column>
+                                        <h:outputText value="Affiliate ID"/>
+                                    </p:column>
+                                    <p:column>
+                                        <p:selectOneMenu value="#{affiliateMaster.ID}">
+                                            <f:selectItems id="vendorID" value="#{webDEBean.affiliateMasterList}" var="vendor" 
+                                                           itemLabel="#{vendor.value}"
+                                                           itemValue="#{vendor.key}">
+                                            </f:selectItems>
+                                            <p:ajax listener="#{batchManagementBean.changeValue}" update="@form"/>
+                                        </p:selectOneMenu>   
+                                    </p:column>
+                                </p:row>
+
+                                <p:row>
+                                    <p:column>
+                                        <h:outputText value="Store" />
+                                    </p:column>
+                                    <p:column>
+                                        <p:selectOneMenu id="storeList" value="#{affiliateDetailBean.detailId}">
+                                            <f:selectItem itemValue="0" itemLabel="All Stores"/>
+                                            <f:selectItems value="#{affiliateDetailBean.storeList}" var="stores"
+                                                           itemLabel="#{stores.value}" itemValue="#{stores.key}">
+                                            </f:selectItems>
+                                            <f:ajax execute="mgmtForm" render="mgmtForm"/>
+                                            <p:ajax listener="#{affiliateOrderBean.changeHandler}"/>
+                                        </p:selectOneMenu>
+                                        <h:inputHidden id="storeName" value="#{batchManagementBean.storeName}"/>
+                                    </p:column>
+                                </p:row>                
+                                <p:row>
+                                    <p:column>
+                                        <h:outputText value="Check Amount"/>
+                                    </p:column>
+                                    <p:column>
+                                        <p:inputText id="checkAmt" value="#{batchManagementBean.checkAmt}"/>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column>
+                                        <h:outputText value="Batch Month"/>
+                                    </p:column>
+                                    <p:column>
+                                        <p:calendar id="batchMonth" value="#{batchManagementBean.batchMonth}"/>
+                                    </p:column>
+                                </p:row>                                
+                                <p:row>
+                                    <p:column>
+                                        <h:outputText value="Currency"/>
+                                    </p:column>
+                                    <p:column>
+                                        <p:selectOneMenu id="currencyType" value="#{batchManagementBean.currencyType}">
+                                            <f:selectItems value="#{webDEBean.currencyTypes}" var="curr" 
+                                                           itemLabel="#{curr.value}"
+                                                           itemValue="#{curr.key}">
+                                            </f:selectItems>
+                                        </p:selectOneMenu>                                        
+                                    </p:column>
+                                </p:row>                                 
+                            </p:panelGrid>
+
+                            <p:panelGrid styleClass="custom">
+                                <p:row>
+                                    <p:column>
+                                        <p:selectOneRadio value="#{batchManagementBean.batchType}" layout="grid" columns="2">
+                                            <f:selectItem itemValue="P" itemLabel="Processed"/>
+                                            <f:selectItem itemValue="N" itemLabel="Not Processed"/>
+                                            <f:selectItem itemValue="PE" itemLabel="Paid Errors"/>
+                                            <f:selectItem itemValue="ND" itemLabel="Not Paid Deferred"/>
+                                            <f:selectItem itemValue="RP" itemLabel="Received Payment"/>
+                                            <f:selectItem itemValue="U" itemLabel="Upload"/>
+                                        </p:selectOneRadio>
+                                    </p:column>
+                                </p:row>
+                            </p:panelGrid>
+
+                            <p:panelGrid styleClass="custom">
+                                <p:row>
+                                    <p:column>
+                                        <h:outputText value="Converted Amount"/>
+                                    </p:column>
+                                    <p:column>
+                                        <h:inputText id="convertedAmount" value="#{batchManagementBean.convertedAmount}" style="text-align: right;">
+                                            <f:convertNumber currencyCode="USD" type="currency" />
+                                        </h:inputText>        
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column>
+                                        <h:outputText value="Approved Amount"/>
+                                    </p:column>
+                                    <p:column>
+                                        <h:inputText id="approvedAmount" value="#{batchManagementBean.convertedAmount}" style="text-align: right;">
+                                            <f:convertNumber currencyCode="USD" type="currency" />
+                                        </h:inputText>  
+                                    </p:column>                                    
+                                </p:row>
+                                <p:row>
+                                    <p:column>
+                                        <h:outputText value="Balance"/>
+                                    </p:column>
+                                    <p:column>
+                                        <h:inputText id="balance" value="#{batchManagementBean.convertedAmount}" style="text-align: right;">
+                                            <f:convertNumber currencyCode="USD" type="currency" />
+                                        </h:inputText>
+                                    </p:column>                                    
+                                </p:row>
+                                <p:row>
+                                    <p:column colspan="2" style="text-align: right;">
+                                        <p:commandButton value="Get Batches" ajax="false" action="#{batchManagementBean.nextPage}"/>
+                                    </p:column>
+                                </p:row>
+                            </p:panelGrid>
+
+                        </p:panelGrid>
+
+                        <p:panel style="border: none; width: 50%; margin: auto;">
+                            <p:panelGrid styleClass="custom" columns="2">
+                                <p:panelGrid styleClass="custom">
+                                    <p:row>
+                                        <p:column colspan="3">
+                                            <h:outputText id="vendorId" value="#{batchManagementBean.vendorName}"/>
+                                        </p:column>
+                                    </p:row>
+                                    <p:row>
+                                        <p:column>
+                                            <h:outputText value="Search for order number"/>
+                                        </p:column>                                            
+                                        <p:column>
+                                            <h:inputText id="orderNumber" value="#{batchManagementBean.orderNumber}" style="width: 300px;"/>
+                                        </p:column>
+                                        <p:column>
+                                            <h:commandButton value="Search" action="#{batchManagementBean.doSearch}">
+                                                <p:ajax listener="#{batchManagementBean.doSearch()}" 
+                                                        process="@this,vendorId,orderNumber" update="searchResults"/>
+                                            </h:commandButton>
+                                        </p:column>                                        
+                                    </p:row>
+
+                                </p:panelGrid>                                
+                                <p:selectOneRadio value="#{batchManagementBean.mgmtRole}" layout="grid" columns="1">
+                                    <f:selectItem itemValue="T" itemLabel="Trans Amt"/>
+                                    <f:selectItems value="#{batchManagementBean.mgmtRoles}" />
+                                </p:selectOneRadio>
+                            </p:panelGrid>
+                        </p:panel>
+
+                        <p:panel style="border: none;">
+                            <p:ajaxStatus>  
+                                <f:facet name="start">  
+                                    <p:graphicImage value="/resources/images/ajax-loader.gif"/>  
+                                </f:facet>  
+                                <f:facet name="complete">  
+                                    <h:outputText value="" />  
+                                </f:facet>  
+                            </p:ajaxStatus>
+                            <p:dataTable id="searchResults" var="order" value="#{batchManagementBean.searchResults}">
+                                <f:facet name="header">
+                                    <h:outputText value="Order Search Results"/>
+                                </f:facet>
+                                <p:column headerText="ID" width="15%">
+                                    <h:commandLink action="#{affiliateOrderView.viewOrder(order.id)}">
+                                        <h:outputText value="#{order.vendorOrderNum}"/>
+                                    </h:commandLink>
+                                </p:column>
+                                <p:column headerText="Store Name">
+                                    <h:outputText value="#{order.storeName}" />
+                                </p:column>
+                                <p:column headerText="Order Date">
+                                    <h:outputText value="#{order.orderDate}" />
+                                </p:column>
+                                <p:column headerText="Paying ID">
+                                    <h:outputText value="#{order.payingId}" />
+                                </p:column>
+                                <p:column headerText="Filing ID">
+                                    <h:outputText value="#{order.filingId}" />
+                                </p:column>
+                                <p:column headerText="Order Total">
+                                    <h:outputText value="#{order.orderTotal}" />
+                                </p:column>
+                                <p:column headerText="Commission">
+                                    <h:outputText value="#{order.commissionTotal}" />
+                                </p:column>
+                                <p:column headerText="IBV">
+                                    <h:outputText value="#{order.ibvTotal}" />
+                                </p:column> 
+                                <p:column headerText="Errors">
+                                    <h:outputText value="#{order.errorCount}" />
+                                </p:column>
+                            </p:dataTable>
+                        </p:panel>
+
+                    </p:panel>
+                    <h:inputHidden id="userId" value="#{batchManagementBean.userId}"/>
+
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

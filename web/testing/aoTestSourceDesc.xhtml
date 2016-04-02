@@ -1,0 +1,192 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="../layout.xhtml">
+
+            <ui:define name="banner">
+                banner
+            </ui:define>
+
+            <ui:define name="content">
+                <span style="width: 99%; text-align: center; margin: 2em auto;">
+                    <h2>Affiliate Order Test Data Descriptor</h2>
+                </span>
+                <p:growl id="msgs" showDetail="true"/>
+                <h:form id="form">
+
+                    <p:panelGrid style="width: 25%; margin: auto; margin-bottom: 1em;">
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="User"/>
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id ="userName" value='#{aopTestBean.userName}' editable="true">
+                                    <p:ajax event="change" listener="#{aopTestBean.readSourceDesc(event)}" 
+                                            update="@form"
+                                            process="@this"/>
+                                    <f:selectItem itemValue = "-1" itemLabel="Select user"/>
+                                    <f:selectItems value='#{webDEBean.getValues("PARAMS", "AOP.SOURCE.DESC.CONTROL","1")}'
+                                                   var="users" itemValue="#{users}" itemLabel="#{users}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Country"/>
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="baseCountry" value='#{aopTestBean.countryCode}' disabled='#{aopTestBean.userName eq ""}'>
+                                    <p:ajax listener="#{aopTestBean.readSourceDesc(event)}" 
+                                            process="@this"
+                                            update="@form"/>
+                                    <f:selectItem itemValue = "-1" itemLabel="Select country"/>
+                                    <f:selectItems value="#{aopTestBean.allCountries}" 
+                                                   var = "countryItem" itemValue="#{countryItem}" itemLabel="#{countryItem}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Commission"/>
+                            </p:column>
+                            <p:column>
+                                <p:selectOneListbox id='commissionType' value='#{aopTestBean.commissionType}' 
+                                                    disabled='#{aopTestBean.countryCode eq ""}'>
+                                    <p:ajax listener="#{aopTestBean.readSourceDesc(event)}" 
+                                            process="@this"
+                                            update="@form"/>
+                                    <f:selectItems value="#{aopTestBean.commissionDescriptions}" var="c" itemLabel="#{c}" itemValue="#{c}"/>
+                                </p:selectOneListbox>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Vendor Id"/>
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="vendorId" 
+                                                 value="#{aopTestBean.vendorId}"
+                                                 disabled='#{aopTestBean.commissionType eq ""}'>
+                                    <f:selectItems value="#{affiliateMasterBean.affiliateMasterList}" var="vendor" 
+                                                   itemLabel="#{vendor.value}"
+                                                   itemValue="#{vendor.key}">
+                                    </f:selectItems>
+                                    <p:ajax listener="#{aopTestBean.onChangeVendor()}" update="@form"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Division"/>
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="vendorDiv" value="#{aopTestBean.vendorDiv}"
+                                                 disabled='#{aopTestBean.vendorId eq ""}'>
+                                    <f:selectItems value="#{aopTestBean.storeList}" var="stores" 
+                                                   itemLabel="#{stores.value}" itemValue="#{stores.key}">
+                                    </f:selectItems>
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Store Id"/>
+                            </p:column>
+                            <p:column>
+                                <h:outputText id="storeId" value="#{aopTestBean.storeId}"/>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column colspan="2">
+                                <p:commandButton actionListener="#{aopTestBean.onSaveSourceDesc()}"
+                                                 disabled="#{not(aopTestBean.sourceDesc.newRecord) and not(aopTestBean.sourceDesc.changed)}"
+                                                 value="Save" 
+                                                 update="msgs,@form"/>
+                            </p:column>
+                        </p:row>
+
+                    </p:panelGrid>
+
+                    <p:panel style ="border-width: 0; margin: 1em auto 1em;">
+
+                        <p:dataTable 
+                            id="data"
+                            value="#{aopTestBean.sourceDesc.custList}" 
+                            var="cust" 
+                            style="width:75%; margin: auto; margin-bottom: 1em;" 
+                            rowKey="#{cust.pcId}"
+                            selection="#{aopTestBean.selectedItems}"
+                            editable="true"
+                            editMode="cell">
+                            <p:ajax event="cellEdit" listener="#{aopTestBean.onCellEdit}" update="data" />
+                            <p:ajax event="rowSelect" listener="#{aopTestBean.onRowSelect(event)}" update="deleteButton"/>
+                            <p:ajax event="rowSelectCheckbox" listener="#{aopTestBean.onRowSelect(event)}" update="deleteButton"/>
+                            <p:ajax event="rowUnselect" listener="#{aopTestBean.onRowUnselect(event)}" update="deleteButton"/>
+                            <p:ajax event="rowUnselectCheckbox" listener="#{aopTestBean.onRowUnselect(event)}" update="deleteButton"/>                            
+                            <p:column selectionMode="multiple" style="width:16px;text-align:center">
+                            </p:column>
+                            <p:column id='pcId' headerText="Paying ID" >
+                                <h:outputText value="#{cust.pcId}"/>
+                            </p:column>
+                            <p:column id='pcType' headerText="Type" >
+                                <h:outputText value="#{cust.pcType}"/>
+                            </p:column>                            
+                            <p:column id='pcHome' headerText="HCC" >
+                                <h:outputText value="#{cust.pcHome}"/>
+                            </p:column>
+                            <p:column id='sponsor' headerText="Sponsor">
+                                <h:outputText value="#{cust.sponsor}"/>
+                            </p:column>                        
+                            <p:column id='orderTotal' headerText="Order Total">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{cust.orderTotal}"/></f:facet>
+                                    <f:facet name="input">
+                                        <p:inputText value="#{cust.orderTotal}">
+                                            <f:validateRegex pattern="\d*\.\d{2}" />
+                                        </p:inputText>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>                            
+                            <p:column id='orderDate' headerText="Order Date">
+                                <h:outputText value="#{cust.orderDate}">
+                                    <f:convertDateTime dateStyle="short"/>
+                                </h:outputText>
+                            </p:column>  
+                            <f:facet name="footer">
+                                <p:commandButton id="deleteButton" value="Delete selected" action="#{aopTestBean.deleteCustFromSourceDesc}" 
+                                                 disabled = "#{aopTestBean.selectedItems.size()==0}"
+                                                 update=":form:data"/>
+                                <h:outputText value="PC ID" style="margin-right: 2em;"/>
+                                <h:inputText id="newCustId" value="#{aopTestBean.sourceDesc.pcId}" style="margin-right: 2em;"/>
+                                <h:outputText value="Order Total" style="margin-right: 2em;"/>
+                                <h:inputText id="newOrderValue" value="#{aopTestBean.sourceDesc.orderTotal}" style="margin-right: 2em;"/>
+                                <h:outputText value="Order Date" style="margin-right: 2em;"/>
+                                <p:calendar id="newOrderDate" 
+                                            value="#{aopTestBean.sourceDesc.orderDate}"
+                                            style="margin-right: 2em;">
+                                    <f:convertDateTime dateStyle="short"/>
+                                </p:calendar>
+                                <p:commandButton value="Add item" action="#{aopTestBean.addCustToSourceDesc}" update="@form,msgs"/>
+                            </f:facet>
+                        </p:dataTable>
+                    </p:panel>
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

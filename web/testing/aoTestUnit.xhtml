@@ -1,0 +1,211 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="../layout.xhtml">
+
+            <ui:define name="banner">
+                banner
+            </ui:define>
+
+            <ui:define name="content">
+                <p:messages id="msgs" autoUpdate="true"/>
+                <h:form id="form1">
+                    <p:dataTable id="data" value="#{aopTestBean.dataUnitList}" var="unit" 
+                                 selection="#{aopTestBean.selectedUnitList}"
+                                 rowKey="#{unit.id}"
+                                 selectionMode="multiple"
+                                 resizableColumns="true"
+                                 style="width:99%; margin: auto;">
+                        <f:facet name="header">
+                            <h:outputText value="AOP Test Order Units"/>
+                        </f:facet>
+                        <p:column headerText="Id" width="3%">
+                            <h:outputText value="#{unit.id}"/>
+                        </p:column>
+                        <p:column headerText="Description" width="30%">
+                            <h:outputText value="#{unit.description}"/>
+                        </p:column>
+                        <p:column headerText="Trans type" style="text-align: center;">
+                            <h:outputText value="#{unit.transType}"/>
+                        </p:column>
+                        <p:column headerText="Lines" style="text-align: center;">
+                            <h:outputText value="#{unit.lines}"/>
+                        </p:column>
+                        <p:column headerText="Orders" style="text-align: center;">
+                            <h:outputText value="#{unit.orders}"/>
+                        </p:column>
+                        <p:column headerText="Credit Type" style="text-align: center;">
+                            <h:outputText value='#{unit.creditType}'/>
+                        </p:column>
+                        <p:column headerText="Requires Unit" style="text-align: center;">
+                            <h:outputText value="#{unit.requires}"/>
+                        </p:column> 
+                        <p:column headerText="Error Codes" style="text-align: center;">
+                            <h:outputText value="#{unit.errorCodes}"/>
+                        </p:column>
+                        <p:column headerText="Error Lines" style="text-align: center;" styleClass="wrap">
+                            <h:outputText value="#{unit.errorLines}"/>
+                        </p:column>
+                        <p:column headerText="Error Same Line" style="text-align: center;">
+                            <p:selectBooleanCheckbox id="errSameLine" value="#{unit.errorSameLine}" itemLabel=""/>
+                        </p:column>
+                        <p:column headerText="No SRP" style="text-align: center;">
+                            <p:selectBooleanCheckbox id="srpSupp" value="#{unit.srpSuppress}" itemLabel=""/>
+                        </p:column>
+                        <p:column headerText="No Comm" style="text-align: center;">
+                            <p:selectBooleanCheckbox id="commSupp" value="#{unit.commSuppress}" itemLabel=""/>
+                        </p:column>
+                        <f:facet name="footer">
+                            <h:panelGroup id="panelGroup1">
+                                <p:commandButton id="addButton" value='Add'
+                                                 disabled="#{aopTestBean.edit}"
+                                                 actionListener="#{aopTestBean.toggleEdit}" 
+                                                 update="@parent:@form:data" style="width: 200px; margin-right: 20px;" />
+                                <p:commandButton id="deleteButton" value="Delete selected" 
+                                                 actionListener="#{aopTestBean.deleteUnit()}"
+                                                 disabled="#{aopTestBean.rowSelected}"
+                                                 process="@this"
+                                                 update="data"
+                                                 style="width: 200px;"/>
+
+                                <p:panelGrid id="panel1" rendered="#{aopTestBean.edit}" styleClass="custom2">
+                                    <p:row>
+                                        <p:column colspan="4" styleClass="colhdr" style="width: 30%;">
+                                            <h:outputText value="Description"/>
+                                        </p:column>
+                                        <p:column styleClass="colhdr" style="width: 10%;">
+                                            <h:outputText value="Trans Type"/>
+                                        </p:column>
+                                        <p:column styleClass="colhdr" style="width: 10%;">
+                                            <h:outputText value="Lines"/>
+                                        </p:column>
+                                        <p:column styleClass="colhdr" style="width: 10%;">
+                                            <h:outputText value="Orders"/>
+                                        </p:column>
+                                    </p:row>
+
+                                    <p:row>
+                                        <p:column colspan="4">
+                                            <h:inputText value="#{aopTestBean.selectedDataUnit.description}" 
+                                                         style="margin-left: 0; margin-right: 0; width: 100%;"/>    
+                                        </p:column>
+                                        <p:column>
+                                            <p:selectOneMenu value="#{aopTestBean.selectedDataUnit.transType}">
+                                                <f:selectItem itemValue="D" itemLabel="Sale"/>
+                                                <f:selectItem itemValue="C" itemLabel="Refund"/>
+                                                <p:ajax event="change" listener="#{aopTestBean.onChangeTransType()}" 
+                                                        update="creditTypeSelector"/>
+                                            </p:selectOneMenu>
+                                        </p:column>
+                                        <p:column>
+                                            <p:spinner value="#{aopTestBean.selectedDataUnit.lines}" min="1" max="10">
+                                                <p:ajax event="change" listener="#{aopTestBean.onChangeLines()}" update="errorLineSpinner"/>
+                                            </p:spinner>
+                                        </p:column>
+                                        <p:column>
+                                            <p:spinner value="#{aopTestBean.selectedDataUnit.orders}" min="1" max="10"/>
+                                        </p:column>
+                                    </p:row>
+
+                                    <p:row>
+                                        <p:column styleClass="colhdr">
+                                            <h:outputText value="Requires"/>
+                                        </p:column>                                    
+                                        <p:column styleClass="colhdr">
+                                            <h:outputText value="Credit Type"/>
+                                        </p:column>
+                                        <p:column styleClass="colhdr">
+                                            <h:outputText value="Error Codes"/>
+                                        </p:column>
+                                        <p:column styleClass="colhdr">
+                                            <h:outputText value="Error Lines"/>
+                                        </p:column>
+                                        <p:column styleClass="colhdr">
+                                            <h:outputText value="Error Same Line"/>
+                                        </p:column>
+                                        <p:column styleClass="colhdr">
+                                            <h:outputText value="No SRP"/>
+                                        </p:column>
+                                        <p:column styleClass="colhdr">
+                                            <h:outputText value="No Comm"/>
+                                        </p:column>                                        
+                                    </p:row>
+
+                                    <p:row>
+                                        <p:column>
+                                            <p:selectOneMenu value="#{aopTestBean.selectedDataUnit.requires}">
+                                                <f:selectItem itemValue="" itemLabel="---"/>
+                                                <f:selectItems value="#{aopTestBean.unitList}" var="selectUnit"
+                                                               itemValue ="#{selectUnit.key}" itemLabel="#{selectUnit.value}"/>
+                                            </p:selectOneMenu>
+                                        </p:column>
+                                        <p:column>
+                                            <p:selectOneMenu id="creditTypeSelector" value="#{aopTestBean.selectedDataUnit.creditType}" 
+                                                             disabled='#{aopTestBean.selectedDataUnit.transType eq "D"}'>
+                                                <f:selectItem itemValue="" itemLabel="---"/>
+                                                <f:selectItem itemValue="I" itemLabel="Item count"/>
+                                                <f:selectItem itemValue="O" itemLabel="Order total"/>
+                                            </p:selectOneMenu>
+                                        </p:column>
+                                        <p:column>
+                                            <p:selectManyMenu id="errorCodeList" value="#{aopTestBean.selectedDataUnit.errorList}"
+                                                              scrollHeight="80" 
+                                                              style="text-align: left; width: 100%;">
+                                                <p:ajax event="change" listener="#{aopTestBean.onSelectErrorCode(vce)}" 
+                                                        update="errorLineSpinner,errSelect"/>                                                
+                                                <f:selectItems value="#{aopTestBean.errorList}" var="errcode" 
+                                                               itemValue="#{errcode.key}" itemLabel="#{errcode.value}">
+                                                </f:selectItems>
+                                            </p:selectManyMenu>
+                                        </p:column>                                                                                
+                                        <p:column>
+                                            <p:spinner id="errorLineSpinner" value="#{aopTestBean.selectedDataUnit.errorLines}" 
+                                                       min="0" max="#{aopTestBean.selectedDataUnit.lines}"
+                                                       disabled="#{aopTestBean.selectedDataUnit.hasErrors}">
+                                            </p:spinner>
+                                        </p:column>
+                                        <p:column>
+                                            <p:selectBooleanCheckbox id="errSelect" 
+                                                              value="#{aopTestBean.selectedDataUnit.errorSameLine}"
+                                                              disabled="#{aopTestBean.selectedDataUnit.hasErrors}">
+                                            </p:selectBooleanCheckbox>
+                                        </p:column>  
+                                        <p:column>
+                                            <p:selectBooleanCheckbox value="#{aopTestBean.selectedDataUnit.srpSuppress}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <p:selectBooleanCheckbox value="#{aopTestBean.selectedDataUnit.commSuppress}"/>
+                                        </p:column>
+                                    </p:row>
+
+                                    <p:row>
+                                        <p:column colspan="7">
+                                            <p:commandButton id="okButton" value = "OK" actionListener="#{aopTestBean.addUnit}"
+                                                             update="data" style="width: 100px; margin-right: 20px;"/>
+                                            <p:commandButton id="cancelButton" value="Cancel" 
+                                                             actionListener="#{aopTestBean.toggleEdit(actionEvent)}"
+                                                             update="data" style="width: 100px;"/>
+                                        </p:column>
+                                    </p:row>
+
+                                </p:panelGrid>
+
+                            </h:panelGroup>
+                        </f:facet>
+                        <p:ajax event="rowSelect" listener="#{aopTestBean.onRowSelect(se)}" update="deleteButton"/>
+                        <p:ajax event="rowUnselect" listener="#{aopTestBean.onRowUnselect(se)}" update="deleteButton"/>
+                    </p:dataTable>
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

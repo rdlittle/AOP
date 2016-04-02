@@ -89,7 +89,7 @@ public class AffiliateOrderBean implements Serializable {
                 return "";
             }
         }
-        return "/aopQueue?faces-redirect=true";
+        return "/affiliate/orders/aopQueue?faces-redirect=true";
     }
 
     public void setOrderList() {

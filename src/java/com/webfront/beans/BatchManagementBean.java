@@ -85,7 +85,7 @@ public class BatchManagementBean implements Serializable {
     }
 
     public String nextPage() {
-        String nextPage = "/batchManager?faces-redirect=true";
+        String nextPage = "/affiliate/orders/batchManager?faces-redirect=true";
         return nextPage;
     }
 

@@ -70,7 +70,7 @@ public final class AffiliateOrderView implements Serializable {
         this.fromErrorListing = refPage.contains("affiliateErrorListing.xhtml");
         this.fromSearchScreen = refPage.contains("batchManagementInputForm.xhtml");
         setOrder(getAoController().getAffiliateOrder(orderId));
-        return "affiliateOrder.xhtml?orderId=" + orderId + "&faces-redirect=true";
+        return "/affiliate/orders/order.xhtml?orderId=" + orderId + "&faces-redirect=true";
     }
 
     public String validateOrder() {
@@ -87,7 +87,7 @@ public final class AffiliateOrderView implements Serializable {
     }
 
     public void handleReturn() {
-        RequestContext.getCurrentInstance().closeDialog("batchManager?faces-redirect=true");
+        RequestContext.getCurrentInstance().closeDialog("/affiliate/orders/batchManager?faces-redirect=true");
     }
 
     public String prepareUpdate() {
@@ -98,7 +98,7 @@ public final class AffiliateOrderView implements Serializable {
         }
         setBatchList(new LinkedList<BatchItem>());
         getAoController().setAffiliateOrder(order.getId(), order);
-        return "batchManager?faces-redirect=true";
+        return "/affiliate/orders/batchManager?faces-redirect=true";
     }
 
     public String cancel() {
@@ -106,17 +106,17 @@ public final class AffiliateOrderView implements Serializable {
             return getReferringPage() + "?faces-redirect=true";
         }
         setBatchList(new LinkedList<BatchItem>());
-        return "batchManager?faces-redirect=true";
+        return "/affiliate/orders/batchManager?faces-redirect=true";
     }
 
     public String cancelDefer() {
         String orderId = order.getId();
-        return "affiliateOrder.xhtml?orderId=" + orderId + "&faces-redirect=true";
+        return "/affiliate/orders/order.xhtml?orderId=" + orderId + "&faces-redirect=true";
     }
 
     public String prepareDefer() {
         setBatchList(getAoController().getDataController().getSelectBatchList(order.getVendorId(), order.getBatchId()));
-        return "affiliateOrderDefer?faces-redirect=true";
+        return "/affiliate/orders/orderDefer?faces-redirect=true";
     }
 
     public String doDefer() {
@@ -126,7 +126,7 @@ public final class AffiliateOrderView implements Serializable {
         if (rmsg.equals("ok")) {
             getAoController().getDataController().clearBatchTree();
             this.batchList = null;
-            String rtn = "batchManager";
+            String rtn = "/affiliate/orders/batchManager";
             rtn += "?faces-redirect=true";
             return rtn;
         }

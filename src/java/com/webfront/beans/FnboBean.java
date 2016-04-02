@@ -174,7 +174,7 @@ public class FnboBean implements Serializable {
             } else {
                 JSFHelper.sendFacesMessage("Reprocess OK", "Info");
                 submitted = false;
-                return "/fnboProcessing.xhtml?faces-redirect=true";
+                return "/fnbo/fnboProcessing.xhtml?faces-redirect=true";
             }
         } catch (RbException ex) {
             Logger.getLogger(FnboBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -249,7 +249,7 @@ public class FnboBean implements Serializable {
                 JSFHelper.sendFacesMessage(svrCtrlCode + ": " + svrMessage, "Error");
             } else {
                 buildReport(rbo);
-                return "/fnboTransReport.xhtml?faces-redirect=true";
+                return "/fnbo/fnboTransReport.xhtml?faces-redirect=true";
             }
         } catch (RbException ex) {
             Logger.getLogger(FnboBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -439,7 +439,7 @@ public class FnboBean implements Serializable {
         if (!transId.isEmpty()) {
             searchType = "Transaction";
             lookupTransItem();
-            return "/fnboTrans.xhtml?faces-redirect=true";
+            return "/fnbo/fnboTrans.xhtml?faces-redirect=true";
         } else if (!arn.isEmpty()) {
             setSearchType("arn");
             searchTarget = arn;
@@ -467,7 +467,7 @@ public class FnboBean implements Serializable {
         if (!found) {
             lookupTransItem();
         }
-        return "/fnboTransEdit.xhtml?faces-redirect=true";
+        return "/fnbo/fnboTransEdit.xhtml?faces-redirect=true";
     }
 
     public void onProcessQueue() {

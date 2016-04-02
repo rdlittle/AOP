@@ -599,11 +599,11 @@ public class AopTestingBean implements Serializable {
         FacesContext ctx = FacesContext.getCurrentInstance();
         Map<String, String> map = ctx.getExternalContext().getRequestParameterMap();
         setEdit(true);
-        return "/testGroupSetup.xhtml?faces-redirect=true";
+        return "/affiliate/testing/testGroupSetup.xhtml?faces-redirect=true";
     }
 
     public String onEditDataGroup(ActionEvent event) {
-        return "/testGroupSetup.xhtml?faces-redirect=true";
+        return "/affiliate/testing/testGroupSetup.xhtml?faces-redirect=true";
     }
 
     public void onDeleteDataGroup() {
@@ -660,7 +660,7 @@ public class AopTestingBean implements Serializable {
         } catch (RbException ex) {
             Logger.getLogger(AopTestingBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return "/aoTestGroup.xhtml?faces-redirect=true";
+        return "/affiliate/testing/aoTestGroup.xhtml?faces-redirect=true";
     }
 
     public void onSaveSourceDesc() {

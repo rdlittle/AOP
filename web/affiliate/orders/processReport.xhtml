@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html">
+
+    <body>
+
+        <ui:composition template="../../layout.xhtml">
+
+            <ui:define name="content">
+                <h:form id="tableForm">
+                    <p:messages showDetail="true"/>
+                    <h:outputText value="Vendor: #{uploadBean.vendorCode}"/>
+                    <br/>
+                    <h:outputText value="Commission: #{batchSummaryBean.totalCommission}"/>
+
+                    <p:dataTable id ="batchList" value="#{batchSummaryBean.batchList}" var="batchItem"
+                                 paginator="true" rows="20" rowsPerPageTemplate="10, 15, 20, 25, 30, 1000">
+                        <p:column sortBy="#{batchItem.storeName}" headerText="Store Name" >
+                            #{batchItem.storeName}
+                        </p:column>
+                        <p:column sortBy="#{batchItem.processDate}" headerText="Date">
+                            #{batchItem.processDate}
+                        </p:column>
+                        <p:column headerText="#Orders" style="text-align: right;">
+                            #{batchItem.orderCount}
+                        </p:column>
+                        <p:column headerText="#Errors" style="text-align: right;">
+                            #{batchItem.errorCount}
+                        </p:column>
+                        <p:column headerText="IBV" style="text-align: right;">
+                            #{batchItem.IBV}
+                        </p:column>
+                        <p:column sortBy="#{batchItem.commission}" headerText="Commission"  style="text-align: right;">
+                            #{batchItem.commissionAsString}
+                        </p:column>
+                        <p:column headerText="PS Approval">
+                            #{batchItem.psApprovalStatus}
+                        </p:column>
+                        <p:column headerText="PS Approval By">
+                            #{batchItem.psApprovalName}
+                        </p:column>
+                        <p:column headerText="PS Approval Date">
+                            #{batchItem.psApprovalDate}
+                        </p:column>                    
+                    </p:dataTable>
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>
