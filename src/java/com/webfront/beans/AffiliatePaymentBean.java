@@ -90,6 +90,12 @@ public class AffiliatePaymentBean {
         queueItem.setCheckId(this.checkId);
         queueItem.setCheckAmount(this.checkAmount);
         queueItem.setCheckDate(checkDateToString());
+        queueItem.setNetworkId(this.networkId);
+        queueItem.setLineCount("");
+        queueItem.setOrderCount("");
+        queueItem.setErrors("");
+        queueItem.setErrorReport("");
+        queueItem.setSuccessReport("");
         controller.setQueueItem(queueItem);
         try {
             controller.createQueue();

@@ -128,7 +128,7 @@ public class AopQueueController {
         rb.setProperty("fileName",queueItem.getFileName());
         rb.setProperty("userName", queueItem.getUserName());
         
-        rb.setProperty("networkId", queueItem.getNetworkdId());
+        rb.setProperty("networkId", queueItem.getNetworkId());
         rb.setProperty("checkAmount", queueItem.getCheckAmount());
         rb.setProperty("queueType", queueItem.getQueueType());
         rb.setProperty("checkId", queueItem.getCheckId());

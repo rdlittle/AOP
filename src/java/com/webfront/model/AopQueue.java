@@ -35,6 +35,7 @@ public class AopQueue extends Queue {
     private String networkdId;
     private String networkName;
     private String networkCountry;
+    private String networkId;
 
     public AopQueue() {
         this.runStage = new HashMap<>();
@@ -42,6 +43,7 @@ public class AopQueue extends Queue {
         this.runStage.put("1", "Run");
         this.runStage.put("2", "Delete");
         this.runLevel = "0";
+        this.networkId = "";
         super.setQueueStatus("0");
     }
 
@@ -327,6 +329,20 @@ public class AopQueue extends Queue {
      */
     public void setCheckDate(String checkDate) {
         this.checkDate = checkDate;
+    }
+
+    /**
+     * @return the networkId
+     */
+    public String getNetworkId() {
+        return networkId;
+    }
+
+    /**
+     * @param networkId the networkId to set
+     */
+    public void setNetworkId(String networkId) {
+        this.networkId = networkId;
     }
 
 }
