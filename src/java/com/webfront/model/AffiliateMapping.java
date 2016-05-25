@@ -6,26 +6,29 @@
 
 package com.webfront.model;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
-
 /**
  *
  * @author rlittle
  */
 public class AffiliateMapping {
     private String id;
-    private String columnName;
+    private String fieldNumber;
+    private String fieldName;
+    private String fieldContents;
+    private String dataType;
     private String outputField;
-    private String exclude;
+    private boolean required;
+    private boolean fieldSaved;
 
     public AffiliateMapping() {
-        this.id=new String();
-        this.columnName=new String();
+        this.id = new String();
+        this.fieldNumber = new String();
+        this.fieldName=new String();
+        this.fieldContents=new String();
         this.outputField=new String();
-        this.exclude=new String();
+        this.dataType = new String();
+        this.required=true;
+        this.fieldSaved = false;
     }
     /**
      * @return the id
@@ -42,17 +45,17 @@ public class AffiliateMapping {
     }
 
     /**
-     * @return the columnNames
+     * @return the fieldNames
      */
-    public String getColumnName() {
-        return columnName;
+    public String getFieldName() {
+        return fieldName;
     }
 
     /**
-     * @param columnName the columnNames to set
+     * @param fieldName the fieldNames to set
      */
-    public void setColumnName(String columnName) {
-        this.columnName = columnName;
+    public void setFieldName(String fieldName) {
+        this.fieldName = fieldName;
     }
 
     /**
@@ -72,38 +75,71 @@ public class AffiliateMapping {
     /**
      * @return the exclude
      */
-    public String getExclude() {
-        return exclude;
+    public boolean getRequired() {
+        return required;
     }
 
     /**
-     * @param exclude the exclude to set
+     * @param required the exclude to set
      */
-    public void setExclude(String exclude) {
-        this.exclude = exclude;
+    public void setRequired(boolean required) {
+        this.required = required;
     }
 
-//    @FacesConverter(forClass = AffiliateMapping.class)
-//    public class MappingConverter implements Converter {
-//
-//        @Override
-//        public Object getAsObject(FacesContext context, UIComponent component, String value) {
-//            if(value==null) {
-//                return new AffiliateMapping();
-//            }
-//            AffiliateMaster master = (AffiliateMaster) context.getApplication().getELResolver().
-//                getValue(context.getELContext(), null, "AffiliateMaster");
-//            AffiliateMapping item = master.getFieldMap().get(value);
-//            return item;
-//        }
-//
-//        @Override
-//        public String getAsString(FacesContext context, UIComponent component, Object value) {
-//            if(value == null) {
-//                return "";
-//            }
-//            return ((AffiliateMapping) value).getColumnName();
-//        }
-        
-//    }
+    /**
+     * @return the fieldContents
+     */
+    public String getFieldContents() {
+        return fieldContents;
+    }
+
+    /**
+     * @param fieldContents the fieldContents to set
+     */
+    public void setFieldContents(String fieldContents) {
+        this.fieldContents = fieldContents;
+    }
+
+    /**
+     * @return the coumnNumber
+     */
+    public String getFieldNumber() {
+        return fieldNumber;
+    }
+
+    /**
+     * @param coumnNumber the coumnNumber to set
+     */
+    public void setFieldNumber(String coumnNumber) {
+        this.fieldNumber = coumnNumber;
+    }
+
+    /**
+     * @return the dataType
+     */
+    public String getDataType() {
+        return dataType;
+    }
+
+    /**
+     * @param dataType the dataType to set
+     */
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
+    }
+
+    /**
+     * @return the fieldSaved
+     */
+    public boolean isFieldSaved() {
+        return fieldSaved;
+    }
+
+    /**
+     * @param fieldSaved the fieldSaved to set
+     */
+    public void setFieldSaved(boolean fieldSaved) {
+        this.fieldSaved = fieldSaved;
+    }
+
 }

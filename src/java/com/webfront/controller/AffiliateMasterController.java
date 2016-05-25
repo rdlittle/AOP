@@ -10,9 +10,7 @@ import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.beans.WebDEBean;
 import com.webfront.model.AffiliateMaster;
-import com.webfront.model.SelectItem;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
@@ -30,11 +28,11 @@ public class AffiliateMasterController implements Serializable {
 
     private final RedObject rb;
     protected AffiliateMaster affiliateMaster;
-    private final HashMap<String, String> columnNames;
+    private String affiliateMasterId;
 
     public AffiliateMasterController() {
         this.rb = new RedObject("WDE", "Affiliates:Master");
-        columnNames = new HashMap<>();
+        affiliateMasterId = "";
     }
 
     public AffiliateMaster getAffiliateMaster(String ID) {
@@ -62,7 +60,6 @@ public class AffiliateMasterController implements Serializable {
             affiliateMaster.setCreateDate(rbo.getProperty("createDate"));
             affiliateMaster.setActive(rbo.getProperty("isActive").equals("1"));
             affiliateMaster.setNextDetailId(rbo.getProperty("nextDetailId"));
-            affiliateMaster.setColumnMap(this.populateColumns(ID));
         } catch (RbException ex) {
             Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -101,11 +98,6 @@ public class AffiliateMasterController implements Serializable {
             } else {
                 UniDynArray ibvMappingRec = new UniDynArray();
                 int val = 1;
-                for (SelectItem se : rec.getColumns()) {
-                    String fieldName = se.getKey();
-                    ibvMappingRec.replace(1, 1, val, fieldName);
-                    val += 1;
-                }
                 rbo = new RedObject("WDE", "UTILS:Files");
                 rbo.setProperty("fileName", "IBV.MAPPING");
                 rbo.setProperty("fileRec", ibvMappingRec);
@@ -129,51 +121,20 @@ public class AffiliateMasterController implements Serializable {
         }
     }
 
-    public HashMap<String, String> populateColumns(String id) {
-        HashMap<String, String> list = new HashMap<>();
-        try {
-            RedObject rbo = new RedObject("WDE", "UTILS:Files");
-            rbo.setProperty("fileName", "IBV.MAPPING");
-            rbo.setProperty("id", id);
-            rbo.callMethod("getFileRec");
-            String errStat = rbo.getProperty("errStat");
-            String errCode = rbo.getProperty("errCode");
-            String errMsg = rbo.getProperty("errMsg");
-            UniDynArray uda = rbo.getPropertyToDynArray("fileRec");
-            int vals = uda.dcount(1, 1);
-            HashMap<String,String> map = getColumnNames();
-            for (int val = 1; val <= vals; val++) {
-                String fieldKey = uda.extract(1, 1, val).toString();
-                String fieldValue = map.get(fieldKey);
-                list.put(fieldKey, fieldValue);
-            }
 
-        } catch (RbException rbe) {
-            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, rbe);
-        }
-        return list;
+
+    /**
+     * @return the affiliateMasterId
+     */
+    public String getAffiliateMasterId() {
+        return affiliateMasterId;
     }
 
-    public HashMap<String, String> getColumnNames() {
-        if (columnNames.isEmpty()) {
-            try {
-                RedObject rbo = new RedObject("WDE", "UTILS:Files");
-                rbo.setProperty("fileName", "PARAMS");
-                rbo.setProperty("id", "DATA.FEED.COLUMN.NAMES");
-                rbo.callMethod("getFileRec");
-                String errStat = rbo.getProperty("errStat");
-                String errCode = rbo.getProperty("errCode");
-                String errMsg = rbo.getProperty("errMsg");
-                UniDynArray uda = rbo.getPropertyToDynArray("fileRec");
-                int vals = uda.dcount(1, 1);
-                for (int val = 1; val <= vals; val++) {
-                    columnNames.put(uda.extract(1, 2, val).toString(), uda.extract(1, 1, val).toString());
-                }
-            } catch (RbException rbe) {
-                Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, rbe);
-            }
-        }
-        return columnNames;
+    /**
+     * @param affiliateMasterId the affiliateMasterId to set
+     */
+    public void setAffiliateMasterId(String affiliateMasterId) {
+        this.affiliateMasterId = affiliateMasterId;
     }
 
 }

@@ -163,52 +163,6 @@
                             </p:column>                        
                         </p:row>
                     </p:panelGrid>
-
-                    <p:panel style="margin-right: 100px; border: none; width:50%; margin: auto;">
-
-                        <p:commandLink id="newColumn" actionListener="#{affiliateMaster.addNewColumn}" 
-                                       process="@this" update="@this @form fields" rendered="#{!affiliateMaster.newColumn}"
-                                       value="Add" />
-                        <p:commandLink id="saveColumn" actionListener="#{affiliateMaster.saveColumn}" 
-                                       process="@this" update="@this @form" rendered="#{affiliateMaster.newColumn}"
-                                       value="Save" />
-
-                        <p:dataTable id="fields" var="mf" value="#{affiliateMaster.columns}"
-                                     rowIndexVar="mfidx" rowKey="#{mf.key}"
-                                     editable="true" editMode="cell">
-                            <f:facet name="header">
-                                <h:outputText value="Report Mapping"/>
-                            </f:facet>
-                            <p:ajax event="cellEdit" listener="#{affiliateMaster.onFieldNameEdit}" update="fields"/>
-                            <p:column id = "rowNum" headerText="Column" width="5" style="text-align: left;">
-                                <h:outputText value="#{mfidx+1}"/>
-                            </p:column>
-                            <p:column id="fieldName" headerText="Field Name" width="100">
-                                <p:cellEditor>
-                                    <f:facet name="output">
-                                        <h:outputText value="#{mf.value}"/>
-                                    </f:facet>
-                                    <f:facet name="input">
-                                        <h:selectOneMenu value="#{mf.key}">
-                                            <f:selectItems value="#{webDEBean.masterColumnNames}" var="mp" 
-                                                           itemValue="#{mp.key}" 
-                                                           itemLabel="#{mp.value}">
-                                            </f:selectItems>
-                                        </h:selectOneMenu>        
-                                    </f:facet>
-                                </p:cellEditor>
-                            </p:column>
-                            <p:column id="delColumn" headerText="Delete" width="30">
-                                <p:commandLink id="removeField" process="@this" update="@this @form"
-                                               actionListener="#{affiliateMaster.removeField(mf)}">
-                                    <p:graphicImage value="/resources/images/delete.png" height="16"/>
-                                </p:commandLink>
-                            </p:column>
-                            <p:commandButton value="Save" actionListener="#{affiliateMaster.saveRecord}" 
-                                             process="@this" ajax="true" update="notifications"/>
-                        </p:dataTable>
-
-                    </p:panel>
                     <p:panel style="text-align: right; border: 0; width: 75%; margin: auto;">
                         <p:commandButton value="Save" actionListener="#{affiliateMaster.saveRecord}" 
                                          process="@this" ajax="true" update="notifications"/>

@@ -127,8 +127,8 @@
                                   padding-right: 1px; padding-left: 1px; " sortBy="#{trans.transDate}">
                             <h:outputText value="#{trans.transDateAsString}"/>
                         </p:column>
-                        <p:column headerText='#{fnboBean.searchType eq "ARN" ? "Member Id" : "ARN"}' style="width: 9%;">
-                            <h:outputText value='#{fnboBean.searchType eq "ARN" ? trans.memberId : trans.arn}' style="text-align: left;"/>
+                        <p:column headerText='#{fnboBean.searchType eq "arn" ? "Member Id" : "ARN"}' style="width: 9%;">
+                            <h:outputText value='#{fnboBean.searchType eq "arn" ? trans.memberId : trans.arn}' style="text-align: left;"/>
                         </p:column>
                         <p:column headerText="Name" style = "width: 12%;">
                             <h:outputText value="#{trans.cardholderName}" style="text-align: left;"/>
@@ -142,9 +142,6 @@
                         <p:column headerText="M/R" sortBy="#{trans.merchType}" style="width: 2%;">
                             <h:outputText value="#{trans.merchType}"/>
                         </p:column>                                                
-                        <p:column headerText="Type" sortBy="#{trans.transCodeDesc}" style="width: 3%;">
-                            <h:outputText value="#{trans.transCodeDesc}"/>
-                        </p:column>                    
                         <p:column headerText="Trans Amt" style="text-align: right;" sortBy="#{trans.transAmt}">
                             <h:outputText value="#{trans.transAmtAsString}"/>
                         </p:column>
@@ -162,7 +159,7 @@
                             </h:outputText>
                         </p:column>
                         <p:rowExpansion>
-                            <p:panelGrid style="width: 18%; margin-left: auto; margin-right: 0; padding: 0;">
+                            <p:panelGrid style="width: 18%; margin-left: auto; margin-right: 0; padding: 0; float: right;">
                                 <p:row>
                                     <p:column style="text-align: right;">
                                         <h:outputText value="#{trans.award1.orderNumber}"/>

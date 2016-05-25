@@ -18,7 +18,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.ValueChangeEvent;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
-import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.RowEditEvent;
 
 /**
@@ -51,11 +50,6 @@ public class AffiliateMaster implements Serializable {
     protected String nextDetailId;
     protected String field1;
     protected String networkId;
-    protected HashMap<String, String> columnMap;
-    private ArrayList<SelectItem> columns;
-    protected boolean newColumn;
-    private Integer mfidx;
-    private String rowNumber;
     private UIComponent selector;
 
     public AffiliateMaster() {
@@ -79,31 +73,6 @@ public class AffiliateMaster implements Serializable {
         createDate = am.extract(1, 14).toString();
         active = am.extract(1, 15).toString().equals("1");
         nextDetailId = am.extract(1, 16).toString();
-        newColumn = false;
-        columns = new ArrayList<>();
-        for (String key : controller.getColumnNames().keySet()) {
-            columns.add(new SelectItem(key, controller.getColumnNames().get(key)));
-        }
-    }
-
-    public void addNewColumn() {
-        int nextColumn = getColumnMap().size();
-        nextColumn++;
-        getColumnMap().put(Integer.toString(nextColumn), "");
-        setNewColumn(true);
-        columns.add(new SelectItem());
-    }
-
-    public void saveColumn() {
-        setNewColumn(false);
-    }
-
-    public void fieldMapChangeListener(ValueChangeEvent vce) {
-        String clientId = vce.getComponent().getClientId();
-        String junk[] = clientId.split(":");
-        String fieldNumberStr = junk[2];
-        Integer fieldNumber = Integer.valueOf(fieldNumberStr);
-        String value = vce.getNewValue().toString();
     }
 
     public void changeVendor(AjaxBehaviorEvent event) {
@@ -125,22 +94,6 @@ public class AffiliateMaster implements Serializable {
         setCreateDate(rec.getCreateDate());
         setActive(rec.isActive());
         setNextDetailId(rec.getNextDetailId());
-        setColumnMap(rec.getColumnMap());
-        setColumns(new ArrayList<>());
-        HashMap<String,String> map = controller.getColumnNames();
-        columnMap.keySet().stream().map((k) -> {
-            String v = map.get(k);
-            SelectItem se = new SelectItem(k,v);
-            return se;
-        }).forEach((se) -> {
-            columns.add(se);
-        });
-        mfidx = 1;
-        setNewColumn(false);
-    }
-
-    public void setColumns(ArrayList<SelectItem> l) {
-        columns = l;
     }
 
     public void saveRecord() {
@@ -165,52 +118,6 @@ public class AffiliateMaster implements Serializable {
 
     public void changeCountry(AjaxBehaviorEvent event) {
         System.out.println(event.toString());
-    }
-
-    public void changeField(AjaxBehaviorEvent event) {
-        SelectOneMenu uic = (SelectOneMenu) event.getComponent();
-        SelectOneMenu som = (SelectOneMenu) event.getSource();
-        String uicStr = (String) uic.getValue();
-        String somStr = (String) som.getValue();
-        System.out.println(event.toString());
-        this.setType(type);
-    }
-
-    public void onFieldNameEdit(CellEditEvent event) {
-        String newValue = (String) event.getNewValue();
-        for(SelectItem se : columns) {
-            String key = se.getKey();
-            String val = se.getValue();
-            if(se.getKey().equals(newValue)) {
-                mfidx = 1;
-                int idx = columns.indexOf(se);
-                String value = controller.getColumnNames().get(newValue);
-                se.setKey(newValue);
-                se.setValue(value);
-                columns.set(idx, se);
-            }
-        }
-    }
-    
-    public ArrayList<SelectItem> getColumns() {
-        if (columns == null || columns.isEmpty()) {
-            return new ArrayList<>();
-        }
-        return columns;
-    }
-
-    public void onRowEdit(RowEditEvent event) {
-
-    }
-
-    public void onRowCancel(RowEditEvent event) {
-
-    }
-
-    public void removeField(SelectItem se) {
-        if(columns.contains(se)) {
-            columns.remove(se);
-        }
     }
 
     /**
@@ -451,31 +358,6 @@ public class AffiliateMaster implements Serializable {
         this.field1 = field1;
     }
 
-    public final void setColumnMap(HashMap<String, String> fm) {
-        this.columnMap = fm;
-    }
-
-    /**
-     * @return the columnMap
-     */
-    public HashMap<String, String> getColumnMap() {
-        return columnMap;
-    }
-
-    /**
-     * @return the newColumn
-     */
-    public boolean isNewColumn() {
-        return newColumn;
-    }
-
-    /**
-     * @param newColumn the newColumn to set
-     */
-    public void setNewColumn(boolean newColumn) {
-        this.newColumn = newColumn;
-    }
-
     /**
      * @return the controller
      */
@@ -488,20 +370,6 @@ public class AffiliateMaster implements Serializable {
      */
     public void setController(AffiliateMasterController controller) {
         this.controller = controller;
-    }
-
-    /**
-     * @return the mfidx
-     */
-    public Integer getMfidx() {
-        return mfidx;
-    }
-
-    /**
-     * @param mfidx the mfidx to set
-     */
-    public void setMfidx(Integer mfidx) {
-        this.mfidx = mfidx;
     }
 
     /**

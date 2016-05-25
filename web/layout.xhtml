@@ -19,12 +19,21 @@
                 <p:graphicImage url="/resources/images/ma-logo.png" />
             </ui:insert>
         </div>
+        <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>
+
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false"
+                  appendTo="@(body)"
+                  resizable="false" showHeader="false">
+            <p:graphicImage value="/resources/images/ajax-loader.gif"/>
+        </p:dialog>
+        
         <div id="left">
             <h:form>
                 <p:tieredMenu>
                     <p:submenu label="Affiliates">
                         <p:menuitem value="Networks" outcome="/affiliate/partners/networkForm.xhtml"/>
                         <p:menuitem value="Aggregators" outcome="/affiliate/partners/masterForm.xhtml"/>
+                        <p:menuitem value="Mapping" outcome="/affiliate/partners/affiliateMapping.xhtml"/>
                         <p:menuitem value="Stores" outcome="/affiliate/partners/storeForm.xhtml"/>
                         <p:menuitem value="Campaigns" outcome="/affiliate/partners/campaignManager.xhtml"/>
                         <p:menuitem value="Commissions" outcome="/affiliate/partners/tieredCommission.xhtml"/>
