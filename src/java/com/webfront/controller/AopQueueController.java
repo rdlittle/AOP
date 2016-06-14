@@ -56,9 +56,9 @@ public class AopQueueController {
         
         try {
             rb.callMethod("getQueue");
-            String errStat = rb.getProperty("errStat");
-            String errCode = rb.getProperty("errCode");
-            String errMsg = rb.getProperty("errMsg");
+            String errStat = rb.getProperty("svrStatus");
+            String errCode = rb.getProperty("svrCtrlCode");
+            String errMsg = rb.getProperty("svrMessage");
             errObj = new ErrorObject(errStat,errCode,errMsg);
             if (-1 == errObj.getSvrStatus()) {
                 FacesMessage fmsg = new FacesMessage(errObj.toString());
@@ -73,7 +73,7 @@ public class AopQueueController {
                     UniDynArray affiliateMasterList = rb.getPropertyToDynArray("affiliateMasterId");
                     UniDynArray fileNameList = rb.getPropertyToDynArray("fileName");
                     UniDynArray uploadDateList = rb.getPropertyToDynArray("createDate");
-                    UniDynArray queueStatusList = rb.getPropertyToDynArray("queueStatus");                    
+                    UniDynArray runLevelList = rb.getPropertyToDynArray("runLevel");                    
                     UniDynArray userNameList = rb.getPropertyToDynArray("userName");
                     UniDynArray lineCountList = rb.getPropertyToDynArray("lineCount");
                     UniDynArray orderCountList = rb.getPropertyToDynArray("orderCount");
@@ -86,24 +86,21 @@ public class AopQueueController {
                     UniDynArray successReportList = rb.getPropertyToDynArray("successReport");
 
                     for (int val = 1; val <= vals; val++) {
-                        Queue item = new AopQueue();
+                        AopQueue item = new AopQueue();
                         item.setId(queueIdList.extract(1, val).toString());                        
-                        item.setVendorCode(affiliateMasterList.extract(1, val).toString());
+                        item.setAggregatorId(affiliateMasterList.extract(1, val).toString());
                         item.setFileName(fileNameList.extract(1, val).toString());
                         item.setErrorCount(errorCountList.extract(1, val).toString());
-                        item.setQueueStatus(queueStatusList.extract(1, val).toString());
+                        item.setRunLevel(runLevelList.extract(1, val).toString());
                         item.setCreateDate(uploadDateList.extract(1, val).toString());
                         item.setCreateTime(uploadTimeList.extract(1, val).toString());
                         item.setUserName(userNameList.extract(1, val).toString());
-                        item.setItemCount(lineCountList.extract(1, val).toString());
+                        item.setLineCount(lineCountList.extract(1, val).toString());
                         item.setQueueType(queueTypeList.extract(1, val).toString());
                         item.setErrorReport(errorReportList.extract(1, val).toString());
                         item.setSuccessReport(successReportList.extract(1, val).toString());
-//                        item.setOrderCount(orderCountList.extract(1, val).toString());                        
+                        item.setOrderCount(orderCountList.extract(1, val).toString());                        
                         item.setCheckAmount(checkAmountList.extract(1, val).toString());
-//                        item.setNetworkdId(networkIdList.extract(1, val).toString());
-//                        item.setNetworkName(networkNameList.extract(1, val).toString());
-//                        item.setNetworkCountry(networkCountryList.extract(1, val).toString());
                         item.setCheckId(checkIdList.extract(1, val).toString());                        
                         this.queueList.add(item);
                     }
@@ -124,21 +121,16 @@ public class AopQueueController {
         rb.setProperty("queueId", "");
         rb.setProperty("queueStatus", "");
         
-        rb.setProperty("affiliateMasterId", queueItem.getAffiliateMasterId());
+        rb.setProperty("affiliateMasterId", queueItem.getAggregatorId());
         rb.setProperty("fileName",queueItem.getFileName());
         rb.setProperty("userName", queueItem.getUserName());
         
-        rb.setProperty("networkId", queueItem.getNetworkId());
-        rb.setProperty("checkAmount", queueItem.getCheckAmount());
-        rb.setProperty("queueType", queueItem.getQueueType());
         rb.setProperty("checkId", queueItem.getCheckId());
+        rb.setProperty("checkAmount", queueItem.getCheckAmount());
+        rb.setProperty("checkDate", queueItem.getCheckDate());
         
-        rb.setProperty("lineCount", queueItem.getLineCount());
-        rb.setProperty("orderCount", queueItem.getOrderCount());
-        rb.setProperty("errorCount", queueItem.getErrors());
+        rb.setProperty("queueType", queueItem.getQueueType());
         
-        rb.setProperty("errorReport", queueItem.getErrorReport());
-        rb.setProperty("successReport", queueItem.getSuccessReport());
         try {
             rb.callMethod("postAopQueue");
             errObj = new ErrorObject(rb.getProperty("svrStatus"),rb.getProperty("svrCtrlCode"),rb.getProperty("svrMessage"));
@@ -156,26 +148,11 @@ public class AopQueueController {
 
     public void updateQueue() throws UVException {
         
-        rb.setProperty("queueId", queueItem.getQueueId());
-        rb.setProperty("queueStatus", queueItem.getQueueStatus());
+        rb.setProperty("queueId", queueItem.getId());
+        rb.setProperty("runLevel", queueItem.getRunLevel());
         
-        rb.setProperty("affiliateMasterId", queueItem.getAffiliateMasterId());
-        rb.setProperty("fileName",queueItem.getFileName());
-        rb.setProperty("userName", queueItem.getUserName());
-        
-        rb.setProperty("networkId", queueItem.getNetworkdId());
-        rb.setProperty("checkAmount", queueItem.getCheckAmount());
-        rb.setProperty("queueType", queueItem.getQueueType());
-        rb.setProperty("checkId", queueItem.getCheckId());
-        
-        rb.setProperty("lineCount", queueItem.getLineCount());
-        rb.setProperty("orderCount", queueItem.getOrderCount());
-        rb.setProperty("errorCount", queueItem.getErrors());
-        
-        rb.setProperty("errorReport", queueItem.getErrorReport());
-        rb.setProperty("successReport", queueItem.getSuccessReport());
         try {
-            rb.callMethod("postAopQueue");
+            rb.callMethod("postAopQueueUpdateStatus");
             errObj = new ErrorObject(rb.getProperty("svrStatus"),rb.getProperty("svrCtrlCode"),rb.getProperty("svrMessage"));
             if (-1 == errObj.getSvrStatus()) {
                 throw new UVException(errObj);
@@ -188,4 +165,5 @@ public class AopQueueController {
     public void deleteQueue() {
 
     }
+
 }

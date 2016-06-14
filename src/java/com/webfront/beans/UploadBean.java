@@ -25,19 +25,12 @@ import org.primefaces.model.UploadedFile;
 public class UploadBean {
 
     private UploadedFile file;
-    private final String uploadDir = "/usr/local/dmcdev/AFFILIATE.UPLOAD/";
-
-
-    /**
-     * Creates a new instance of UploadBean
-     */
-    public UploadBean() {
-    }
+    private final String uploadDir = "/usr/local/dmcdev/AOP.UPLOAD/";
 
     public UploadedFile getFile() {
         return file;
     }
-
+    
     public void setFile(UploadedFile file) {
         this.file = file;
     }

@@ -83,17 +83,15 @@ public class AffiliatePaymentBean {
             return "";
         }
         AopQueue queueItem = new AopQueue();
-        queueItem.setAffiliateMasterId(this.networkId);
+        queueItem.setAggregatorId(this.networkId);
         queueItem.setCheckAmount(this.checkAmount);
         queueItem.setFileName(fileName.getFileName());
         queueItem.setQueueType("C");
         queueItem.setCheckId(this.checkId);
         queueItem.setCheckAmount(this.checkAmount);
         queueItem.setCheckDate(checkDateToString());
-        queueItem.setNetworkId(this.networkId);
         queueItem.setLineCount("");
         queueItem.setOrderCount("");
-        queueItem.setErrors("");
         queueItem.setErrorReport("");
         queueItem.setSuccessReport("");
         controller.setQueueItem(queueItem);

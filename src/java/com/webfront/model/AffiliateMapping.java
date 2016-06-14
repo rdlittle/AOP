@@ -3,33 +3,32 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.webfront.model;
+
+import java.util.ArrayList;
 
 /**
  *
  * @author rlittle
  */
-public class AffiliateMapping {
+public class AffiliateMapping extends Mapping {
+
     private String id;
-    private String fieldNumber;
-    private String fieldName;
-    private String fieldContents;
-    private String dataType;
-    private String outputField;
-    private boolean required;
+    private String fieldSeparator;
+    private boolean hasHeader;
+    private String dataStartRow;
+    private boolean multiPart;
     private boolean fieldSaved;
+    private ArrayList<Mapping> subFields;
+    private String fileType;
 
     public AffiliateMapping() {
-        this.id = new String();
-        this.fieldNumber = new String();
-        this.fieldName=new String();
-        this.fieldContents=new String();
-        this.outputField=new String();
-        this.dataType = new String();
-        this.required=true;
-        this.fieldSaved = false;
+        id = "";
+        subFields = new ArrayList<>();
+        dataStartRow = "0";
+        fieldSaved = false;
     }
+
     /**
      * @return the id
      */
@@ -45,101 +44,101 @@ public class AffiliateMapping {
     }
 
     /**
-     * @return the fieldNames
+     * @return the fieldSeparator
      */
-    public String getFieldName() {
-        return fieldName;
+    public String getFieldSeparator() {
+        return fieldSeparator;
     }
 
     /**
-     * @param fieldName the fieldNames to set
+     * @param fs the fieldSeparator to set
      */
-    public void setFieldName(String fieldName) {
-        this.fieldName = fieldName;
+    public void setFieldSeparator(String fs) {
+        fieldSeparator = fs;
     }
 
     /**
-     * @return the outputField
+     * @return the hasHeader
      */
-    public String getOutputField() {
-        return outputField;
+    public boolean isHasHeader() {
+        return hasHeader;
     }
 
     /**
-     * @param outputField the outputField to set
+     * @param hasHeader the hasHeader to set
      */
-    public void setOutputField(String outputField) {
-        this.outputField = outputField;
+    public void setHasHeader(boolean hasHeader) {
+        this.hasHeader = hasHeader;
     }
 
     /**
-     * @return the exclude
-     */
-    public boolean getRequired() {
-        return required;
-    }
-
-    /**
-     * @param required the exclude to set
-     */
-    public void setRequired(boolean required) {
-        this.required = required;
-    }
-
-    /**
-     * @return the fieldContents
-     */
-    public String getFieldContents() {
-        return fieldContents;
-    }
-
-    /**
-     * @param fieldContents the fieldContents to set
-     */
-    public void setFieldContents(String fieldContents) {
-        this.fieldContents = fieldContents;
-    }
-
-    /**
-     * @return the coumnNumber
-     */
-    public String getFieldNumber() {
-        return fieldNumber;
-    }
-
-    /**
-     * @param coumnNumber the coumnNumber to set
-     */
-    public void setFieldNumber(String coumnNumber) {
-        this.fieldNumber = coumnNumber;
-    }
-
-    /**
-     * @return the dataType
-     */
-    public String getDataType() {
-        return dataType;
-    }
-
-    /**
-     * @param dataType the dataType to set
-     */
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
-    }
-
-    /**
-     * @return the fieldSaved
+     * @return the saved
      */
     public boolean isFieldSaved() {
         return fieldSaved;
     }
 
     /**
-     * @param fieldSaved the fieldSaved to set
+     * @param saved the saved to set
      */
-    public void setFieldSaved(boolean fieldSaved) {
-        this.fieldSaved = fieldSaved;
+    public void setFieldSaved(boolean saved) {
+        this.fieldSaved = saved;
+    }
+
+    /**
+     * @return the subFields
+     */
+    public ArrayList<Mapping> getSubFields() {
+        return subFields;
+    }
+
+    /**
+     * @param subFields the subFields to set
+     */
+    public void setSubFields(ArrayList<Mapping> subFields) {
+        this.subFields = subFields;
+    }
+
+    /**
+     * @return the dataStartRow
+     */
+    public String getDataStartRow() {
+        return dataStartRow;
+    }
+
+    /**
+     * @param dataStartRow the dataStartRow to set
+     */
+    public void setDataStartRow(String dataStartRow) {
+        this.dataStartRow = dataStartRow;
+    }
+
+    /**
+     * @return the multiPart
+     */
+    public boolean isMultiPart() {
+        return multiPart;
+    }
+
+    /**
+     * @param multiPart the multiPart to set
+     */
+    public void setMultiPart(boolean multiPart) {
+        this.multiPart = multiPart;
+    }
+
+    /**
+     * @return the fileType
+     */
+    public String getFileType() {
+        return fileType;
+    }
+
+    /**
+     * @param fileType the fileType to set
+     */
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
     }
 
 }

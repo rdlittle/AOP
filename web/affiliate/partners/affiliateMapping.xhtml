@@ -14,10 +14,10 @@
                 <span style="width: 99%; text-align: center; margin: 2em auto;">
                     <h2>Affiliate Mapping Maintenance</h2>
                 </span>
-                
+
                 <h:form id="form">
                     <p:growl id="msgs" showDetail="true"/>
-                    
+
                     <p:panelGrid styleClass="custom" style="width: 25%; margin: auto auto;">
                         <p:row>
                             <p:column>
@@ -29,14 +29,43 @@
                                                    itemLabel="#{vendor.value}"
                                                    itemValue="#{vendor.key}">
                                     </f:selectItems>
-                                    <p:ajax partialSubmit="false"
-                                            listener="#{affiliateMappingBean.getMapping()}" 
+                                    <p:ajax listener="#{affiliateMappingBean.setAggregatorId()}"
                                             event="change"
-                                            update="newField saveField table"/>
+                                            process="@this"
+                                            update="fileTypes table"/>
+                                </p:selectOneMenu>
+                            </p:column>
+
+                            <p:column>
+                                <p:selectOneMenu id="fileTypes" value="#{affiliateMappingBean.fileType}">
+                                    <f:selectItem itemLabel="Select" itemValue="-1"/>
+                                    <f:selectItems value="#{affiliateMappingBean.fileTypes}" var="ft"
+                                                   itemLabel="#{ft}" itemValue="#{ft}"/>
+                                    <p:ajax partialSubmit="false"
+                                            listener="#{affiliateMappingBean.changeFileType()}" 
+                                            event="change"
+                                            process="@this"
+                                            update="meta newField saveField table"/>
                                 </p:selectOneMenu>
                             </p:column>
                         </p:row>
-
+                    </p:panelGrid>
+                    
+                    <p:panelGrid id="meta" styleClass="custom" style="width: 25%; margin: auto auto;">
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Has header"/>
+                            </p:column>
+                            <p:column>
+                                <p:selectBooleanCheckbox value="#{affiliateMappingBean.hasHeader}"/>
+                            </p:column>                            
+                            <p:column>
+                                <h:outputText value="Data start row"/>
+                            </p:column>
+                            <p:column>
+                                <p:spinner min="0" max="10" value="#{affiliateMappingBean.dataStartRow}"/>
+                            </p:column>
+                        </p:row>
                     </p:panelGrid>
 
                     <p:panel style="margin-right: 100px; border: none; margin: auto;">
@@ -49,56 +78,45 @@
                                        value="Save" />
 
                         <p:dataTable id="table" var="mf" value="#{affiliateMappingBean.mapping}"
-                                     rowIndexVar="mfidx" rowKey="#{mf.fieldNumber}"
-                                     editable="true" editMode="cell">
+                                     editable="true" editMode="cell" rowIndexVar="mfidx">
                             <f:facet name="header">
                                 <h:outputText value="Report Mapping"/>
                             </f:facet>
 
-                            <p:column id = "rowNum" headerText="Col" style="text-align: left; width: 2%;">
+
+                            <p:column id = "rowNum" headerText="#" style="text-align: left; width: 2%;">
                                 <h:outputText value="#{mfidx+1}"/>
                             </p:column>
 
-                            <p:column id="fieldName" headerText="Field Name" style='width: 25%;'>
-                                <h:inputText value="#{mf.fieldName}" style="width: 95%;"/>
+                            <p:column id="fieldLabel" headerText="Label">
+                                <h:inputText value="#{mf.fieldLabel}" style="width: 95%;"/>
                             </p:column>
 
+                            <p:column id="fieldType" headerText="Multi-part" style="width: 5%;">
+                                <p:selectBooleanCheckbox value ="#{mf.multiPart}" style="width: 5%;"/>
+                            </p:column>
+
+                            <p:ajax event="cellEdit" listener="#{affiliateMappingBean.onCellEdit}" update=":form:msgs"/>
                             <p:column id="fieldContents" headerText="Contents" style="width: 15%;">
                                 <p:cellEditor>
                                     <f:facet name="output">
-                                        <h:outputText value="#{mf.fieldContents}"/>
+                                        <h:outputText value="#{mf.fieldKey}"/>
                                     </f:facet>
                                     <f:facet name="input">
-                                        <h:selectOneMenu value="#{mf.fieldContents}">
+                                        <h:selectOneMenu value="#{mf.fieldKey}">
                                             <f:selectItems value="#{webDEBean.masterColumnNames}" var="mp" 
-                                                           itemValue="#{mp.key}" 
-                                                           itemLabel="#{mp.value}">
+                                                           itemValue="#{mp.value}" 
+                                                           itemLabel="#{mp.key}">
                                             </f:selectItems>
                                         </h:selectOneMenu>        
                                     </f:facet>
                                 </p:cellEditor>
                             </p:column>
 
-                            <p:column id="dataType" headerText="Data type" style="width: 10%;">
-                                <p:selectOneMenu value="#{mf.dataType}" style="width: 80%;">
-                                    <f:selectItem itemLabel="Alpha" itemValue="0A"/>
-                                    <f:selectItem itemLabel="Numeric" itemValue="0N"/>
-                                    <f:selectItem itemLabel="Mixed" itemValue="0X"/>
-                                    <f:selectItem itemLabel="Currency" itemValue="0N'.'2N"/>
-                                    <f:selectItem itemLabel="Date" itemValue="D"/>
-                                </p:selectOneMenu>
-                            </p:column>
-
-                            <p:column id="isRequired" headerText="Ignore" style="width: 3%;">
-                                <p:selectBooleanCheckbox value="#{mf.required}">
-                                </p:selectBooleanCheckbox>
-                            </p:column>
-
-
                             <p:column id="actionColumn" headerText="Action" style="width: 3%;">
                                 <p:commandLink id="fieldAction" process="@this" update="table"
                                                actionListener="#{affiliateMappingBean.commitField(mf)}">
-                                    <p:graphicImage value='#{mf.fieldSaved ? "/resources/images/delete.png" : "/resources/images/tick.png"}' 
+                                    <p:graphicImage id="icon" value='#{mf.fieldSaved ? "/resources/images/delete.png" : "/resources/images/tick.png"}' 
                                                     height="16"/>
                                 </p:commandLink>
                             </p:column>

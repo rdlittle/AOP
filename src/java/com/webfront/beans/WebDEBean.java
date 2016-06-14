@@ -224,7 +224,7 @@ public final class WebDEBean implements Serializable {
         try {
             RedObject rb = new RedObject("WDE", "UTILS:Files");
             rb.setProperty("fileName", "PARAMS");
-            rb.setProperty("id", "DATA.FEED.COLUMN.NAMES");
+            rb.setProperty("id", "AFFILIATE.MAPPING.CONTROL");
             rb.setProperty("keyField", "2");
             rb.setProperty("valueField", "1");
             rb.callMethod("getSelectObject");

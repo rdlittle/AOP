@@ -36,7 +36,7 @@
                                 <h:outputText value="#{item.id}"/>
                             </p:column>
                             <p:column headerText="Status" style="width: 8%;">
-                                <h:outputText value="#{item.queueStatusName}"/>
+                                <h:outputText value="#{item.runLevel}"/>
                             </p:column>
                             <p:column headerText="Date" style="width: 5%;">
                                 <h:outputText value="#{item.createDate}"/>
@@ -49,7 +49,21 @@
                             </p:column>
                             <p:column headerText="Errors" style="width: 5%;">
                                 <h:outputText value="#{item.errorCount}"/>
-                            </p:column>                            
+                            </p:column>  
+
+                            <p:column headerText="Reports" style="text-align: left;" width="15%">
+                                <p:commandLink ajax="false" value="Success" action="#{aopQueueBean.downLoader.setDownload}" 
+                                               style="line-height: 1em;" rendered="#{item.hasSuccessReport}">
+                                    <f:setPropertyActionListener target="#{aopQueueBean.downLoader.fileName}" value="#{item.successReport}" />
+                                    <p:fileDownload value="#{aopQueueBean.downLoader.content}"/>
+                                </p:commandLink>
+                                <p:commandLink ajax="false" value="Errors" action="#{aopQueueBean.downLoader.setDownload}"
+                                               rendered="#{item.hasErrorReport}">
+                                    <f:setPropertyActionListener target="#{aopQueueBean.downLoader.fileName}" value="#{item.errorReport}" />
+                                    <p:fileDownload value="#{aopQueueBean.downLoader.content}"/>
+                                </p:commandLink>
+                            </p:column> 
+
                         </p:dataTable>
                     </p:panel>
                 </h:form>

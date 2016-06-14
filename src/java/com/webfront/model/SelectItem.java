@@ -5,10 +5,6 @@
 package com.webfront.model;
 
 import java.io.Serializable;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
 
 /**
  *
@@ -34,6 +30,12 @@ public class SelectItem implements Serializable {
     }
     public void setValue(String v) {
         this.value=v;
+    }
+    public String getLabel() {
+        return this.value;
+    }
+    public void setLabel(String lbl) {
+        this.value=lbl;
     }
     @Override
     public String toString() {
@@ -70,5 +72,6 @@ public class SelectItem implements Serializable {
 //        }
 //        
 //    }
+
     
 }

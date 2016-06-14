@@ -19,7 +19,6 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
-import org.primefaces.model.UploadedFile;
 
 /**
  *
@@ -31,12 +30,10 @@ public class AffiliateOrderBean implements Serializable {
 
     @ManagedProperty(value = "#{affiliateDetailBean}")
     private AffiliateDetailBean detail;
-    @ManagedProperty(value = "#{uploadBean}")
-    private UploadBean uploader;
+
     private String affiliateMasterId;
     private String affiliateDetailId;
     private boolean errorsOnly;
-    private UploadedFile file;
 
     private ArrayList<AffiliateOrder> orderList;
 
@@ -49,47 +46,6 @@ public class AffiliateOrderBean implements Serializable {
      */
     public ArrayList<AffiliateOrder> getOrderList() {
         return this.orderList;
-    }
-
-    public String uploadReport() {
-        boolean result;
-        getUploader().setFile(getFile());
-        result = uploader.upload(); // Uploads file to /usr/local/dmcdev/AFFILIATE.UPLOAD/
-        if (!result) {
-            return "";
-        }
-        if ("-1".equals(affiliateMasterId)) {
-            FacesMessage msg = new FacesMessage("Vendor code is missing");
-            msg.setSeverity(FacesMessage.SEVERITY_ERROR);
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return "";
-        } else {
-            RedObject rb = new RedObject("WDE", "AOP:Queue");
-            rb.setProperty("affiliateMasterId", this.affiliateMasterId);
-            rb.setProperty("fileName", getFile().getFileName());
-            try {
-                rb.callMethod("setQueue");
-                String errStat = rb.getProperty("errStat");
-                String errCode = rb.getProperty("errCode");
-                String errMsg = rb.getProperty("errMsg");
-                if (errStat.equals("-1")) {
-                    errMsg = "Error: " + errCode + " " + errMsg;
-                    FacesMessage fmsg = new FacesMessage(errMsg);
-                    fmsg.setSeverity(FacesMessage.SEVERITY_ERROR);
-                    FacesContext ctx = FacesContext.getCurrentInstance();
-                    ctx.addMessage("msg", fmsg);
-                    return "";
-                }
-            } catch (RbException ex) {
-                Logger.getLogger(UploadBean.class.getName()).log(Level.SEVERE, null, ex);
-                FacesMessage fmsg = new FacesMessage(ex.getMessage());
-                fmsg.setSeverity(FacesMessage.SEVERITY_FATAL);
-                FacesContext ctx = FacesContext.getCurrentInstance();
-                ctx.addMessage("msg", fmsg);
-                return "";
-            }
-        }
-        return "/affiliate/orders/aopQueue?faces-redirect=true";
     }
 
     public void setOrderList() {
@@ -234,33 +190,5 @@ public class AffiliateOrderBean implements Serializable {
             }
             setOrderList();
         }
-    }
-
-    /**
-     * @return the uploader
-     */
-    public UploadBean getUploader() {
-        return uploader;
-    }
-
-    /**
-     * @param uploader the uploader to set
-     */
-    public void setUploader(UploadBean uploader) {
-        this.uploader = uploader;
-    }
-
-    /**
-     * @return the file
-     */
-    public UploadedFile getFile() {
-        return file;
-    }
-
-    /**
-     * @param file the file to set
-     */
-    public void setFile(UploadedFile file) {
-        this.file = file;
     }
 }

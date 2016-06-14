@@ -13,6 +13,7 @@ import com.webfront.model.Award;
 import com.webfront.model.CardHolder;
 import com.webfront.model.FnboTrans;
 import com.webfront.model.Queue;
+import com.webfront.model.RunLevel;
 import com.webfront.util.DateUtils;
 import com.webfront.util.JSFHelper;
 import com.webfront.util.MVUtils;
@@ -564,18 +565,16 @@ public class FnboBean implements Serializable {
                 ArrayList<Queue> copyOfQueueList = new ArrayList<>();
 
                 for (int i = 1; i <= items; i++) {
-                    Queue item = new AopQueue();
+                    AopQueue item = new AopQueue();
                     item.setId(uda.extract(2, i).toString());
-                    item.setVendorCode(uda.extract(4, i).toString());
+                    item.setAggregatorId(uda.extract(4, i).toString());
                     item.setFileName(uda.extract(5, i).toString());
-                    item.setQueueStatus(uda.extract(6, i).toString());
+                    item.setRunLevel(uda.extract(6, i).toString());
                     item.setCreateDate(uda.extract(7, i).toString());
                     item.setCreateTime(uda.extract(8, i).toString());
                     item.setUserName(uda.extract(9, i).toString());
-                    item.setItemCount(uda.extract(10, i).toString());
+                    item.setLineCount(uda.extract(10, i).toString());
                     item.setErrorCount(uda.extract(11, i).toString());
-                    item.setRunDate(uda.extract(12, i).toString());
-                    item.setRunTime(uda.extract(13, i).toString());
                     item.setQueueType(uda.extract(14, i).toString());
                     copyOfQueueList.add(item);
                 }

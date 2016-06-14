@@ -2,19 +2,9 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
-         equ QUEUE.STATUS.INIT           to 0
-         equ QUEUE.STATUS.VALIDATE       to 1
-         equ QUEUE.STATUS.AO.CREATE      to 2
-         equ QUEUE.STATUS.REFUND.PROCESS to 3
-         equ QUEUE.STATUS.ORDER.CREATE   to 4
-         equ QUEUE.STATUS.REPORT         to 5
-         equ QUEUE.STATUS.DELETE         to 6
-         equ QUEUE.STATUS.ERROR          to 7
-         equ QUEUE.STATUS.HOLD           to 9
+
  */
 package com.webfront.model;
-
-import java.util.HashMap;
 
 /**
  *
@@ -23,46 +13,29 @@ import java.util.HashMap;
 public abstract class Queue {
 
     private String id;
-    private String vendorCode;
     private String fileName;
-    private String queueStatus;
     private String createDate;
     private String createTime;
     private String userName;
-    private String itemCount;
-    private String errorCount;
-    private String runDate;
-    private String runTime;
+    private String lineCount;
     private String queueType;
-    private final HashMap<String, String> statusNames;
     private String errorReport;
     private String successReport;
-    private String checkId;
-    private String checkAmount;
+    private boolean hasErrorReport;
+    private boolean hasSuccessReport;
+    private String runLevel;
 
     public Queue() {
         id = "";
-        vendorCode = "";
         fileName = "";
-        queueStatus = "";
+        runLevel = "";
         createDate = "";
         createTime = "";
         userName = "";
-        itemCount = "";
-        errorCount = "";
-        runDate = "";
-        runTime = "";
+        lineCount = "";
         queueType = "";
-        statusNames = new HashMap<>();
-        statusNames.put("0", "Pending");
-        statusNames.put("1", "Validating");
-        statusNames.put("2", "Building");
-        statusNames.put("3", "Processing Refunds");
-        statusNames.put("4", "Creating Orders");
-        statusNames.put("5", "Reports Ready");
-        statusNames.put("6", "Deleting");
-        statusNames.put("7", "Error");
-        statusNames.put("9", "On Hold");
+        hasErrorReport = false;
+        hasSuccessReport = false;
     }
 
     /**
@@ -80,20 +53,6 @@ public abstract class Queue {
     }
 
     /**
-     * @return the vendorCode
-     */
-    public String getVendorCode() {
-        return vendorCode;
-    }
-
-    /**
-     * @param vendorCode the vendorCode to set
-     */
-    public void setVendorCode(String vendorCode) {
-        this.vendorCode = vendorCode;
-    }
-
-    /**
      * @return the fileName
      */
     public String getFileName() {
@@ -108,24 +67,10 @@ public abstract class Queue {
     }
 
     /**
-     * @return the queueStatus
+     * @param status the runLevel to set
      */
-    public String getQueueStatus() {
-        return queueStatus;
-    }
-
-    /**
-     * @param status the queueStatus to set
-     */
-    public void setQueueStatus(String status) {
-        this.queueStatus = status;
-    }
-
-    public String getQueueStatusName() {
-        if (!statusNames.containsKey(this.queueStatus)) {
-            this.queueStatus = "0";
-        }
-        return statusNames.get(this.queueStatus);
+    public void setRunLevel(String rl) {
+        runLevel = rl;
     }
     
     /**
@@ -173,57 +118,15 @@ public abstract class Queue {
     /**
      * @return the itemCount
      */
-    public String getItemCount() {
-        return itemCount;
+    public String getLineCount() {
+        return lineCount;
     }
 
     /**
      * @param itemCount the itemCount to set
      */
-    public void setItemCount(String itemCount) {
-        this.itemCount = itemCount;
-    }
-
-    /**
-     * @return the errorCount
-     */
-    public String getErrorCount() {
-        return errorCount;
-    }
-
-    /**
-     * @param errorCount the errorCount to set
-     */
-    public void setErrorCount(String errorCount) {
-        this.errorCount = errorCount;
-    }
-
-    /**
-     * @return the runDate
-     */
-    public String getRunDate() {
-        return runDate;
-    }
-
-    /**
-     * @param runDate the runDate to set
-     */
-    public void setRunDate(String runDate) {
-        this.runDate = runDate;
-    }
-
-    /**
-     * @return the runTime
-     */
-    public String getRunTime() {
-        return runTime;
-    }
-
-    /**
-     * @param runTime the runTime to set
-     */
-    public void setRunTime(String runTime) {
-        this.runTime = runTime;
+    public void setLineCount(String itemCount) {
+        this.lineCount = itemCount;
     }
 
     /**
@@ -231,6 +134,10 @@ public abstract class Queue {
      */
     public String getQueueType() {
         return queueType;
+    }
+    
+    public String getRunLevel() {
+        return runLevel;
     }
 
     /**
@@ -285,32 +192,14 @@ public abstract class Queue {
         this.successReport = successReport;
     }
 
-    /**
-     * @return the checkId
-     */
-    public String getCheckId() {
-        return checkId;
+    public boolean getHasErrorReport() {
+        hasErrorReport = !errorReport.isEmpty();
+        return hasErrorReport;
     }
-
-    /**
-     * @param checkId the checkId to set
-     */
-    public void setCheckId(String checkId) {
-        this.checkId = checkId;
-    }
-
-    /**
-     * @return the checkAmount
-     */
-    public String getCheckAmount() {
-        return checkAmount;
-    }
-
-    /**
-     * @param checkAmount the checkAmount to set
-     */
-    public void setCheckAmount(String checkAmount) {
-        this.checkAmount = checkAmount;
+    
+    public boolean getHasSuccessReport() {
+        hasSuccessReport = !successReport.isEmpty();
+        return hasSuccessReport;
     }
     
 }
