@@ -42,6 +42,7 @@ public class AffiliateMappingBean {
     private String mappingId;
     private boolean newField;
     private boolean fieldCommitted;
+    private boolean fileSaved;
     private String fileType;
     private String fieldSeparator;
     private final ArrayList<String> fileTypes;
@@ -57,6 +58,7 @@ public class AffiliateMappingBean {
         mappingId = "";
         newField = false;
         fieldCommitted = false;
+        fileSaved = true;
         fileType = "";
         fieldSeparator = "";
         fileTypes = new ArrayList<>();
@@ -132,10 +134,9 @@ public class AffiliateMappingBean {
                         map.setFieldLabel(uda.extract(1, f).toString());
                         map.setFieldKey(uda.extract(2, f).toString());
                         map.setFieldValue(uda.extract(3, f).toString());
-                        map.setMultiPart(uda.extract(4, f).toString().equals("1"));
                         map.setFieldSeparator(uda.extract(5, f).toString());
-                        int subCount = uda.dcount(6,f);
-                        for(int s = 1; s<=subCount ; s++) {
+                        int subCount = uda.dcount(6, f);
+                        for (int s = 1; s <= subCount; s++) {
                             Mapping sm = new Mapping();
                             sm.setFieldKey(uda.extract(6, f, s).toString());
                             sm.setFieldValue(uda.extract(7, f, s).toString());
@@ -143,6 +144,7 @@ public class AffiliateMappingBean {
                             map.getSubFields().add(sm);
                         }
                         map.setFieldSaved(true);
+                        fileSaved = true;
                         mapping.add(map);
                     }
                 }
@@ -152,6 +154,10 @@ public class AffiliateMappingBean {
         }
     }
 
+    public void onTextChange() {
+
+    }
+
     public void onCellEdit(CellEditEvent event) {
         String oldValue = (String) event.getOldValue();
         String newValue = (String) event.getNewValue();
@@ -159,7 +165,7 @@ public class AffiliateMappingBean {
             AffiliateMapping item = (AffiliateMapping) mapping.get(event.getRowIndex());
             item.setFieldKey(newValue);
             item.setFieldValue(fieldValues.get(newValue));
-            
+            fileSaved = false;
         }
     }
 
@@ -171,22 +177,19 @@ public class AffiliateMappingBean {
         if (getMappingId().isEmpty()) {
             return;
         }
-
         UniDynArray uda = new UniDynArray();
         int fieldCount = 1;
         for (AffiliateMapping map : mapping) {
             uda.insert(1, fieldCount, map.getFieldLabel());
-            uda.insert(2, fieldCount, map.getFieldKey());
-            uda.insert(3, fieldCount, map.getFieldValue());
-            uda.insert(4, fieldCount, map.isMultiPart() ? "1" : "");
-            uda.insert(5, fieldCount, map.getFieldSeparator() == null ? "" : map.getFieldSeparator());
-            if (map.isMultiPart()) {
-                int subFieldNum = 1;
-                for(Mapping m : map.getSubFields()) {
-                    uda.insert(6, fieldCount, subFieldNum, m.getFieldKey());
-                    uda.insert(7, fieldCount, subFieldNum++, m.getFieldValue());
-                }
+            String key = map.getFieldKey();
+            String value = map.getFieldValue();
+            if (key == null) {
+                key = " ";
+                value = " ";
             }
+            uda.insert(2, fieldCount, key);
+            uda.insert(3, fieldCount, value);
+            uda.insert(5, fieldCount, map.getFieldSeparator() == null ? "" : map.getFieldSeparator());
             fieldCount++;
         }
         rbo.setProperty("aggregatorId", getMappingId());
@@ -194,7 +197,6 @@ public class AffiliateMappingBean {
         rbo.setProperty("fieldLabel", uda.extract(1));
         rbo.setProperty("fieldKey", uda.extract(2));
         rbo.setProperty("fieldValue", uda.extract(3));
-        rbo.setProperty("multiPart", uda.extract(4));
         rbo.setProperty("fieldSeparator", uda.extract(5));
         rbo.setProperty("hasHeader", hasHeader ? "1" : "0");
         rbo.setProperty("dataStartRow", dataStartRow);
@@ -209,6 +211,7 @@ public class AffiliateMappingBean {
                 JSFHelper.sendFacesMessage(errMsg, "Error");
             } else {
                 JSFHelper.sendFacesMessage("msgs", mappingId + " saved", "Info");
+                fileSaved = true;
             }
         } catch (RbException ex) {
             Logger.getLogger(AffiliateMasterController.class.getName()).log(Level.SEVERE, null, ex);
@@ -220,19 +223,17 @@ public class AffiliateMappingBean {
         nextColumn++;
         setNewField(true);
         AffiliateMapping m = new AffiliateMapping();
-        setNewField(true);
-        setFieldCommitted(false);
         getMapping().add(m);
-    }
-
-    public void addSubField() {
-
+        setNewField(true);
+        setFieldCommitted(false);        
+        fileSaved = false;
     }
 
     public void removeField(AffiliateMapping se) {
         if (mapping.contains(se)) {
             mapping.remove(se);
             newField = false;
+            fileSaved = false;
         }
     }
 
@@ -240,8 +241,10 @@ public class AffiliateMappingBean {
         if (am.isFieldSaved()) {
             removeField(am);
         } else {
-            saveField();
             am.setFieldSaved(true);
+//            saveField();
+            setNewField(false);
+            setFieldCommitted(true);
         }
     }
 
@@ -426,6 +429,20 @@ public class AffiliateMappingBean {
      */
     public void setFieldValues(HashMap<String, String> fieldValues) {
         this.fieldValues = fieldValues;
+    }
+
+    /**
+     * @return the fileSaved
+     */
+    public boolean isFileSaved() {
+        return fileSaved;
+    }
+
+    /**
+     * @param fileSaved the fileSaved to set
+     */
+    public void setFileSaved(boolean fileSaved) {
+        this.fileSaved = fileSaved;
     }
 
     @FacesConverter(forClass = AffiliateMapping.class)

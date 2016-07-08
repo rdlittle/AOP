@@ -41,21 +41,27 @@ import org.primefaces.model.UploadedFile;
 public class AopQueueBean implements Serializable {
 
     private final AopQueueController controller = new AopQueueController();
-    private final RedObject rbo = new RedObject("WDE", "AOP:Queue");
+    private final RedObject rbo = new RedObject("WDE", "AFFILIATE:Queue");
 
     private final ArrayList<RunLevel> runLevels;
     private final HashMap<String, String> runLevelNames;
     private ArrayList<AopQueue> queueList;
     private ArrayList<AopQueue> selectedItems;
     private String queueType;
+    private String _queueType;
     private boolean selected;
     @ManagedProperty(value = "#{downloadBean}")
     private DownloadBean downLoader;
     @ManagedProperty(value = "#{uploadBean}")
     private UploadBean uploader;
+    @ManagedProperty(value = "#{aopUserBean}")
+    private AopUserBean aopUser;
     private String affiliateMasterId;
     private String fileType;
     private UploadedFile file;
+    private boolean running;
+    private boolean showAll;
+    private boolean admin;
 
     public AopQueueBean() {
         this.selectedItems = new ArrayList<>();
@@ -63,11 +69,14 @@ public class AopQueueBean implements Serializable {
         this.selected = false;
         runLevels = new ArrayList<>();
         runLevelNames = new HashMap<>();
+        queueType = "";
+        _queueType = "";
     }
 
     @PostConstruct
     public void init() {
-        setRunLevels();
+        queueType = "";
+        runLevels.clear();
     }
 
     public void rePoll() {
@@ -83,9 +92,18 @@ public class AopQueueBean implements Serializable {
 
     public void setQueueList() {
         this.queueList.clear();
-        this.queueList = (ArrayList<AopQueue>) controller.getQueueList(queueType);
+        this.queueList = (ArrayList<AopQueue>) controller.getQueueList(queueType,aopUser.getUserName().toUpperCase(),showAll);
+        this.running = controller.isMonitorRunning();
+    }
+    
+    public boolean isRunning() {
+        return controller.isMonitorRunning();
     }
 
+    public void onBtnStartQueue() {
+        controller.startQueue(queueType);
+    }
+    
     public void onCellEdit(CellEditEvent evt) {
         String newValue = evt.getNewValue().toString();
         String oldValue = evt.getOldValue().toString();
@@ -132,7 +150,7 @@ public class AopQueueBean implements Serializable {
         rbo.setProperty("queueId", uda.extract(1));
         rbo.setProperty("queueStatus", uda.extract(2));
         try {
-            rbo.callMethod("setAopQueueStatus");
+            rbo.callMethod("setAffiliateQueueStatus");
         } catch (RbException ex) {
             Logger.getLogger(AopQueueBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -141,8 +159,8 @@ public class AopQueueBean implements Serializable {
     public String onUpload() {
         boolean result;
         String runLevel = "0";
-        String userId = "system";
-        queueType = "AO";
+        String userId = aopUser.getUserName();
+//        queueType = "AO";
 
         FacesContext fContext = FacesContext.getCurrentInstance();
         ExternalContext eContext = fContext.getExternalContext();
@@ -160,14 +178,14 @@ public class AopQueueBean implements Serializable {
             queueType = reqmap.get("queueType");
         }
 
-        rbo.setProperty("affiliateMasterId", affiliateMasterId);
+        rbo.setProperty("aggregatorId", affiliateMasterId);
         rbo.setProperty("fileName", getFile().getFileName());
         rbo.setProperty("userName", userId);
         rbo.setProperty("queueType", queueType);
         rbo.setProperty("runLevel", runLevel);
 
         try {
-            rbo.callMethod("postAopQueue");
+            rbo.callMethod("postAffiliateQueue");
             int errStat = Integer.parseInt(rbo.getProperty("svrStatus"));
             if (errStat == -1) {
                 String errCode = rbo.getProperty("svrCtrlCode");
@@ -225,6 +243,7 @@ public class AopQueueBean implements Serializable {
         FacesContext fContext = FacesContext.getCurrentInstance();
         ExternalContext eContext = fContext.getExternalContext();
         String pi = fContext.getCurrentPhaseId().getName();
+        setRunLevels();
         setQueueList();
     }
 
@@ -330,8 +349,15 @@ public class AopQueueBean implements Serializable {
     }
 
     public void setRunLevels() {
+        if (queueType.isEmpty() && _queueType.isEmpty()) {
+            return;
+        }
+        if(queueType.equals(_queueType)) {
+            return;
+        }
         try {
-            rbo.callMethod("getAopQueueRunLevelList");
+            rbo.setProperty("queueType",queueType);
+            rbo.callMethod("getAffiliateQueueRunLevelList");
             int errStat = Integer.parseInt(rbo.getProperty("svrStatus"));
             if (errStat == -1) {
                 String errCode = rbo.getProperty("svrCtrlCode");
@@ -354,9 +380,50 @@ public class AopQueueBean implements Serializable {
                     runLevelNames.put(rl.getLevel(), rl.getName());
                 }
             }
+            _queueType = queueType;
         } catch (RbException ex) {
             Logger.getLogger(AopQueueBean.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    /**
+     * @return the showAll
+     */
+    public boolean isShowAll() {
+        return showAll;
+    }
+
+    /**
+     * @param showAll the showAll to set
+     */
+    public void setShowAll(boolean showAll) {
+        this.showAll = showAll;
+    }
+    
+    public void onClickShowAll() {
+        
+    }
+
+    /**
+     * @return the admin
+     */
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    /**
+     * @return the user
+     */
+    public AopUserBean getAopUser() {
+        return aopUser;
+    }
+
+    /**
+     * @param u the user to set
+     */
+    public void setAopUser(AopUserBean u) {
+        this.aopUser = u;
+        admin = aopUser.hasAuthorizedRole("admin");
     }
 
 }

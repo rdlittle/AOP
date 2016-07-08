@@ -17,7 +17,6 @@ public class AffiliateMapping extends Mapping {
     private String fieldSeparator;
     private boolean hasHeader;
     private String dataStartRow;
-    private boolean multiPart;
     private boolean fieldSaved;
     private ArrayList<Mapping> subFields;
     private String fileType;
@@ -111,20 +110,6 @@ public class AffiliateMapping extends Mapping {
      */
     public void setDataStartRow(String dataStartRow) {
         this.dataStartRow = dataStartRow;
-    }
-
-    /**
-     * @return the multiPart
-     */
-    public boolean isMultiPart() {
-        return multiPart;
-    }
-
-    /**
-     * @param multiPart the multiPart to set
-     */
-    public void setMultiPart(boolean multiPart) {
-        this.multiPart = multiPart;
     }
 
     /**

@@ -234,8 +234,6 @@ public final class WebDEBean implements Serializable {
             UniDynArray keys = rb.getPropertyToDynArray("keyList");
             UniDynArray values = rb.getPropertyToDynArray("valueList");
             int vals = keys.dcount(1);
-            SelectItem defaultItem = new SelectItem("-1", "- Select -");
-            mf.add(defaultItem);
             for (int i = 1; i <= vals; i++) {
                 String key = keys.extract(1, i).toString();
                 String value = values.extract(1, i).toString();
@@ -338,7 +336,7 @@ public final class WebDEBean implements Serializable {
     public void setUserId(String userId) {
         this.userId = userId;
     }
-
+    
     /**
      * @return the networkList
      */

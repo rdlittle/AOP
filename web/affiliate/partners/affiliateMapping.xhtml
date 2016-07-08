@@ -50,7 +50,7 @@
                             </p:column>
                         </p:row>
                     </p:panelGrid>
-                    
+
                     <p:panelGrid id="meta" styleClass="custom" style="width: 25%; margin: auto auto;">
                         <p:row>
                             <p:column>
@@ -83,17 +83,14 @@
                                 <h:outputText value="Report Mapping"/>
                             </f:facet>
 
-
                             <p:column id = "rowNum" headerText="#" style="text-align: left; width: 2%;">
                                 <h:outputText value="#{mfidx+1}"/>
                             </p:column>
 
                             <p:column id="fieldLabel" headerText="Label">
-                                <h:inputText value="#{mf.fieldLabel}" style="width: 95%;"/>
-                            </p:column>
-
-                            <p:column id="fieldType" headerText="Multi-part" style="width: 5%;">
-                                <p:selectBooleanCheckbox value ="#{mf.multiPart}" style="width: 5%;"/>
+                                <h:inputText value="#{mf.fieldLabel}" style="width: 95%;">
+                                    <p:ajax event="blur" listener="#{affiliateMappingBean.onTextChange()}" />
+                                </h:inputText>
                             </p:column>
 
                             <p:ajax event="cellEdit" listener="#{affiliateMappingBean.onCellEdit}" update=":form:msgs"/>
@@ -104,6 +101,7 @@
                                     </f:facet>
                                     <f:facet name="input">
                                         <h:selectOneMenu value="#{mf.fieldKey}">
+                                            <f:selectItem itemValue="" itemLabel="Not used"/>
                                             <f:selectItems value="#{webDEBean.masterColumnNames}" var="mp" 
                                                            itemValue="#{mp.value}" 
                                                            itemLabel="#{mp.key}">
@@ -114,7 +112,7 @@
                             </p:column>
 
                             <p:column id="actionColumn" headerText="Action" style="width: 3%;">
-                                <p:commandLink id="fieldAction" process="@this" update="table"
+                                <p:commandLink id="fieldAction" process="@this" update="table :form:saveButton"
                                                actionListener="#{affiliateMappingBean.commitField(mf)}">
                                     <p:graphicImage id="icon" value='#{mf.fieldSaved ? "/resources/images/delete.png" : "/resources/images/tick.png"}' 
                                                     height="16"/>
@@ -122,8 +120,8 @@
                             </p:column>
 
                         </p:dataTable>
-                        <p:commandButton value="Save" actionListener="#{affiliateMappingBean.setMapping()}" 
-                                         process="@this" update="table msgs" 
+                        <p:commandButton id="saveButton" value="Save" actionListener="#{affiliateMappingBean.setMapping()}" 
+                                         process="@this" update="@form" disabled="#{affiliateMappingBean.fileSaved}"
                                          style="margin-top: 1.5em; float: right;"/>    
                     </p:panel>
 

@@ -13,7 +13,6 @@ import com.webfront.model.Award;
 import com.webfront.model.CardHolder;
 import com.webfront.model.FnboTrans;
 import com.webfront.model.Queue;
-import com.webfront.model.RunLevel;
 import com.webfront.util.DateUtils;
 import com.webfront.util.JSFHelper;
 import com.webfront.util.MVUtils;
@@ -284,7 +283,8 @@ public class FnboBean implements Serializable {
         trans.insert(21, rbo.getPropertyToDynArray("originalOrder"));
         trans.insert(23, rbo.getPropertyToDynArray("awardCount"));
         trans.insert(24, rbo.getPropertyToDynArray("awardPct"));
-        startDate = MVUtils.oConvDate(rbo.getProperty("startDate")); // oList<11>
+        String sdate = rbo.getProperty("startDate");
+        startDate = MVUtils.oConvDate(rbo.getProperty("startDate"));
         endDate = MVUtils.oConvDate(rbo.getProperty("endDate"));     // oList<12>
 
         int transCount = trans.dcount(1);

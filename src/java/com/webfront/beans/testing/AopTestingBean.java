@@ -775,11 +775,11 @@ public class AopTestingBean implements Serializable {
         rbo.setProperty("commissionType", commTypeMap.get(commissionType));
         rbo.setProperty("userName", userName);
         try {
-            rbo.callMethod("setAopSourceData");
+            rbo.callMethod("setAopTestData");
             errStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
             if (errStatus == -1) {
                 errCode = rbo.getProperty("svrCtrlCode");
-                errMessage = rbo.getProperty("svrmessage");
+                errMessage = rbo.getProperty("svrMessage");
                 JSFHelper.sendFacesMessage("Error: [" + errCode + "] " + errMessage, "Error");
             } else {
                 UniDynArray oList1 = rbo.getPropertyToDynArray("batchId");

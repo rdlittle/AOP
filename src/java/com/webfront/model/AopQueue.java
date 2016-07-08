@@ -5,6 +5,8 @@
  */
 package com.webfront.model;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author rlittle
@@ -12,13 +14,17 @@ package com.webfront.model;
 public class AopQueue extends Queue {
 
     private String aggregatorId;
+    private String aggregatorName;
     private String orderCount;
     private String errorCount;
     private String checkId;
     private String checkAmount;
     private String checkDate;
+    private boolean disabled;
+    private ArrayList<String> completedLevels;
 
     public AopQueue() {
+        completedLevels = new ArrayList<>();
     }
 
     /**
@@ -103,6 +109,48 @@ public class AopQueue extends Queue {
      */
     public void setErrorCount(String errorCount) {
         this.errorCount = errorCount;
+    }
+
+    /**
+     * @return the aggregatorName
+     */
+    public String getAggregatorName() {
+        return aggregatorName;
+    }
+
+    /**
+     * @param aggregatorName the aggregatorName to set
+     */
+    public void setAggregatorName(String aggregatorName) {
+        this.aggregatorName = aggregatorName;
+    }
+
+    /**
+     * @return the disable
+     */
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    /**
+     * @param disable the disable to set
+     */
+    public void setDisabled(boolean disable) {
+        this.disabled = disable;
+    }
+
+    /**
+     * @return the completedLevels
+     */
+    public ArrayList<String> getCompletedLevels() {
+        return completedLevels;
+    }
+
+    /**
+     * @param completedLevels the completedLevels to set
+     */
+    public void setCompletedLevels(ArrayList<String> completedLevels) {
+        this.completedLevels = completedLevels;
     }
 
 }

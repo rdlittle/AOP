@@ -12,6 +12,7 @@ import com.webfront.beans.AopQueueBean;
 import com.webfront.model.AopQueue;
 import com.webfront.model.ErrorObject;
 import com.webfront.model.Queue;
+import com.webfront.model.RunLevel;
 import com.webfront.model.UVException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -25,14 +26,19 @@ import javax.faces.context.FacesContext;
  */
 public class AopQueueController {
 
-    private final RedObject rb = new RedObject("WDE", "AOP:Queue");
+    private final RedObject rb = new RedObject("WDE", "AFFILIATE:Queue");
     private AopQueue queueItem;
     private final ArrayList<Queue> queueList;
     public ErrorObject errObj;
+    private boolean monitorRunning;
+    protected boolean showAll;
+    protected String userName;
 
     public AopQueueController() {
         errObj = new ErrorObject();
         this.queueList = new ArrayList<>();
+        showAll = false;
+        userName = "";
     }
 
     /**
@@ -51,15 +57,15 @@ public class AopQueueController {
 
     private void setQueueList(String queueType) {
         rb.setProperty("queueType", queueType);
-        rb.setProperty("queueId", "");
-        rb.setProperty("queueStatus", "");
-        
+        rb.setProperty("userName", userName);
+        rb.setProperty("showAll", showAll ? "1" : "0");
+
         try {
-            rb.callMethod("getQueue");
+            rb.callMethod("getAffiliateQueue");
             String errStat = rb.getProperty("svrStatus");
             String errCode = rb.getProperty("svrCtrlCode");
             String errMsg = rb.getProperty("svrMessage");
-            errObj = new ErrorObject(errStat,errCode,errMsg);
+            errObj = new ErrorObject(errStat, errCode, errMsg);
             if (-1 == errObj.getSvrStatus()) {
                 FacesMessage fmsg = new FacesMessage(errObj.toString());
                 fmsg.setSeverity(FacesMessage.SEVERITY_ERROR);
@@ -70,24 +76,28 @@ public class AopQueueController {
                 if (vals > 0) {
                     this.queueList.clear();
                     UniDynArray queueIdList = rb.getPropertyToDynArray("queueId");
-                    UniDynArray affiliateMasterList = rb.getPropertyToDynArray("affiliateMasterId");
+                    UniDynArray affiliateMasterList = rb.getPropertyToDynArray("aggregatorId");
                     UniDynArray fileNameList = rb.getPropertyToDynArray("fileName");
                     UniDynArray uploadDateList = rb.getPropertyToDynArray("createDate");
-                    UniDynArray runLevelList = rb.getPropertyToDynArray("runLevel");                    
+                    UniDynArray runLevelList = rb.getPropertyToDynArray("runLevel");
                     UniDynArray userNameList = rb.getPropertyToDynArray("userName");
                     UniDynArray lineCountList = rb.getPropertyToDynArray("lineCount");
                     UniDynArray orderCountList = rb.getPropertyToDynArray("orderCount");
                     UniDynArray errorCountList = rb.getPropertyToDynArray("errorCount");
                     UniDynArray uploadTimeList = rb.getPropertyToDynArray("createTime");
-                    UniDynArray checkIdList = rb.getPropertyToDynArray("checkId");                    
+                    UniDynArray checkIdList = rb.getPropertyToDynArray("checkId");
                     UniDynArray checkAmountList = rb.getPropertyToDynArray("checkAmount");
                     UniDynArray queueTypeList = rb.getPropertyToDynArray("queueType");
                     UniDynArray errorReportList = rb.getPropertyToDynArray("errorReport");
                     UniDynArray successReportList = rb.getPropertyToDynArray("successReport");
+                    UniDynArray aggregatorNameList = rb.getPropertyToDynArray("aggregatorName");
+                    UniDynArray disableList = rb.getPropertyToDynArray("isDisabled");
+                    UniDynArray completedRunLevelList = rb.getPropertyToDynArray("completedRunLevels");
+                    monitorRunning = rb.getProperty("monitorRunning").equals("1");
 
                     for (int val = 1; val <= vals; val++) {
                         AopQueue item = new AopQueue();
-                        item.setId(queueIdList.extract(1, val).toString());                        
+                        item.setId(queueIdList.extract(1, val).toString());
                         item.setAggregatorId(affiliateMasterList.extract(1, val).toString());
                         item.setFileName(fileNameList.extract(1, val).toString());
                         item.setErrorCount(errorCountList.extract(1, val).toString());
@@ -99,9 +109,17 @@ public class AopQueueController {
                         item.setQueueType(queueTypeList.extract(1, val).toString());
                         item.setErrorReport(errorReportList.extract(1, val).toString());
                         item.setSuccessReport(successReportList.extract(1, val).toString());
-                        item.setOrderCount(orderCountList.extract(1, val).toString());                        
+                        item.setOrderCount(orderCountList.extract(1, val).toString());
                         item.setCheckAmount(checkAmountList.extract(1, val).toString());
-                        item.setCheckId(checkIdList.extract(1, val).toString());                        
+                        item.setCheckId(checkIdList.extract(1, val).toString());
+                        item.setAggregatorName(aggregatorNameList.extract(1, val).toString());
+                        item.setDisabled(disableList.extract(1, val).toString().equals("1"));
+                        if(completedRunLevelList != null) {
+                        int completedLevelCount = completedRunLevelList.dcount(1);
+                            for (int n = 1; n <= completedLevelCount; n++) {
+                                item.getCompletedLevels().add(completedRunLevelList.extract(1, val).toString());
+                            }
+                        }
                         this.queueList.add(item);
                     }
                 }
@@ -112,7 +130,56 @@ public class AopQueueController {
         }
     }
 
-    public ArrayList<? extends Queue> getQueueList(String queueType) {
+    public void startQueue(String queueType) {
+        if (isMonitorRunning()) {
+            stopQueue(queueType);
+        } else {
+            rb.setProperty("queueType", queueType);
+            try {
+                rb.callMethod("setAffiliateQueuePhantom");
+                String errStat = rb.getProperty("svrStatus");
+                String errCode = rb.getProperty("svrCtrlCode");
+                String errMsg = rb.getProperty("svrMessage");
+                errObj = new ErrorObject(errStat, errCode, errMsg);
+                if (-1 == errObj.getSvrStatus()) {
+                    FacesMessage fmsg = new FacesMessage(errObj.toString());
+                    fmsg.setSeverity(FacesMessage.SEVERITY_ERROR);
+                    FacesContext ctx = FacesContext.getCurrentInstance();
+                    ctx.addMessage("msg", fmsg);
+                } else {
+                    setMonitorRunning(true);
+                }
+            } catch (RbException ex) {
+                Logger.getLogger(AopQueueBean.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("AopQueueController.startQueue(" + queueType + "): Exception " + ex.toString());
+            }
+        }
+    }
+
+    public void stopQueue(String queueType) {
+        try {
+            rb.callMethod("postAffiliateQueueShutdown");
+            String errStat = rb.getProperty("svrStatus");
+            String errCode = rb.getProperty("svrCtrlCode");
+            String errMsg = rb.getProperty("svrMessage");
+            errObj = new ErrorObject(errStat, errCode, errMsg);
+            if (-1 == errObj.getSvrStatus()) {
+                FacesMessage fmsg = new FacesMessage(errObj.toString());
+                fmsg.setSeverity(FacesMessage.SEVERITY_ERROR);
+                FacesContext ctx = FacesContext.getCurrentInstance();
+                ctx.addMessage("msg", fmsg);
+            } else {
+                setMonitorRunning(false);
+            }
+        } catch (RbException ex) {
+            Logger.getLogger(AopQueueBean.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("AopQueueController.stopQueue(" + queueType + "): Exception " + ex.toString());
+        }
+    }
+
+    public ArrayList<? extends Queue> getQueueList(String queueType, String user, boolean show) {
+        this.userName = user;
+        this.showAll = show;
         setQueueList(queueType);
         return this.queueList;
     }
@@ -120,26 +187,26 @@ public class AopQueueController {
     public void createQueue() throws UVException {
         rb.setProperty("queueId", "");
         rb.setProperty("queueStatus", "");
-        
-        rb.setProperty("affiliateMasterId", queueItem.getAggregatorId());
-        rb.setProperty("fileName",queueItem.getFileName());
+
+        rb.setProperty("aggregatorId", queueItem.getAggregatorId());
+        rb.setProperty("fileName", queueItem.getFileName());
         rb.setProperty("userName", queueItem.getUserName());
-        
+
         rb.setProperty("checkId", queueItem.getCheckId());
         rb.setProperty("checkAmount", queueItem.getCheckAmount());
         rb.setProperty("checkDate", queueItem.getCheckDate());
-        
+
         rb.setProperty("queueType", queueItem.getQueueType());
-        
+
         try {
-            rb.callMethod("postAopQueue");
-            errObj = new ErrorObject(rb.getProperty("svrStatus"),rb.getProperty("svrCtrlCode"),rb.getProperty("svrMessage"));
+            rb.callMethod("postAffiliateQueue");
+            errObj = new ErrorObject(rb.getProperty("svrStatus"), rb.getProperty("svrCtrlCode"), rb.getProperty("svrMessage"));
             if (-1 == errObj.getSvrStatus()) {
                 throw new UVException(errObj);
             }
         } catch (RbException ex) {
             Logger.getLogger(AopQueueController.class.getName()).log(Level.SEVERE, null, ex);
-        }        
+        }
     }
 
     public void readQueue() {
@@ -147,16 +214,16 @@ public class AopQueueController {
     }
 
     public void updateQueue() throws UVException {
-        
+
         rb.setProperty("queueId", queueItem.getId());
         rb.setProperty("runLevel", queueItem.getRunLevel());
-        
+
         try {
-            rb.callMethod("postAopQueueUpdateStatus");
-            errObj = new ErrorObject(rb.getProperty("svrStatus"),rb.getProperty("svrCtrlCode"),rb.getProperty("svrMessage"));
+            rb.callMethod("putAffiliateQueue");
+            errObj = new ErrorObject(rb.getProperty("svrStatus"), rb.getProperty("svrCtrlCode"), rb.getProperty("svrMessage"));
             if (-1 == errObj.getSvrStatus()) {
                 throw new UVException(errObj);
-            }            
+            }
         } catch (RbException ex) {
             Logger.getLogger(AopQueueController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -164,6 +231,20 @@ public class AopQueueController {
 
     public void deleteQueue() {
 
+    }
+
+    /**
+     * @return the monitorRunning
+     */
+    public boolean isMonitorRunning() {
+        return monitorRunning;
+    }
+
+    /**
+     * @param monitorRunning the monitorRunning to set
+     */
+    public void setMonitorRunning(boolean monitorRunning) {
+        this.monitorRunning = monitorRunning;
     }
 
 }

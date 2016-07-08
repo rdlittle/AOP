@@ -19,58 +19,54 @@
                 </span>
                 <h:form id="form">
                     <p:growl id="msg" />
+                    
+                    <p:outputLabel value="Monitor" style ="margin: 1.5em;"></p:outputLabel>
+                    <p:commandButton id="btnStartMonitor" value='#{aopQueueBean.running ? "Stop" : "Start"}' 
+                                     style="margin-bottom: 1.5em;"
+                                     actionListener="#{aopQueueBean.onBtnStartQueue()}" update="form">
+                    </p:commandButton>
+                    
+                                     
                     <p:dataTable id="aopQueue" var="queueItem" value="#{aopQueueBean.queueList}" 
-                                 selection="#{aopQueueBean.selectedItems}" 
-                                 selectionMode="multiple"
+                                 editable="true" editMode="cell"
                                  rowKey="#{queueItem.fileName}" style="width: 98%; margin: auto;">
                         <p:column headerText="Vendor Master" width="8%">
-                            <h:outputText value="#{queueItem.affiliateMasterId}"/>
+                            <h:outputText value="#{queueItem.aggregatorId}"/>
                         </p:column>                    
                         <p:column headerText="Upload Date" style="text-align: center;">
-                            <h:outputText value="#{queueItem.uploadDate}"/>
+                            <h:outputText value="#{queueItem.createDate}"/>
                         </p:column>
                         <p:column headerText="Upload Time" style="text-align: center;">
-                            <h:outputText value="#{queueItem.uploadTime}"/>
+                            <h:outputText value="#{queueItem.createTime}"/>
                         </p:column>                    
                         <p:column headerText="User">
                             <h:outputText value="#{queueItem.userName}"/>
                         </p:column>
-                        <p:column headerText="Status" width="5%" >
+                        
+                        <p:ajax event="cellEdit" listener="#{aopQueueBean.onCellEdit}" update="runLevel"/>
+                        <p:column id="runLevel" headerText="Status" style="width: 8%;">
                             <p:cellEditor>
                                 <f:facet name="output">
-                                    <h:outputText value="#{queueItem.queueStatusName}"/>
+                                    <h:outputText value="#{aopQueueBean.getRunLevelName(queueItem.runLevel)}"/>
                                 </f:facet>
                                 <f:facet name="input">
-                                    <p:selectOneMenu value="#{queueItem.status}" id="statusSelector">
-                                        <f:selectItem itemValue="0" itemLabel="Requeued"/>
-                                        <f:selectItem itemValue="6" itemLabel="Deleting"/>
-                                        <f:selectItem itemValue="9" itemLabel="Hold"/>
+                                    <p:selectOneMenu value="#{queueItem.runLevel}" id="runLevelSelector" disabled="#{queueItem.disabled}">
+                                        <f:selectItems value="#{aopQueueBean.runLevels}" var="rl"
+                                                       itemValue="#{rl.level}"
+                                                       itemLabel="#{rl.name}">
+                                        </f:selectItems>
                                     </p:selectOneMenu>
                                 </f:facet>
                             </p:cellEditor>
                         </p:column>
-                        <p:column headerText="Lines" width="5%">
-                            <h:outputText value="#{queueItem.lineCount}"/>
-                        </p:column> 
-                        <p:column headerText="Orders" width="5%">
-                            <h:outputText value="#{queueItem.orderCount}"/>
-                        </p:column> 
-                        <p:column headerText="Errors" width="5%">
-                            <h:outputText id="errorCount" value="#{queueItem.errors}"/>
-                        </p:column> 
 
                         <p:column headerText="Report Name" width="25%">
                             <h:outputText value="#{queueItem.fileName}"/>
                         </p:column>      
-                        <p:ajax event="rowSelect" listener="#{aopQueueBean.onRowSelect(se)}" update="@form:processButton"/>
-                        <p:ajax event="rowUnselect" listener="#{aopQueueBean.onRowUnselect(se)}" update="@form:processButton"/>
-
+                        
                     </p:dataTable>
-                    <p:poll id="poll" interval="10" listener="#{aopQueueBean.rePoll}" update="@form" autoStart="true" process="@this"/>
-                    <p:commandButton id='processButton' 
-                                     value="Process selected items"
-                                     disabled="#{!aopQueueBean.selected}"
-                                     actionListener="#{aopQueueBean.onClickProcess()}"/>
+                    <p:poll id="poll" interval="10" listener="#{aopQueueBean.rePoll}" update="form" autoStart="true" process="@this"/>
+                    
                 </h:form>
             </ui:define>
         </ui:composition>

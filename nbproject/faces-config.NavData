@@ -1,6 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scene Scope="Project" version="2">
     <Scope Scope="Faces Configuration Only"/>
-    <Scope Scope="Project"/>
+    <Scope Scope="Project">
+        <Node id="affiliate/payments/paymentQueue.xhtml" x="400" y="150" zoom="true"/>
+        <Node id="fnbo/fnboTransEdit.xhtml" x="1400" y="300" zoom="true"/>
+        <Node id="affiliate/partners/affiliateMapping.xhtml" x="650" y="300" zoom="true"/>
+        <Node id="fnbo/fnboInquiryForm.xhtml" x="1150" y="150" zoom="true"/>
+        <Node id="affiliate/orders/aoForm.xhtml" x="650" y="750" zoom="true"/>
+        <Node id="testing/aoTestGroup.xhtml" x="650" y="150" zoom="true"/>
+        <Node id="affiliate/partners/campaignManager.xhtml" x="1400" y="150" zoom="true"/>
+        <Node id="testing/aoTestSourceDesc.xhtml" x="1150" y="600" zoom="true"/>
+        <Node id="affiliate/orders/aopQueue.xhtml" x="150" y="750" zoom="true"/>
+        <Node id="fnbo/fnboTrans.xhtml" x="400" y="300" zoom="true"/>
+        <Node id="affiliate/partners/networkForm.xhtml" x="900" y="150" zoom="true"/>
+        <Node id="affiliate/orders/processReport.xhtml" x="1150" y="300" zoom="true"/>
+        <Node id="testing/testingBatchSetupForm.xhtml" x="150" y="450" zoom="true"/>
+        <Node id="testing/unitTestSuiteForm.xhtml" x="650" y="900" zoom="true"/>
+        <Node id="fnbo/fnboArnEntry.xhtml" x="150" y="600" zoom="true"/>
+        <Node id="affiliate/orders/batchManagementInputForm.xhtml" x="900" y="300" zoom="true"/>
+        <Node id="affiliate/partners/storeForm.xhtml" x="900" y="750" zoom="true"/>
+        <Node id="affiliate/orders/errorListing.xhtml" x="400" y="900" zoom="true"/>
+        <Node id="affiliate/payments/checkSelector.xhtml" x="150" y="1050" zoom="true"/>
+        <Node id="affiliate/partners/masterForm.xhtml" x="1650" y="150" zoom="true"/>
+        <Node id="fnbo/fnboTransReprocess.xhtml" x="650" y="600" zoom="true"/>
+        <Node id="layout.xhtml" x="2150" y="150" zoom="true"/>
+        <Node id="menu.xhtml" x="1400" y="450" zoom="true"/>
+        <Node id="testing/testGroupSetup.xhtml" x="1900" y="300" zoom="true"/>
+        <Node id="testing/aopTestDataQueue.xhtml" x="1900" y="150" zoom="true"/>
+        <Node id="index.xhtml" x="150" y="900" zoom="true"/>
+        <Node id="fnbo/fnboTransReport.xhtml" x="1150" y="450" zoom="true"/>
+        <Node id="banner.xhtml" x="1650" y="300" zoom="true"/>
+        <Node id="affiliate/orders/aopUploader.xhtml" x="400" y="1050" zoom="true"/>
+        <Node id="testing/unitTestLog.xhtml" x="400" y="600" zoom="true"/>
+        <Node id="fnbo/cardHolder.xhtml" x="400" y="450" zoom="true"/>
+        <Node id="affiliate/orders/order.xhtml" x="400" y="750" zoom="true"/>
+        <Node id="testing/aoTestUnit.xhtml" x="650" y="450" zoom="true"/>
+        <Node id="affiliate/orders/orderDefer.xhtml" x="150" y="150" zoom="true"/>
+        <Node id="fnbo/fnboTransSearch.xhtml" x="150" y="1200" zoom="true"/>
+        <Node id="fnbo/fnboProcessing.xhtml" x="900" y="450" zoom="true"/>
+        <Node id="affiliate/partners/tieredCommission.xhtml" x="1650" y="450" zoom="true"/>
+        <Node id="login.xhtml" x="1400" y="600" zoom="true"/>
+        <Node id="affiliate/payments/checkReconFileUploader.xhtml" x="150" y="300" zoom="true"/>
+        <Node id="affiliate/orders/batchManager.xhtml" x="900" y="600" zoom="true"/>
+    </Scope>
     <Scope Scope="All Faces Configurations"/>
 </Scene>
