@@ -102,7 +102,7 @@ public class AffiliatePaymentBean {
             ctx.addMessage("msg", ex.toFacesMessage());
             Logger.getLogger(AffiliatePaymentBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return "/affiliate/orders/aopQueue?faces-redirect=true";
+        return "/affiliate/queue/aopQueue?faces-redirect=true";
     }
 
     /**

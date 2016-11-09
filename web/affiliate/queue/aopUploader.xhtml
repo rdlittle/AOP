@@ -9,7 +9,7 @@
         <ui:composition template="../../layout.xhtml">
             <ui:define name="content">
                 <f:metadata>
-                    <f:event type="preRenderView" listener='#{aopQueueBean.setQueueType("AO")}'/>
+                    <f:event type="preRenderView" listener='#{aopQueueBean.initQueue("AO")}'/>
                 </f:metadata>
                 <h:form id="form1" enctype="multipart/form-data">
                     <span style="width: 99%; text-align: center; margin: 2em auto;">
@@ -60,21 +60,13 @@
 
                     <h:inputHidden id="aggregatorId" value="#{aopQueueBean.affiliateMasterId}"/>
                     <p:panel style="width: 20%; margin: auto; margin-top: 3em; border-width: 0 0 0 0;">
-                        <p:commandButton value="Pre-run" ajax="false" action="#{aopQueueBean.onUpload}" style="margin-right: 2em;">
+                        <p:commandButton value="Submit" ajax="false" action="#{aopQueueBean.onUpload}" style="margin-right: 2em;">
                             <f:param name="runLevel" value="1"/>
                             <f:param name="vendor" value="#{affiliateMappingBean.affiliateMasterId}"/>
                             <f:param name="userId" value="#{aopUserBean.userName}"/>
                             <f:param name="queueType" value="AO"/>
                         </p:commandButton>
-
-                        <p:commandButton value="Live run" ajax="false" action="#{aopQueueBean.onUpload}">
-                            <f:param name="runLevel" value="2"/>
-                            <f:param name="vendor" value="#{affiliateMappingBean.affiliateMasterId}"/>
-                            <f:param name="userId" value="#{aopUserBean.userName}"/>
-                            <f:param name="queueType" value="AO"/>
-                        </p:commandButton>
                     </p:panel>
-
                 </h:form>
             </ui:define>
         </ui:composition>

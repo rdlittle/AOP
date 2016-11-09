@@ -10,7 +10,7 @@
 
         <ui:composition template="../layout.xhtml">
             <f:metadata>
-                <f:viewAction action="#{fnboBean.setQueueList()}" onPostback="false"/>
+                <f:event type="preRenderView" listener='#{aopQueueBean.initQueue("B")}'/>
             </f:metadata>
 
             <ui:define name="banner">
@@ -21,19 +21,18 @@
                 <span style="width: 99%; text-align: center; margin: 2em auto 3em auto;">
                     <h2>FNBO Processing</h2>
                 </span>
-                <h:form>
-                    <p:poll id="poll" interval="7" listener="#{fnboBean.onRepollQueue()}" update="@form" 
-                            autoStart="true" process="@this"/>
+                <h:form id="form">
+                    
                     <p:panel style="margin-left: 2em;">
-                        <p:commandButton id="processQueue" action="#{fnboBean.onProcessQueue()}"
-                                         disabled="#{fnboBean.running || !fnboBean.hasItems}"
-                                         value='#{fnboBean.btnProcLabel}'/>
-                        <p:dataTable id="table" value="#{fnboBean.queueList}" var="item">
+                        <p:commandButton id="processQueue" action="#{aopQueueBean.onClickProcess()}"
+                                         disabled="#{aopQueueBean.running || !aopQueueBean.hasItems}"
+                                         value='#{aopQueueBean.running ? "Stop" : "Start"}'/>
+                        <p:dataTable id="table" value="#{aopQueueBean.queueList}" var="item">
                             <f:facet name="header">
                                 <h:outputText value="Processing Queue"/>
                             </f:facet>
-                            <p:column headerText="Id">
-                                <h:outputText value="#{item.id}"/>
+                            <p:column headerText="File">
+                                <h:outputText value="#{item.fileName}"/>
                             </p:column>
                             <p:column headerText="Status" style="width: 8%;">
                                 <h:outputText value="#{item.runLevel}"/>
@@ -45,13 +44,13 @@
                                 <h:outputText value="#{item.createTime}"/>
                             </p:column>
                             <p:column headerText="Lines" style="width: 5%;">
-                                <h:outputText value="#{item.itemCount}"/>
+                                <h:outputText value="#{item.lineCount}"/>
                             </p:column>
                             <p:column headerText="Errors" style="width: 5%;">
                                 <h:outputText value="#{item.errorCount}"/>
                             </p:column>  
 
-                            <p:column headerText="Reports" style="text-align: left;" width="15%">
+                            <p:column headerText="Reports" style="text-align: left;" width="25%">
                                 <p:commandLink ajax="false" value="Success" action="#{aopQueueBean.downLoader.setDownload}" 
                                                style="line-height: 1em;" rendered="#{item.hasSuccessReport}">
                                     <f:setPropertyActionListener target="#{aopQueueBean.downLoader.fileName}" value="#{item.successReport}" />
@@ -66,6 +65,7 @@
 
                         </p:dataTable>
                     </p:panel>
+                    <p:poll id="poll" interval="15" listener="#{aopQueueBean.rePoll}" update="form" autoStart="true" process="form"/>
                 </h:form>
             </ui:define>
 

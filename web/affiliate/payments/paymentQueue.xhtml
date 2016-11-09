@@ -12,7 +12,7 @@
 
             <ui:define name="content">
                 <f:metadata>
-                    <f:event type="preRenderView" listener='#{aopQueueBean.setQueueType("C")}'/>
+                    <f:event type="preRenderView" listener='#{aopQueueBean.initQueue("C")}'/>
                 </f:metadata>
                 <span style="width: 99%; text-align: center; margin: 2em auto;">
                     <h2>Affiliate Payment Processing Queue</h2>

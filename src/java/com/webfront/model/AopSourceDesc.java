@@ -22,154 +22,154 @@ public class AopSourceDesc {
     private String countryCode;
     private String commissionType;
     private ArrayList<Customer> custList;
-    private String pcId;
-    private String pcType;
-    private String pcHome;
-    private String sponsor;
-    private String orderTotal;
-    private Date orderDate;
-    private String ibv;
-    private String cashback;
+//    private String pcId;
+//    private String pcType;
+//    private String pcHome;
+//    private String sponsor;
+//    private String orderTotal;
+//    private Date orderDate;
+//    private String ibv;
+//    private String cashback;
     private String vendorId;
     private String vendorDiv;
     private boolean newRecord;
     private boolean changed;
 
     public AopSourceDesc() {
-        pcId = "";
-        pcType = "";
-        pcHome = "";
-        orderTotal = "";
+//        pcId = "";
+//        pcType = "";
+//        pcHome = "";
+//        orderTotal = "";
         LocalDate ld = LocalDate.now();
         ld = ld.minusDays(30);
         Calendar cal = Calendar.getInstance(Locale.getDefault());
         cal.set(ld.getYear(), ld.getMonthValue(), ld.getDayOfMonth());
-        orderDate = cal.getTime();
-        ibv = "";
-        cashback = "";
-        sponsor = "";
+//        orderDate = cal.getTime();
+//        ibv = "";
+//        cashback = "";
+//        sponsor = "";
         custList = new ArrayList<>();
         changed = false;
         newRecord = true;
     }
     
-    /**
-     * @return the pcId
-     */
-    public String getPcId() {
-        return pcId;
-    }
-
-    /**
-     * @param pcId the pcId to set
-     */
-    public void setPcId(String pcId) {
-        this.pcId = pcId;
-    }
-
-    /**
-     * @return the pcType
-     */
-    public String getPcType() {
-        return pcType;
-    }
-
-    /**
-     * @param pcType the pcType to set
-     */
-    public void setPcType(String pcType) {
-        this.pcType = pcType;
-    }
-
-    /**
-     * @return the pcHome
-     */
-    public String getPcHome() {
-        return pcHome;
-    }
-
-    /**
-     * @param pcHome the pcHome to set
-     */
-    public void setPcHome(String pcHome) {
-        this.pcHome = pcHome;
-    }
-
-    /**
-     * @return the orderTotal
-     */
-    public String getOrderTotal() {
-        return orderTotal;
-    }
-
-    /**
-     * @param orderTotal the orderTotal to set
-     */
-    public void setOrderTotal(String orderTotal) {
-        this.orderTotal = orderTotal;
-    }
-
-    /**
-     * @return the orderDate
-     */
-    public Date getOrderDate() {
-        return orderDate;
-    }
-
-    
-    public String dateAsString() {
-        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yy");
-        return format.format(getOrderDate());
-    }
-    
-    /**
-     * @param orderDate the orderDate to set
-     */
-    public void setOrderDate(Date orderDate) {
-        this.orderDate = orderDate;
-    }
-
-    /**
-     * @return the ibv
-     */
-    public String getIbv() {
-        return ibv;
-    }
-
-    /**
-     * @param ibv the ibv to set
-     */
-    public void setIbv(String ibv) {
-        this.ibv = ibv;
-    }
-
-    /**
-     * @return the cashback
-     */
-    public String getCashback() {
-        return cashback;
-    }
-
-    /**
-     * @param cashback the cashback to set
-     */
-    public void setCashback(String cashback) {
-        this.cashback = cashback;
-    }
-
-    /**
-     * @return the sponsor
-     */
-    public String getSponsor() {
-        return sponsor;
-    }
-
-    /**
-     * @param sponsor the sponsor to set
-     */
-    public void setSponsor(String sponsor) {
-        this.sponsor = sponsor;
-    }
+//    /**
+//     * @return the pcId
+//     */
+//    public String getPcId() {
+//        return pcId;
+//    }
+//
+//    /**
+//     * @param pcId the pcId to set
+//     */
+//    public void setPcId(String pcId) {
+//        this.pcId = pcId;
+//    }
+//
+//    /**
+//     * @return the pcType
+//     */
+//    public String getPcType() {
+//        return pcType;
+//    }
+//
+//    /**
+//     * @param pcType the pcType to set
+//     */
+//    public void setPcType(String pcType) {
+//        this.pcType = pcType;
+//    }
+//
+//    /**
+//     * @return the pcHome
+//     */
+//    public String getPcHome() {
+//        return pcHome;
+//    }
+//
+//    /**
+//     * @param pcHome the pcHome to set
+//     */
+//    public void setPcHome(String pcHome) {
+//        this.pcHome = pcHome;
+//    }
+//
+//    /**
+//     * @return the orderTotal
+//     */
+//    public String getOrderTotal() {
+//        return orderTotal;
+//    }
+//
+//    /**
+//     * @param orderTotal the orderTotal to set
+//     */
+//    public void setOrderTotal(String orderTotal) {
+//        this.orderTotal = orderTotal;
+//    }
+//
+//    /**
+//     * @return the orderDate
+//     */
+//    public Date getOrderDate() {
+//        return orderDate;
+//    }
+//
+//    
+//    public String dateAsString() {
+//        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yy");
+//        return format.format(getOrderDate());
+//    }
+//    
+//    /**
+//     * @param orderDate the orderDate to set
+//     */
+//    public void setOrderDate(Date orderDate) {
+//        this.orderDate = orderDate;
+//    }
+//
+//    /**
+//     * @return the ibv
+//     */
+//    public String getIbv() {
+//        return ibv;
+//    }
+//
+//    /**
+//     * @param ibv the ibv to set
+//     */
+//    public void setIbv(String ibv) {
+//        this.ibv = ibv;
+//    }
+//
+//    /**
+//     * @return the cashback
+//     */
+//    public String getCashback() {
+//        return cashback;
+//    }
+//
+//    /**
+//     * @param cashback the cashback to set
+//     */
+//    public void setCashback(String cashback) {
+//        this.cashback = cashback;
+//    }
+//
+//    /**
+//     * @return the sponsor
+//     */
+//    public String getSponsor() {
+//        return sponsor;
+//    }
+//
+//    /**
+//     * @param sponsor the sponsor to set
+//     */
+//    public void setSponsor(String sponsor) {
+//        this.sponsor = sponsor;
+//    }
 
     /**
      * @return the userName

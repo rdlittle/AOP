@@ -12,7 +12,7 @@ import com.webfront.beans.AopQueueBean;
 import com.webfront.model.AopQueue;
 import com.webfront.model.ErrorObject;
 import com.webfront.model.Queue;
-import com.webfront.model.RunLevel;
+import com.webfront.model.QueueItem;
 import com.webfront.model.UVException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -33,6 +33,7 @@ public class AopQueueController {
     private boolean monitorRunning;
     protected boolean showAll;
     protected String userName;
+    private QueueItem queueType;
 
     public AopQueueController() {
         errObj = new ErrorObject();
@@ -245,6 +246,20 @@ public class AopQueueController {
      */
     public void setMonitorRunning(boolean monitorRunning) {
         this.monitorRunning = monitorRunning;
+    }
+
+    /**
+     * @return the queueType
+     */
+    public QueueItem getQueueType() {
+        return queueType;
+    }
+
+    /**
+     * @param queueType the queueType to set
+     */
+    public void setQueueType(QueueItem queueType) {
+        this.queueType = queueType;
     }
 
 }

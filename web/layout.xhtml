@@ -17,16 +17,11 @@
         <div id="top" class="banner">
             <ui:insert name="top">
                 <p:graphicImage url="/resources/images/ma-logo.png" />
+                <p:commandLink action="/styleSelector" value="Change Theme" 
+                               style="font-size: x-small; vertical-align: bottom; float: right;"/>
             </ui:insert>
         </div>
-        <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>
 
-        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false"
-                  appendTo="@(body)"
-                  resizable="false" showHeader="false">
-            <p:graphicImage value="/resources/images/ajax-loader.gif"/>
-        </p:dialog>
-        
         <div id="left">
             <h:form>
                 <p:tieredMenu>
@@ -42,9 +37,10 @@
                         <p:menuitem value="Batch listing" outcome="/affiliate/orders/batchManagementInputForm.xhtml"/>
                         <p:menuitem value="Error listing" outcome="/affiliate/orders/errorListing.xhtml"/>
                     </p:submenu>
-                    <p:submenu label="Order Processing">
-                        <p:menuitem value="Process a report" outcome="/affiliate/orders/aopUploader.xhtml"/>
-                        <p:menuitem value="Processing queue" outcome="/affiliate/orders/aopQueue.xhtml"/>
+                    <p:submenu label="Queue">
+                        <p:menuitem value="Process a report" outcome="/affiliate/queue/aopUploader.xhtml"/>
+                        <p:menuitem value="Processing queue" outcome="/affiliate/queue/aopQueue.xhtml?queueType=AO"/>
+                        <p:menuitem value="File Upload" outcome="/affiliate/queue/queueUploader.xhtml"/>
                     </p:submenu>   
                     <p:submenu label="Payment Processing">
                         <p:menuitem value="Check reconcilliation" outcome="/affiliate/payments/checkReconFileUploader.xhtml"/>                        
@@ -72,6 +68,7 @@
                         <p:menuitem value="Test Suite Entry" outcome="/testing/unitTestSuiteForm.xhtml"/>                        
                         <p:menuitem value="View Test Results" outcome="/testing/unitTestLog.xhtml"/>   
                     </p:submenu>
+                    <p:menuitem value="#{aopUserBean.loggedIn ? 'Logout' : 'Login'}" outcome="/login.xhtml"/>   
                 </p:tieredMenu>
             </h:form>
         </div>

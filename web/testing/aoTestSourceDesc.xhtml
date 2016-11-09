@@ -81,7 +81,7 @@
                                                    itemLabel="#{vendor.value}"
                                                    itemValue="#{vendor.key}">
                                     </f:selectItems>
-                                    <p:ajax listener="#{aopTestBean.onChangeVendor()}" update="@form"/>
+                                    <p:ajax listener="#{aopTestBean.onChangeVendor()}" update="vendorDiv"/>
                                 </p:selectOneMenu>
                             </p:column>
                         </p:row>
@@ -96,6 +96,7 @@
                                     <f:selectItems value="#{aopTestBean.storeList}" var="stores" 
                                                    itemLabel="#{stores.value}" itemValue="#{stores.key}">
                                     </f:selectItems>
+                                    <p:ajax listener="#{aopTestBean.onSelectVendorDiv()}" update="storeId"/>
                                 </p:selectOneMenu>
                             </p:column>
                         </p:row>
@@ -132,10 +133,10 @@
                             editable="true"
                             editMode="cell">
                             <p:ajax event="cellEdit" listener="#{aopTestBean.onCellEdit}" update="data" />
-                            <p:ajax event="rowSelect" listener="#{aopTestBean.onRowSelect(event)}" update="deleteButton"/>
-                            <p:ajax event="rowSelectCheckbox" listener="#{aopTestBean.onRowSelect(event)}" update="deleteButton"/>
-                            <p:ajax event="rowUnselect" listener="#{aopTestBean.onRowUnselect(event)}" update="deleteButton"/>
-                            <p:ajax event="rowUnselectCheckbox" listener="#{aopTestBean.onRowUnselect(event)}" update="deleteButton"/>                            
+                            <p:ajax event="rowSelect" listener="#{aopTestBean.onRowSelect()}" update="deleteButton"/>
+                            <p:ajax event="rowSelectCheckbox" listener="#{aopTestBean.onRowSelect()}" update="deleteButton"/>
+                            <p:ajax event="rowUnselect" listener="#{aopTestBean.onRowUnselect()}" update="deleteButton"/>
+                            <p:ajax event="rowUnselectCheckbox" listener="#{aopTestBean.onRowUnselect()}" update="deleteButton"/>                            
                             <p:column selectionMode="multiple" style="width:16px;text-align:center">
                             </p:column>
                             <p:column id='pcId' headerText="Paying ID" >
@@ -166,19 +167,32 @@
                                 </h:outputText>
                             </p:column>  
                             <f:facet name="footer">
-                                <p:commandButton id="deleteButton" value="Delete selected" action="#{aopTestBean.deleteCustFromSourceDesc}" 
-                                                 disabled = "#{aopTestBean.selectedItems.size()==0}"
-                                                 update=":form:data"/>
-                                <h:outputText value="PC ID" style="margin-right: 2em;"/>
-                                <h:inputText id="newCustId" value="#{aopTestBean.sourceDesc.pcId}" style="margin-right: 2em;"/>
-                                <h:outputText value="Order Total" style="margin-right: 2em;"/>
-                                <h:inputText id="newOrderValue" value="#{aopTestBean.sourceDesc.orderTotal}" style="margin-right: 2em;"/>
-                                <h:outputText value="Order Date" style="margin-right: 2em;"/>
-                                <p:calendar id="newOrderDate" 
-                                            value="#{aopTestBean.sourceDesc.orderDate}"
-                                            style="margin-right: 2em;">
-                                    <f:convertDateTime dateStyle="short"/>
-                                </p:calendar>
+                                <p:column>
+                                    <p:commandButton id="deleteButton" value="X" action="#{aopTestBean.deleteCustFromSourceDesc}" 
+                                                     disabled = "#{aopTestBean.selectedItems.size()==0}"
+                                                     update=":form:data"/>
+                                </p:column>
+                                <p:column>
+                                    <h:outputText value="PC Id" style="margin-right: 10px; margin-left: 10px;"/>
+                                </p:column>
+                                <p:column>
+                                    <h:inputText id="newCustId" value="#{aopTestBean.selectedCustomer.pcId}" style="margin-right: 1em;"/>
+                                </p:column>
+                                <p:column>
+                                    <h:outputText value="Order Value" style="margin-right: 10px;"/>
+                                </p:column>
+                                <p:column>
+                                    <h:inputText id="newOrderValue" value="#{aopTestBean.selectedCustomer.orderTotal}" style="margin-right: 1em;"/>
+                                </p:column>
+                                <p:column>
+                                    <h:outputText value="Order Date" style="margin-right: 10px;"/>
+                                </p:column>
+                                <p:column width="50px">
+                                    <p:calendar id="newOrderDate" 
+                                                value="#{aopTestBean.selectedCustomer.orderDate}">
+                                        <f:convertDateTime dateStyle="short"/>
+                                    </p:calendar>
+                                </p:column>
                                 <p:commandButton value="Add item" action="#{aopTestBean.addCustToSourceDesc}" update="@form,msgs"/>
                             </f:facet>
                         </p:dataTable>

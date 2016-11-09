@@ -37,8 +37,6 @@ import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.primefaces.event.CellEditEvent;
-import org.primefaces.event.SelectEvent;
-import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.DualListModel;
 
 /**
@@ -48,6 +46,20 @@ import org.primefaces.model.DualListModel;
 @Named("aopTestBean")
 @SessionScoped
 public class AopTestingBean implements Serializable {
+
+    /**
+     * @return the selectedCustomer
+     */
+    public Customer getSelectedCustomer() {
+        return selectedCustomer;
+    }
+
+    /**
+     * @param selectedCustomer the selectedCustomer to set
+     */
+    public void setSelectedCustomer(Customer selectedCustomer) {
+        this.selectedCustomer = selectedCustomer;
+    }
 
     private final RedObject rbo;
     private AopSourceDesc sourceDesc;
@@ -96,6 +108,7 @@ public class AopTestingBean implements Serializable {
     private boolean rowSelected;
     private AoTestDataUnit selectedDataUnit;
     private AoTestDataGroup selectedTestDataGroup;
+    private Customer selectedCustomer;
 
     public AopTestingBean() {
         groupId = "";
@@ -134,6 +147,7 @@ public class AopTestingBean implements Serializable {
         utLogName = "";
         utLogDate = "";
         utLogTime = "";
+        selectedCustomer = new Customer();
     }
 
     public void addUnit() {
@@ -201,7 +215,7 @@ public class AopTestingBean implements Serializable {
             if (commType != null && commTypeMap.containsKey(commType)) {
                 rbo.setProperty("commissionType", commTypeMap.get(commType));
             } else {
-                rbo.setProperty("commissionType", "");
+                rbo.setProperty("commissionType", commType);
             }
             rbo.callMethod("getAopSourceDesc");
             errStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
@@ -275,9 +289,9 @@ public class AopTestingBean implements Serializable {
         rbo.setProperty("userName", getUserName());
         rbo.setProperty("countryCode", getCountryCode());
         rbo.setProperty("commissionType", commTypeMap.get(getCommissionType()));
-        rbo.setProperty("pcId", sourceDesc.getPcId());
-        rbo.setProperty("orderTotal", sourceDesc.getOrderTotal());
-        rbo.setProperty("orderDate", sourceDesc.dateAsString());
+        rbo.setProperty("pcId", selectedCustomer.getPcId());
+        rbo.setProperty("orderTotal", selectedCustomer.getOrderTotal());
+        rbo.setProperty("orderDate", selectedCustomer.dateAsString());
         rbo.setProperty("pcHome", "");
         rbo.setProperty("pcType", "");
         rbo.setProperty("exchRate", "");
@@ -292,8 +306,8 @@ public class AopTestingBean implements Serializable {
                 JSFHelper.sendFacesMessage(errCode + ": " + errMessage, "Error");
             } else {
                 JSFHelper.sendFacesMessage("Customer sucessfully added.");
-                sourceDesc.setPcId("");
-                sourceDesc.setOrderTotal("");
+                selectedCustomer.setPcId("");
+                selectedCustomer.setOrderTotal("");
                 readSourceDesc(null);
             }
         } catch (RbException ex) {
@@ -307,16 +321,28 @@ public class AopTestingBean implements Serializable {
     public void deleteCustFromSourceDesc() {
         rbo.setProperty("userName", getUserName());
         rbo.setProperty("countryCode", getCountryCode());
-        rbo.setProperty("commissionType", commTypeMap.get(getCommissionType()));
+        rbo.setProperty("commissionType", getCommissionType());
         UniDynArray pcArray = new UniDynArray();
+        int val=1;
+        int deleteFlag;
+        int includeFlag;
+        for(Customer c : sourceDesc.getCustList()) {
+            deleteFlag = 0;
+            includeFlag = 1;
+            if(selectedItems.contains(c)) {
+                deleteFlag = 1;
+            }
+            pcArray.insert(1, val, c.getPcId());
+            pcArray.insert(2, val++, deleteFlag);
+        }
         selectedItems.stream().forEach((cust) -> {
             pcArray.insert(1, -1, cust.getPcId());
         });
-        rbo.setProperty("pcId", pcArray);
-        rbo.setProperty("isRemoving", "1");
+        rbo.setProperty("pcId", pcArray.extract(1));
+        rbo.setProperty("isRemoving", pcArray.extract(2));
 
         try {
-            rbo.callMethod("setAopSourceDesc");
+            rbo.callMethod("putAopSourceDesc");
             errStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
             errCode = rbo.getProperty("svrCtrlCode");
             errMessage = rbo.getProperty("svrMessage");
@@ -724,6 +750,15 @@ public class AopTestingBean implements Serializable {
         }
     }
 
+    public void onSelectVendorDiv() {
+        for (SelectItem se : storeList) {
+            if (se.getLabel().equalsIgnoreCase(vendorDiv)) {
+                storeId = se.getKey();
+                break;
+            }
+        }
+    }
+
     public void onAddUnit() {
 
     }
@@ -772,7 +807,7 @@ public class AopTestingBean implements Serializable {
         rbo.setProperty("siteType", "");
         rbo.setProperty("langCode", "");
         rbo.setProperty("groupId", groupId);
-        rbo.setProperty("commissionType", commTypeMap.get(commissionType));
+        rbo.setProperty("commissionType", commissionType);
         rbo.setProperty("userName", userName);
         try {
             rbo.callMethod("setAopTestData");
@@ -853,7 +888,9 @@ public class AopTestingBean implements Serializable {
      * @param commType the commType to set
      */
     public void setCommissionType(String commType) {
-        this.commissionType = commType;
+        if (commType != null) {
+            this.commissionType = commType.substring(0, 1).toUpperCase();
+        }
     }
 
     /**
@@ -955,24 +992,20 @@ public class AopTestingBean implements Serializable {
         this.selectedItems = selectedItems;
     }
 
-    public void onRowSelect(SelectEvent event) {
-        String id = event.getComponent().getId();
-        if (id.equals("baseCountry")) {
-            countryCode = event.getObject().toString();
-            readSourceDesc(null);
-        } else {
-            setRowSelected(selectedUnitList.isEmpty());
-        }
+    public void onRowSelect() {
+        setRowSelected(selectedUnitList.isEmpty());
     }
 
-    public void onRowUnselect(UnselectEvent event) {
-        String id = event.getComponent().getId();
-        if (id.equals("baseCountry")) {
-            countryCode = "";
-            readSourceDesc(null);
-        } else {
-            setRowSelected(selectedUnitList.isEmpty());
-        }
+    public void onRowUnselect() {
+        setRowSelected(selectedUnitList.isEmpty());
+    }
+
+    public void onCustRowSelect() {
+        setRowSelected(selectedUnitList.isEmpty());
+    }
+
+    public void onCustRowUnselect() {
+        setRowSelected(selectedUnitList.isEmpty());
     }
 
     /**

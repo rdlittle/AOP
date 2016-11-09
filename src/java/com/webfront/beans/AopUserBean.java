@@ -36,6 +36,13 @@ public class AopUserBean implements Serializable {
         loggedIn = false;
         roles = new ArrayList<>();
     }
+    
+    public void invalidate() {
+        userName = "";
+        password = "";
+        loggedIn = false;
+        roles.clear();
+    }
 
     public String doLogin() {
         RedObject rbo = new RedObject("WDE", "AOP:Utils");

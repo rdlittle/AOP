@@ -25,7 +25,7 @@ import org.primefaces.model.UploadedFile;
 public class UploadBean {
 
     private UploadedFile file;
-    private final String uploadDir = "/usr/local/dmcdev/AOP.UPLOAD/";
+    private final String uploadDir = "/usr/local/dmcdev/REPORT.QUEUE/";
 
     public UploadedFile getFile() {
         return file;

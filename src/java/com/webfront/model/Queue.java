@@ -19,6 +19,8 @@ public abstract class Queue {
     private String userName;
     private String lineCount;
     private String queueType;
+    private String queueGroup;
+    private String queueDesc;
     private String errorReport;
     private String successReport;
     private boolean hasErrorReport;
@@ -34,6 +36,8 @@ public abstract class Queue {
         userName = "";
         lineCount = "";
         queueType = "";
+        queueGroup = "";
+        queueDesc = "";
         hasErrorReport = false;
         hasSuccessReport = false;
     }
@@ -200,6 +204,34 @@ public abstract class Queue {
     public boolean getHasSuccessReport() {
         hasSuccessReport = !successReport.isEmpty();
         return hasSuccessReport;
+    }
+
+    /**
+     * @return the queueGroup
+     */
+    public String getQueueGroup() {
+        return queueGroup;
+    }
+
+    /**
+     * @param queueGroup the queueGroup to set
+     */
+    public void setQueueGroup(String queueGroup) {
+        this.queueGroup = queueGroup;
+    }
+
+    /**
+     * @return the queueDesc
+     */
+    public String getQueueDesc() {
+        return queueDesc;
+    }
+
+    /**
+     * @param queueDesc the queueDesc to set
+     */
+    public void setQueueDesc(String queueDesc) {
+        this.queueDesc = queueDesc;
     }
     
 }
