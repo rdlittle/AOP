@@ -30,39 +30,48 @@
                     </p:commandButton> 
 
                     <h:outputLabel value="Show all" style="margin-left: 1.5em; margin-right: 1.5em;"/>
-                    <p:selectBooleanCheckbox id = "showAll" value="#{aopQueueBean.showAll}"  disabled="#{!aopQueueBean.admin}">
+                    <p:selectBooleanCheckbox id = "showAll" value="#{aopQueueBean.showAll}" disabled="#{!aopQueueBean.admin}">
                         <p:ajax listener="#{aopQueueBean.onClickShowAll}" process="@this" update="aopQueue"/>
                     </p:selectBooleanCheckbox>
 
                     <p:dataTable id="aopQueue" var="queueItem" value="#{aopQueueBean.queueList}" 
                                  editable="true"
                                  editMode="cell"
+                                 rows="15"
+                                 paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,15,20"
                                  style="width: 99%; margin: auto;">
-
-                        <p:column headerText="Aggregator">
-                            <h:outputText value="#{queueItem.aggregatorId}"/>
-                        </p:column>
-                        <p:column headerText="Name">
-                            <h:outputText value="#{queueItem.aggregatorName}"/>
-                        </p:column>
+                        
                         <p:column headerText="Report">
                             <h:outputText value="#{queueItem.fileName}"/>
                         </p:column>
-                        <p:column headerText="Upload Date">
-                            <h:outputText value="#{queueItem.createDate}"/>
-                        </p:column>
-                        <p:column headerText="Upload Time">
-                            <h:outputText value="#{queueItem.createTime}"/>
-                        </p:column>                    
-                        <p:column headerText="User">
+                        
+                        <p:column headerText="User" style="width: 4%;">
                             <h:outputText value="#{queueItem.userName}"/>
                         </p:column>
-
+                        
+                        <p:column headerText="Date" style="width: 4%;">
+                            <h:outputText value="#{queueItem.createDate}"/>
+                        </p:column>
+                        <p:column headerText="Time" style="width: 4%;">
+                            <h:outputText value="#{queueItem.createTime}"/>
+                        </p:column>  
+                        
+                        
+                        <p:column headerText="Start" style="width: 4%;">
+                            <h:outputText value="#{queueItem.startTime}"/>
+                        </p:column>                        
+                        
+                        <p:column headerText="End" style="width: 4%;">
+                            <h:outputText value="#{queueItem.endTime}"/>
+                        </p:column>                        
+                        
                         <p:ajax event="cellEdit" listener="#{aopQueueBean.onCellEdit}" update="runLevel"/>
-                        <p:column id="runLevel" headerText="Status">
+                        <p:column id="runLevel" headerText="Status" style="width: 8%;">
                             <p:cellEditor>
                                 <f:facet name="output">
-                                    <h:outputText value="#{aopQueueBean.getRunLevelName(queueItem.runLevel)}"/>
+                                    <h:outputText value="#{aopQueueBean.getRunLevelName(queueItem.runLevel)}" style="width: 6%;"/>
                                 </f:facet>
                                 <f:facet name="input">
                                     <p:selectOneMenu value="#{queueItem.runLevel}" id="runLevelSelector" disabled="#{queueItem.disabled}">
@@ -75,31 +84,19 @@
                             </p:cellEditor>
                         </p:column>
 
-                        <p:column headerText="Lines">
-                            <h:outputText value="#{queueItem.lineCount}"/>
+                        <p:column headerText="Lines" style="width: 4%;">
+                            <h:outputText value="#{queueItem.lineCount}" style="width: 4%;"/>
                         </p:column> 
-                        <p:column headerText="Orders">
-                            <h:outputText value="#{queueItem.orderCount}"/>
+ 
+                        <p:column headerText="Errors" style="width: 4%;">
+                            <h:commandLink action="#{aopQueueBean.onGetErrorListing()}" value="#{queueItem.errorCount}" style="width: 4%;">
+                                <f:param name="aopQueueId" value="#{queueItem.id}"/>
+                            </h:commandLink>
                         </p:column> 
-                        <p:column headerText="Errors">
-                            <h:outputText id="errorCount" value="#{queueItem.errorCount}"/>
-                        </p:column> 
-
-                        <p:column headerText="Success Report">
-                            <p:commandLink ajax="false" value="Success" action="#{aopQueueBean.downLoader.setDownload}" 
-                                           style="margin-right: 1em;" rendered="#{queueItem.hasSuccessReport}">
-                                <f:setPropertyActionListener target="#{aopQueueBean.downLoader.fileName}" value="#{queueItem.successReport}" />
-                                <p:fileDownload value="#{aopQueueBean.downLoader.content}"/>
-                            </p:commandLink>
+                        
+                        <p:column headerText="Orders" style="width: 4%;">
+                            <h:outputText value="#{queueItem.orderCount}" style="width: 4%;"/>
                         </p:column>
-                        <p:column headerText="Error Report">
-                            <p:commandLink ajax="false" value="Errors" action="#{aopQueueBean.downLoader.setDownload}"
-                                           rendered="#{queueItem.hasErrorReport}">
-                                <f:setPropertyActionListener target="#{aopQueueBean.downLoader.fileName}" value="#{queueItem.errorReport}" />
-                                <p:fileDownload value="#{aopQueueBean.downLoader.content}"/>
-                            </p:commandLink>
-                        </p:column>                        
-
                     </p:dataTable>
                     <p:poll id="poll" interval="15" listener="#{aopQueueBean.rePoll}" update="form" autoStart="true" process="form"/>
                 </h:form>

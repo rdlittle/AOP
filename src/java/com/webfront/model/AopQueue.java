@@ -5,8 +5,6 @@
  */
 package com.webfront.model;
 
-import java.util.ArrayList;
-
 /**
  *
  * @author rlittle
@@ -21,10 +19,13 @@ public class AopQueue extends Queue {
     private String checkAmount;
     private String checkDate;
     private boolean disabled;
-    private ArrayList<String> completedLevels;
+    private String startDate;
+    private String startTime;
+    private String endDate;
+    private String endTime;
+    private String completionStatus;
 
     public AopQueue() {
-        completedLevels = new ArrayList<>();
     }
 
     /**
@@ -140,17 +141,73 @@ public class AopQueue extends Queue {
     }
 
     /**
-     * @return the completedLevels
+     * @return the startDate
      */
-    public ArrayList<String> getCompletedLevels() {
-        return completedLevels;
+    public String getStartDate() {
+        return startDate;
     }
 
     /**
-     * @param completedLevels the completedLevels to set
+     * @param startDate the startDate to set
      */
-    public void setCompletedLevels(ArrayList<String> completedLevels) {
-        this.completedLevels = completedLevels;
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    /**
+     * @return the startTime
+     */
+    public String getStartTime() {
+        return startTime;
+    }
+
+    /**
+     * @param startTime the startTime to set
+     */
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    /**
+     * @return the endDate
+     */
+    public String getEndDate() {
+        return endDate;
+    }
+
+    /**
+     * @param endDate the endDate to set
+     */
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
+    /**
+     * @return the endTime
+     */
+    public String getEndTime() {
+        return endTime;
+    }
+
+    /**
+     * @param endTime the endTime to set
+     */
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
+    /**
+     * @return the completionStatus
+     */
+    public String getCompletionStatus() {
+        return completionStatus;
+    }
+
+    /**
+     * @param completionStatus the completionStatus to set
+     */
+    public void setCompletionStatus(String completionStatus) {
+        this.completionStatus = completionStatus;
     }
 
 }

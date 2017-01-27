@@ -6,6 +6,7 @@
 package com.webfront.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  *
@@ -14,18 +15,23 @@ import java.util.ArrayList;
 public class AffiliateMapping extends Mapping {
 
     private String id;
+    private String aggregatorId;
+    private String fileType;
     private String fieldSeparator;
     private boolean hasHeader;
     private String dataStartRow;
     private boolean fieldSaved;
-    private ArrayList<Mapping> subFields;
-    private String fileType;
+    private int fieldCount;
+    private ArrayList<Mapping> fields;
+    private HashMap<String,Mapping> subFields;
+    
 
     public AffiliateMapping() {
         id = "";
-        subFields = new ArrayList<>();
         dataStartRow = "0";
         fieldSaved = false;
+        fields = new ArrayList<>();
+        subFields = new HashMap<>();
     }
 
     /**
@@ -87,15 +93,15 @@ public class AffiliateMapping extends Mapping {
     /**
      * @return the subFields
      */
-    public ArrayList<Mapping> getSubFields() {
-        return subFields;
+    public ArrayList<Mapping> getFields() {
+        return fields;
     }
 
     /**
-     * @param subFields the subFields to set
+     * @param fields the subFields to set
      */
-    public void setSubFields(ArrayList<Mapping> subFields) {
-        this.subFields = subFields;
+    public void setFields(ArrayList<Mapping> fields) {
+        this.fields = fields;
     }
 
     /**
@@ -124,6 +130,41 @@ public class AffiliateMapping extends Mapping {
      */
     public void setFileType(String fileType) {
         this.fileType = fileType;
+    }
+
+    /**
+     * @return the aggregatorId
+     */
+    public String getAggregatorId() {
+        return aggregatorId;
+    }
+
+    /**
+     * @param aggregatorId the aggregatorId to set
+     */
+    public void setAggregatorId(String aggregatorId) {
+        this.aggregatorId = aggregatorId;
+    }
+
+    /**
+     * @return the fieldCount
+     */
+    public int getFieldCount() {
+        return fieldCount;
+    }
+
+    /**
+     * @param fieldCount the fieldCount to set
+     */
+    public void setFieldCount(int fieldCount) {
+        this.fieldCount = fieldCount;
+    }
+
+    /**
+     * @return the subFields
+     */
+    public HashMap<String,Mapping> getSubFields() {
+        return subFields;
     }
 
 }

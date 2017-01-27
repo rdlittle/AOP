@@ -1,0 +1,225 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../layout.xhtml">
+
+            <ui:define name="content">
+                <p:panel style="width: 50%; margin: auto; padding: auto; text-align: center; border-color: white;">
+                    <h:outputText style="font-size: x-large; text-align: center;" value="Control-M Program Request"/>
+                </p:panel>
+                <h:form id="form">
+                    <p:panelGrid style="width: 99%; margin: auto;">
+                        <p:row>
+                            <p:column style="width: 15%;">
+                                <h:outputText value="Project manager"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="projectManager" value="#{monitorRequestBean.projectManager}" style="width: 100%;"/>
+                            </p:column>                        
+                            <p:column style="width: 15%;">
+                                <h:outputText value="Developer"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="developer" value="#{monitorRequestBean.developer}" style="width: 100%;"/>
+                            </p:column>     
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Start date"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="startDate" value="#{monitorRequestBean.startDate}"/>
+                            </p:column>                        
+                            <p:column>
+                                <h:outputText value="Program name"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="progName" value="#{monitorRequestBean.progName}" style="width: 100%;"/>
+                            </p:column>                                
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Program function"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="progFunction" value="#{monitorRequestBean.progFunction}" style="width: 100%;"/>
+                            </p:column>                        
+                            <p:column>
+                                <h:outputText value="Dependencies"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputTextarea id="depencencies" style="width: 100%;"/>
+                            </p:column> 
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Files updated"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputTextarea id="filesUpdated" style="width: 100%;"/>
+                            </p:column>                        
+                            <p:column>
+                                <h:outputText value="Perform/Execute statements"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputTextarea id="performExecute" style="width: 100%;"/>
+                            </p:column>                         
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Subroutines called"/>
+                            </p:column>
+                            <p:column>
+                                <p:dataTable id="calledSubs" value="#{monitorRequestBean.calledPrograms}" var="sub" editable="true">
+                                    <p:ajax event="rowEdit" listener="#{monitorRequestBean.onSubEdit}"/>
+                                    <f:facet name="header">
+                                        <p:outputPanel styleClass="container">
+                                            <p:commandButton id="addSub" value="+" style="font-size: xx-small;" 
+                                                             ajax="true" action="#{monitorRequestBean.addSub()}" update="calledSubs"/>
+                                        </p:outputPanel>
+                                    </f:facet>
+                                    <p:column headerText="Name" style="width: 40%; padding: 0px; margin: 0px;">
+                                        <p:cellEditor>
+                                            <f:facet name="output">
+                                                <h:outputText value="#{sub.name}" style="width: 85%; padding: 0px;"/>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <h:inputText value="#{sub.name}" style="width: 85%; padding: 0px;"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column headerText="Description">
+                                        <p:cellEditor>
+                                            <f:facet name="output">
+                                                <h:outputText value="#{sub.description}"/>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <h:inputText value="#{sub.description}"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="width: 2%;">
+                                        <p:rowEditor/>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:column>                        
+                            <p:column>
+                                <h:outputText value="Phantoms"/>
+                            </p:column>
+                            <p:column>
+                                <p:dataTable id="phantoms" value="#{monitorRequestBean.phantoms}" var="phantom" editable="true">
+                                    <p:ajax event="rowEdit" listener="#{monitorRequestBean.onPhantomEdit}"/>
+                                    <f:facet name="header">
+                                        <p:outputPanel styleClass="container">
+                                            <p:commandButton id="addPhantom" value="+" style="font-size: xx-small;" 
+                                                             actionListener="#{monitorRequestBean.addPhantom()}" update="phantoms"/>
+                                        </p:outputPanel>
+                                    </f:facet>   
+                                    <p:column headerText="Name">
+                                        <p:cellEditor>
+                                            <f:facet name="output">
+                                                <h:outputText value="#{phantom.name}" style="width: 85%; padding: 0px;"/>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <h:inputText value="#{phantom.name}" style="width: 85%; padding: 0px;"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column headerText="Description">
+                                        <p:cellEditor>
+                                            <f:facet name="output">
+                                                <h:outputText value="#{phantom.description}" style="width: 85%; padding: 0px;"/>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <h:inputText value="#{phantom.description}" style="width: 85%; padding: 0px;"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>  
+                                    <p:column style="width: 2%;">
+                                        <p:rowEditor/>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:column>                        
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Error conditions"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputTextarea id="errorConditions" style="width: 100%;"/>
+                            </p:column>                        
+                            <p:column>
+                                <h:outputText value="Error resolution"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputTextarea id="errorResolution" style="width: 100%;"/>
+                            </p:column>                           
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Program run length"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="runTime"/>
+                            </p:column>                        
+                            <p:column>
+                                <h:outputText value="Program run days"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="runDays"/>
+                            </p:column>  
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Start time"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="startTime"/>
+                            </p:column>                        
+                            <p:column>
+                                <h:outputText value="Frequency"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="runFrequency"/>
+                            </p:column>                        
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Restart recovery procedure"/>
+                            </p:column>
+                            <p:column colspan="3">
+                                <p:inputTextarea id="recoveryProcedure" style="width: 100%;"/>
+                            </p:column>                        
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Completion notifications to"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="completionNotification" style="width: 100%;"/>
+                            </p:column>                                                
+                            <p:column>
+                                <h:outputText value="Error notifications to"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="errorNotification" style="width: 100%;"/>
+                            </p:column>                        
+                        </p:row>
+                    </p:panelGrid>
+                    <p:panel style="width: 90%; margin: auto; text-align: right; border-color: white;">
+                        <p:commandButton action="#{monitorRequestBean.getReport()}" value="Submit"/>
+                    </p:panel>
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

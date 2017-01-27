@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../../layout.xhtml">
+
+            <ui:define name="content">
+                <h:form id="form">
+                    <p:panel id="panel">
+                        <p:commandLink ajax="false" action="aopQueue.xhtml" value="Return to list"/>&nbsp;
+                        <p:commandButton id="saveButton" action="#{aopQueueBean.onSaveReport()}"
+                                         value="Save" disabled="#{!aopQueueBean.changed}"
+                                         update="@this" style="float: right;"/>
+                        <p:messages id="msg"/>
+                    </p:panel>
+
+                    <p:dataTable id="detail" var="item" value="#{aopQueueBean.errorList}"
+                                 editable="true"
+                                 editMode="cell"
+                                 paginator="true"
+                                 rows="20"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="10,20,30">
+
+                        <p:column id="lineNumber" headerText="Line" style="width: 2%;" sortBy="#{item.lineNumber}">
+                            <h:outputText value="#{item.lineNumber}"/>
+                        </p:column>
+
+                        <p:column id="storeId" headerText="Store Id" style="width: 5%;" sortBy="#{item.storeId}">
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{item.storeId}"/></f:facet>
+                                <f:facet name="input"><p:inputText value="#{item.storeId}"/></f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        <p:column headerText="Store Name" sortBy="#{item.storeName}">
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{item.storeName}"/></f:facet>
+                                <f:facet name="input"><p:inputText id="storeName" value="#{item.storeName}"/></f:facet>
+                            </p:cellEditor>
+                        </p:column>                    
+                        <p:column headerText="Order Id" sortBy="#{item.orderId}">
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{item.orderId}"/></f:facet>
+                                <f:facet name="input"><p:inputText id="orderId" value="#{item.orderId}"/></f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        <p:column headerText="Paying Id" style="width: 6%;" sortBy="#{item.payingId}">
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{item.payingId}"/></f:facet>
+                                <f:facet name="input"><p:inputText id="payingId" value="#{item.payingId}"/></f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        <p:column headerText="SRP" style="width: 5%; text-align: right;" sortBy="#{item.srp}">
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{item.srp}"/></f:facet>
+                                <f:facet name="input"><p:inputText id="srp" value="#{item.srp}"/></f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        <p:column headerText="MA Comm" style="width: 5%; text-align: right;" sortBy="#{item.reportedComm}">
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{item.reportedComm}"/></f:facet>
+                                <f:facet name="input"><p:inputText id="maCommission" value="#{item.reportedComm}"/></f:facet>
+                            </p:cellEditor>                            
+                        </p:column>
+                        <p:column headerText="Error">
+                            <h:outputText value="#{item.errorText}"/>
+                        </p:column>
+                        <p:ajax event="cellEdit" listener="#{aopQueueBean.onEditError}" update=":form:msg, :form:saveButton" />
+                    </p:dataTable>
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

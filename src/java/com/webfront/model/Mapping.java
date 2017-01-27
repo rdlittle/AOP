@@ -10,11 +10,16 @@ package com.webfront.model;
  * @author rlittle
  */
 public class Mapping {
+    public static enum FieldType {
+        SINGLE, MULTIPLE;
+    }
     private String parentField;
     private String fieldLabel;
     private String fieldKey;
     private String fieldValue;
-    private String fieldType;
+    private FieldType fieldType;
+    private boolean isRequired;
+    private int position;
     
     /**
      * @return the fieldLabel
@@ -61,14 +66,14 @@ public class Mapping {
     /**
      * @return the fieldType
      */
-    public String getFieldType() {
+    public FieldType getFieldType() {
         return fieldType;
     }
 
     /**
      * @param fieldType the fieldType to set
      */
-    public void setFieldType(String fieldType) {
+    public void setFieldType(FieldType fieldType) {
         this.fieldType = fieldType;
     }
 
@@ -84,6 +89,34 @@ public class Mapping {
      */
     public void setParentField(String parentField) {
         this.parentField = parentField;
+    }
+
+    /**
+     * @return the isRequired
+     */
+    public boolean isIsRequired() {
+        return isRequired;
+    }
+
+    /**
+     * @param isRequired the isRequired to set
+     */
+    public void setIsRequired(boolean isRequired) {
+        this.isRequired = isRequired;
+    }
+
+    /**
+     * @return the position
+     */
+    public int getPosition() {
+        return position;
+    }
+
+    /**
+     * @param position the position to set
+     */
+    public void setPosition(int position) {
+        this.position = position;
     }
     
 }

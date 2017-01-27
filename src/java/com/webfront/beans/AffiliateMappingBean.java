@@ -9,7 +9,9 @@ import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.controller.AffiliateMasterController;
+import com.webfront.controller.AopQueueController;
 import com.webfront.model.AffiliateMapping;
+import com.webfront.model.ErrorObject;
 import com.webfront.model.Mapping;
 import com.webfront.util.JSFHelper;
 import java.util.ArrayList;
@@ -17,8 +19,9 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -32,10 +35,10 @@ import org.primefaces.model.TreeNode;
  * @author rlittle
  */
 @ManagedBean
-@ViewScoped
+@SessionScoped
 public class AffiliateMappingBean {
 
-    private final RedObject rbo = new RedObject("WDE", "Affiliates:Mapping");
+    private final RedObject rbo = new RedObject("WDE", "AFFILIATE:Mapping");
     private final ArrayList<AffiliateMapping> mapping;
     private String affiliateMasterId;
     protected String _affiliateMasterId;
@@ -50,6 +53,8 @@ public class AffiliateMappingBean {
     private TreeNode tree;
     private String dataStartRow;
     private HashMap<String, String> fieldValues;
+    public ErrorObject errObj;
+    private final ArrayList<AopQueueController.ColumnModel> columnHeaders;
 
     public AffiliateMappingBean() {
         mapping = new ArrayList<>();
@@ -65,6 +70,8 @@ public class AffiliateMappingBean {
         tree = new DefaultTreeNode();
         dataStartRow = "0";
         fieldValues = new HashMap<>();
+        errObj = new ErrorObject();
+        columnHeaders = new ArrayList<>();
     }
 
     @PostConstruct
@@ -141,7 +148,7 @@ public class AffiliateMappingBean {
                             sm.setFieldKey(uda.extract(6, f, s).toString());
                             sm.setFieldValue(uda.extract(7, f, s).toString());
                             sm.setFieldLabel(uda.extract(8, f, s).toString());
-                            map.getSubFields().add(sm);
+                            map.getFields().add(sm);
                         }
                         map.setFieldSaved(true);
                         fileSaved = true;
@@ -171,6 +178,84 @@ public class AffiliateMappingBean {
 
     public ArrayList<AffiliateMapping> getMapping() {
         return mapping;
+    }
+
+    public void readMapping(String aggregatorId) {
+        rbo.setProperty("aggregatorId", aggregatorId);
+        rbo.setProperty("fileType", "CSV");
+        try {
+            rbo.callMethod("getAffiliateMapping");
+            String errStat = rbo.getProperty("svrStatus");
+            String errCode = rbo.getProperty("svrCtrlCode");
+            String errMsg = rbo.getProperty("svrMessage");
+            errObj = new ErrorObject(errStat, errCode, errMsg);
+            if (-1 == errObj.getSvrStatus()) {
+                FacesMessage fmsg = new FacesMessage(errObj.toString());
+                fmsg.setSeverity(FacesMessage.SEVERITY_ERROR);
+                FacesContext ctx = FacesContext.getCurrentInstance();
+                ctx.addMessage("msg", fmsg);
+            } else {
+                AffiliateMapping afMapping = new AffiliateMapping();
+                UniDynArray oList = new UniDynArray();
+                oList.insert(1, rbo.getPropertyToDynArray("fieldLabel"));
+                oList.insert(2, rbo.getPropertyToDynArray("fieldKey"));
+                oList.insert(3, rbo.getPropertyToDynArray("fieldValue"));
+                oList.insert(4, rbo.getPropertyToDynArray("isRequired"));
+                oList.insert(5, rbo.getProperty("fieldSeparator"));
+                oList.insert(6, rbo.getPropertyToDynArray("subFieldKey"));
+                oList.insert(7, rbo.getPropertyToDynArray("subFieldValue"));
+                oList.insert(8, rbo.getPropertyToDynArray("subFieldSeparator"));
+                oList.insert(9, rbo.getProperty("fileType"));
+                oList.insert(10, rbo.getProperty("fieldCount"));
+                oList.insert(11, rbo.getProperty("hasHeader"));
+                oList.insert(12, rbo.getProperty("dataStartRow"));
+                oList.insert(13, rbo.getProperty("subFieldCount"));
+                int vals = Integer.parseInt(oList.extract(10).toString());
+                for (int val = 1; val <= vals; val++) {
+                    String label = oList.extract(1, val).toString();
+                    String key = oList.extract(2, val).toString();
+                    String value = oList.extract(3, val).toString();
+                    boolean isRequired = (oList.extract(4, val).toString().equals(1));
+                    UniDynArray uda = rbo.getPropertyToDynArray("subFieldCount");
+                    int subVals = Integer.parseInt(uda.extract(1, val).toString());
+                    String parentId;
+                    parentId = "";
+                    Mapping map = new Mapping();
+                    map.setParentField(parentId);
+                    map.setFieldLabel(label);
+                    map.setFieldKey(key);
+                    map.setFieldValue(value);
+                    map.setIsRequired(isRequired);
+                    map.setPosition(val);
+                    map.setFieldType(Mapping.FieldType.SINGLE);
+                    afMapping.getFields().add(map);
+                    if (subVals > 0) {
+                        parentId = key;
+                        for (int subVal = 1; subVal <= subVals; subVal++) {
+                            String subFieldKey = oList.extract(6, val, subVal).toString();
+                            String subFieldValue = oList.extract(7, val, subVal).toString();
+                            map = new Mapping();
+                            map.setParentField(parentId);
+                            map.setFieldKey(subFieldKey);
+                            map.setFieldValue(subFieldValue);
+                            map.setPosition(subVal);
+                            map.setFieldType(Mapping.FieldType.MULTIPLE);
+                            afMapping.getSubFields().put(parentId, map);
+                        }
+                    }
+                    afMapping.setAggregatorId(aggregatorId);
+                    afMapping.setHasHeader(hasHeader);
+                    afMapping.setDataStartRow(dataStartRow);
+                    int fieldSep = Integer.parseInt(oList.extract(5).toString());
+                    Character c = (char) fieldSep;
+                    afMapping.setFieldSeparator(c.toString());
+                    afMapping.setFieldCount(vals);
+                    getColumnHeaders().add(new AopQueueController.ColumnModel(label, key));
+                }
+            }
+        } catch (RbException ex) {
+            Logger.getLogger(AopQueueController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void setMapping() {
@@ -225,7 +310,7 @@ public class AffiliateMappingBean {
         AffiliateMapping m = new AffiliateMapping();
         getMapping().add(m);
         setNewField(true);
-        setFieldCommitted(false);        
+        setFieldCommitted(false);
         fileSaved = false;
     }
 
@@ -443,6 +528,13 @@ public class AffiliateMappingBean {
      */
     public void setFileSaved(boolean fileSaved) {
         this.fileSaved = fileSaved;
+    }
+
+    /**
+     * @return the columnHeaders
+     */
+    public ArrayList<AopQueueController.ColumnModel> getColumnHeaders() {
+        return columnHeaders;
     }
 
     @FacesConverter(forClass = AffiliateMapping.class)

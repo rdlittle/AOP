@@ -11,6 +11,7 @@ import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.controller.AopQueueController;
 import com.webfront.model.AopQueue;
 import com.webfront.model.Queue;
+import com.webfront.model.QueueError;
 import com.webfront.model.QueueItem;
 import com.webfront.model.RunLevel;
 import com.webfront.model.UVException;
@@ -58,6 +59,8 @@ public class AopQueueBean implements Serializable {
     private UploadBean uploader;
     @ManagedProperty(value = "#{aopUserBean}")
     private AopUserBean aopUser;
+    @ManagedProperty(value = "#{affiliateMappingBean}")
+    private AffiliateMappingBean mapping;
     private String affiliateMasterId;
     private String fileType;
     private UploadedFile file;
@@ -65,11 +68,14 @@ public class AopQueueBean implements Serializable {
     private boolean showAll;
     private boolean admin;
     private boolean hasItems;
+    private boolean changed;
+    private ArrayList<QueueError> errorList;
 
     public AopQueueBean() {
         this.selectedItems = new ArrayList<>();
         this.queueList = new ArrayList<>();
         this.queueTypes = new ArrayList<>();
+        this.errorList = new ArrayList<>();
         this.selected = false;
         this.queueType = new QueueItem();
         this.hasItems = false;
@@ -86,16 +92,42 @@ public class AopQueueBean implements Serializable {
         setQueueList();
     }
 
+    public String onGetErrorListing() {
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        Map<String, String> map = ctx.getExternalContext().getRequestParameterMap();
+        if (!map.containsKey("aopQueueId")) {
+            return "";
+        }
+        String queueId = map.get("aopQueueId");
+        errorList.clear();
+        errorList.addAll(controller.getErrorList(queueId));
+        setChanged(false);
+        return "/affiliate/queue/validationErrors?faces-redirect=true&id=" + queueId;
+    }
+
+    public ArrayList getErrorList() {
+        return errorList;
+    }
+
+    public ArrayList<String> getColumnHeaders() {
+        return controller.getColumnHeaders();
+    }
+
+    public void setErrorListing(String queueId) {
+
+    }
+
     /**
      * @return the queueList
      */
     public ArrayList<? extends Queue> getQueueList() {
-        return this.queueList;
+        return queueList;
     }
 
     public void setQueueList() {
-        this.queueList.clear();
-        this.queueList = (ArrayList<AopQueue>) controller.getQueueList(getQueueType().getQueueType(), aopUser.getUserName().toUpperCase(), showAll);
+        queueList.clear();
+        ArrayList<AopQueue> list = (ArrayList<AopQueue>) controller.getQueueList(getQueueType().getQueueType(), aopUser.getUserName().toUpperCase(), showAll);
+        queueList = list;
         this.running = controller.isMonitorRunning();
         this.hasItems = !this.queueList.isEmpty();
     }
@@ -106,6 +138,20 @@ public class AopQueueBean implements Serializable {
 
     public void onBtnStartQueue() {
         controller.startQueue(getQueueType().getQueueType());
+    }
+
+    public void onEditError(CellEditEvent evt) {
+        String oldValue = evt.getOldValue().toString();
+        String newValue = evt.getNewValue().toString();
+        if (!oldValue.equals(newValue)) {
+            setChanged(true);
+        }
+    }
+
+    public void onSaveReport() {
+        controller.setErrorList(errorList);
+        controller.saveReportEdit();
+        setChanged(false);
     }
 
     public void onCellEdit(CellEditEvent evt) {
@@ -184,9 +230,9 @@ public class AopQueueBean implements Serializable {
         if (affiliateMasterId != null) {
             rbo.setProperty("aggregatorId", affiliateMasterId);
         }
-        
-        for(QueueItem item : queueTypes) {
-            if(item.getQueueDesc().equalsIgnoreCase(getQueueType().getQueueDesc())) {
+
+        for (QueueItem item : queueTypes) {
+            if (item.getQueueDesc().equalsIgnoreCase(getQueueType().getQueueDesc())) {
                 setQueueType(item);
                 break;
             }
@@ -251,8 +297,8 @@ public class AopQueueBean implements Serializable {
      * @param qType the queueType to set 'C'heck or 'O'rder
      */
     public void setQueueType(String qType) {
-        for(QueueItem item : queueTypes) {
-            if(item.getQueueType().equalsIgnoreCase(qType)) {
+        for (QueueItem item : queueTypes) {
+            if (item.getQueueType().equalsIgnoreCase(qType)) {
                 break;
             }
         }
@@ -286,7 +332,7 @@ public class AopQueueBean implements Serializable {
                     String k = keys.extract(1, val).toString();
                     String v = values.extract(1, val).toString();
                     String g = groups.extract(1, val).toString();
-                    QueueItem item = new QueueItem(k,v,g);
+                    QueueItem item = new QueueItem(k, v, g);
                     queueTypes.add(item);
                 }
             }
@@ -439,7 +485,7 @@ public class AopQueueBean implements Serializable {
             Logger.getLogger(AopQueueBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public boolean getHasItems() {
         return hasItems;
     }
@@ -459,7 +505,7 @@ public class AopQueueBean implements Serializable {
     }
 
     public void onClickShowAll() {
-
+        setQueueList();
     }
 
     /**
@@ -490,15 +536,15 @@ public class AopQueueBean implements Serializable {
     public void setQueueType(QueueItem queueType) {
         this.queueType = queueType;
     }
-    
+
     public void initQueue(String type) {
-        if(type.isEmpty()) {
+        if (type.isEmpty()) {
             return;
         }
-        if(queueTypes.isEmpty()) {
+        if (queueTypes.isEmpty()) {
             getQueueTypes();
         }
-        for(QueueItem qt : queueTypes) {
+        for (QueueItem qt : queueTypes) {
             if (qt.getQueueType().equalsIgnoreCase(type)) {
                 queueType = qt;
                 break;
@@ -507,4 +553,38 @@ public class AopQueueBean implements Serializable {
         setQueueList();
     }
 
+    /**
+     * @return the mapping
+     */
+    public AffiliateMappingBean getMapping() {
+        return mapping;
+    }
+
+    /**
+     * @param mapping the mapping to set
+     */
+    public void setMapping(AffiliateMappingBean mapping) {
+        this.mapping = mapping;
+    }
+
+    /**
+     * @return the changed
+     */
+    public boolean isChanged() {
+        return changed;
+    }
+
+    /**
+     * @param changed the changed to set
+     */
+    public void setChanged(boolean changed) {
+        this.changed = changed;
+    }
+
+    public static class ErrorLine {
+
+        public ErrorLine(String line) {
+
+        }
+    }
 }

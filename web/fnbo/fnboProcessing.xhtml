@@ -23,6 +23,11 @@
                 </span>
                 <h:form id="form">
                     
+                    <h:outputLabel value="Show all" style="margin-left: 1.5em; margin-right: 1.5em;"/>
+                    <p:selectBooleanCheckbox id = "showAll" value="#{aopQueueBean.showAll}" disabled="#{!aopQueueBean.admin}">
+                        <p:ajax listener="#{aopQueueBean.onClickShowAll}" process="@this" update="table"/>
+                    </p:selectBooleanCheckbox>
+                    
                     <p:panel style="margin-left: 2em;">
                         <p:commandButton id="processQueue" action="#{aopQueueBean.onClickProcess()}"
                                          disabled="#{aopQueueBean.running || !aopQueueBean.hasItems}"
@@ -50,22 +55,9 @@
                                 <h:outputText value="#{item.errorCount}"/>
                             </p:column>  
 
-                            <p:column headerText="Reports" style="text-align: left;" width="25%">
-                                <p:commandLink ajax="false" value="Success" action="#{aopQueueBean.downLoader.setDownload}" 
-                                               style="line-height: 1em;" rendered="#{item.hasSuccessReport}">
-                                    <f:setPropertyActionListener target="#{aopQueueBean.downLoader.fileName}" value="#{item.successReport}" />
-                                    <p:fileDownload value="#{aopQueueBean.downLoader.content}"/>
-                                </p:commandLink>
-                                <p:commandLink ajax="false" value="Errors" action="#{aopQueueBean.downLoader.setDownload}"
-                                               rendered="#{item.hasErrorReport}">
-                                    <f:setPropertyActionListener target="#{aopQueueBean.downLoader.fileName}" value="#{item.errorReport}" />
-                                    <p:fileDownload value="#{aopQueueBean.downLoader.content}"/>
-                                </p:commandLink>
-                            </p:column> 
-
                         </p:dataTable>
                     </p:panel>
-                    <p:poll id="poll" interval="15" listener="#{aopQueueBean.rePoll}" update="form" autoStart="true" process="form"/>
+                    <p:poll id="poll" interval="15" listener="#{aopQueueBean.rePoll}" update="form" autoStart="false" process="form"/>
                 </h:form>
             </ui:define>
 
