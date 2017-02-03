@@ -8,14 +8,19 @@ package com.webfront.beans;
 import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
+import com.webfront.preferences.GuestPreferences;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.Cookie;
 
 /**
  *
@@ -29,6 +34,10 @@ public class AopUserBean implements Serializable {
     private String password;
     private boolean loggedIn;
     private ArrayList<String> roles;
+    private String theme;
+    private Map<String, Object> cookies;
+    @ManagedProperty(value="#{guestPreferences}")
+    private GuestPreferences preferences;
 
     public AopUserBean() {
         userName = "";
@@ -36,12 +45,19 @@ public class AopUserBean implements Serializable {
         loggedIn = false;
         roles = new ArrayList<>();
     }
-    
+
     public void invalidate() {
         userName = "";
         password = "";
         loggedIn = false;
         roles.clear();
+        ExternalContext etx = FacesContext.getCurrentInstance().getExternalContext();
+        Map<String, Object> map = etx.getRequestCookieMap();
+        if (map.containsKey("globaltheme")) {
+            Cookie cookie = (Cookie) map.get("globaltheme");
+            theme = (String) cookie.getValue();
+            preferences.changeTheme();
+        }
     }
 
     public String doLogin() {
@@ -64,7 +80,7 @@ public class AopUserBean implements Serializable {
                 int cnt = uda.dcount(1);
                 for (int c = 1; c <= cnt; c++) {
                     roles.add(uda.extract(1, c).toString());
-                } 
+                }
                 if (!loggedIn) {
                     return "loginError";
                 } else {
@@ -135,6 +151,48 @@ public class AopUserBean implements Serializable {
      */
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    /**
+     * @return the theme
+     */
+    public String getTheme() {
+        return theme;
+    }
+
+    /**
+     * @param theme the theme to set
+     */
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
+    /**
+     * @return the cookies
+     */
+    public Map<String, Object> getCookies() {
+        return cookies;
+    }
+
+    /**
+     * @param cookies the cookies to set
+     */
+    public void setCookies(Map<String, Object> cookies) {
+        this.cookies = cookies;
+    }
+
+    /**
+     * @return the preferences
+     */
+    public GuestPreferences getPreferences() {
+        return preferences;
+    }
+
+    /**
+     * @param preferences the preferences to set
+     */
+    public void setPreferences(GuestPreferences preferences) {
+        this.preferences = preferences;
     }
 
 }

@@ -21,7 +21,7 @@
                                 <h:outputText value="Project manager"/>
                             </p:column>
                             <p:column>
-                                <p:inputText id="projectManager" value="#{monitorRequestBean.projectManager}" style="width: 100%;"/>
+                                <p:inputText widgetVar="projectManager" id="projectManager" value="#{monitorRequestBean.projectManager}" style="width: 100%;"/>
                             </p:column>                        
                             <p:column style="width: 15%;">
                                 <h:outputText value="Developer"/>
@@ -214,7 +214,7 @@
                         </p:row>
                     </p:panelGrid>
                     <p:panel style="width: 90%; margin: auto; text-align: right; border-color: white;">
-                        <p:commandButton action="#{monitorRequestBean.getReport()}" value="Submit"/>
+                        <p:commandLink ajax="false" value="../../printdoc">Print</p:commandLink>
                     </p:panel>
                 </h:form>
             </ui:define>
