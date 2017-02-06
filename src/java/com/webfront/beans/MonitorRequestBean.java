@@ -6,8 +6,11 @@
 package com.webfront.beans;
 
 import java.util.ArrayList;
+import java.util.Map;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import org.primefaces.event.RowEditEvent;
 
 /**
@@ -82,6 +85,16 @@ public class MonitorRequestBean {
         fields[16] = "Recovery procedure";
         fields[17] = "Completion notifications to";
         fields[18] = "Error notifications to";
+    }
+    
+    public String doReport() {
+        FacesContext fctx = FacesContext.getCurrentInstance();
+        ExternalContext ectx = fctx.getExternalContext();
+        Map<String,String> map = ectx.getRequestParameterMap();
+        if(!map.containsKey("projectManager")) {
+            map.put("projectManager", projectManager);
+        }
+        return "/printdoc?faces-redirect=true";
     }
 
     public String[] getReport() {
