@@ -1,0 +1,147 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <body>
+
+        <ui:composition template="../../layout.xhtml">
+
+            <ui:define name="content">
+                <span style="width: 99%; text-align: center; margin: 2em auto;">
+                    <h2>Affiliate Aggregator Maintenance</h2>
+                </span>
+                <p:messages id="msgs"/>
+
+                <h:form id="form">
+                    <p:growl id="notifications"/>
+
+
+
+                    <p:panelGrid styleClass="custom" style="width: 85%; margin: auto auto;">
+
+                        <p:row style="margin-bottom: 1.5em;">
+                            <p:column colspan="2">
+                                <p:outputLabel value="Show all "/>
+                                <p:selectBooleanCheckbox id="showAll" value="#{aggregatorBean.showAll}">
+                                    <p:ajax update="@form" listener="#{aggregatorBean.toggleShowAll()}"/>
+                                </p:selectBooleanCheckbox>
+                            </p:column>                            
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Affiliate Aggregator ID" style="margin-left: auto;"/>
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="vendorID" value="#{aggregator.ID}">
+                                    <f:selectItems value="#{aggregatorBean.aggregatorList}" var="vendor" 
+                                                   itemLabel="#{vendor.value}"
+                                                   itemValue="#{vendor.key}">
+                                    </f:selectItems>
+                                    <p:ajax listener="#{aggregator.changeVendor}" update="@form"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Name" style="text-align: right;"/>
+                            </p:column>
+                            <p:column>
+                                <h:inputText id="vendorName" value="#{aggregator.name}" style="width: 250px;"/>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Network"/>
+                            </p:column>
+                            <p:column>
+                                <h:selectOneMenu id="network" value="#{aggregator.networkId}">
+                                    <f:selectItem itemValue="-1" itemLabel="Select network"/>
+                                    <f:selectItems value="#{aggregatorBean.networkList}" var="network" 
+                                                   itemLabel="#{network.value}"
+                                                   itemValue="#{network.key}">
+                                    </f:selectItems>
+                                </h:selectOneMenu>                                
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Report Format"/>
+                            </p:column>
+                            <p:column>
+                                <h:selectOneMenu id="reportFormat" value="#{aggregator.reportFormat}">
+                                    <f:selectItems value="#{aggregatorBean.fileFormats}" var="fmt" 
+                                                   itemLabel="#{fmt.value}"
+                                                   itemValue="#{fmt.key}"/>
+                                </h:selectOneMenu>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Prefix" style="text-align: right;"/>
+                            </p:column>
+                            <p:column>
+                                <h:inputText id="prefix" value="#{aggregator.invPrefix}" size="10"/>        
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Country" style="text-align: right;"/>
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="countryCode" value="#{aggregator.payCountry}">
+                                    <f:selectItems value="#{webDEBean.countryCodes}" var="ctry" 
+                                                   itemLabel="#{ctry.value}"
+                                                   itemValue="#{ctry.key}">
+                                    </f:selectItems>
+                                    <f:ajax listener="#{aggregator.changeCountry}"/>
+                                </p:selectOneMenu>                            
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Paying Currency" style="text-align: right;"/>
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="currencyType" value="#{aggregator.payCurrency}">
+                                    <f:selectItems value="#{webDEBean.currencyTypes}" var="curr" 
+                                                   itemLabel="#{curr.value}"
+                                                   itemValue="#{curr.key}">
+                                    </f:selectItems>
+                                    <f:ajax listener="#{aggregator.changeCurrency}" render="currencyType"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+
+                    </p:panelGrid>
+
+                    <p:panelGrid styleClass="custom" style="text-align: center; border: 0; width: 10%; margin: 1.5em auto auto; float: none;">
+                        <p:row>
+                            <p:column>
+                                <p:button outcome="storeForm.xhtml" value="Stores">
+                                    <f:param name="aggregatorId" value="#{aggregator.ID}"/>
+                                </p:button>
+                            </p:column>
+                            <p:column>
+                                <p:commandButton value="Edit" actionListener="#{aggregator.saveRecord}" 
+                                                 process="@this" ajax="true" update="notifications"/>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

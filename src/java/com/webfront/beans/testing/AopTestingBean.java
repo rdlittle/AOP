@@ -9,7 +9,7 @@ import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.beans.AffiliateDetailBean;
-import com.webfront.beans.AffiliateMasterBean;
+import com.webfront.beans.AggregatorBean;
 import com.webfront.model.AopSourceDesc;
 import com.webfront.model.Customer;
 import com.webfront.model.SelectItem;
@@ -81,7 +81,7 @@ public class AopTestingBean implements Serializable {
     private String groupId;
     private String unitId;
 
-    private AffiliateMasterBean masterBean;
+    private AggregatorBean masterBean;
 
     @ManagedProperty(value = "#{affiliateDetailBean}")
     private AffiliateDetailBean detailBean;
@@ -938,7 +938,7 @@ public class AopTestingBean implements Serializable {
     /**
      * @return the masterBean
      */
-    public AffiliateMasterBean getMasterBean() {
+    public AggregatorBean getMasterBean() {
         return masterBean;
     }
 
@@ -946,7 +946,7 @@ public class AopTestingBean implements Serializable {
      * @param master
      */
     @Inject
-    public void setMasterBean(AffiliateMasterBean master) {
+    public void setMasterBean(AggregatorBean master) {
         masterBean = master;
     }
 

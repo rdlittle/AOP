@@ -9,7 +9,7 @@ import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.controller.AopQueueController;
-import com.webfront.model.AffiliateMaster;
+import com.webfront.model.Aggregator;
 import com.webfront.model.AffiliatePayment;
 import com.webfront.model.AopQueue;
 import com.webfront.model.UVException;
@@ -133,7 +133,7 @@ public class AffiliatePaymentBean {
     public void setPaymentList(ArrayList<AffiliatePayment> paymentList) {
         Map<String,Object> map = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
         if(map.containsKey("affiliateMaster")) {
-            vendorId = ((AffiliateMaster)map.get("affiliateMaster")).getID();
+            vendorId = ((Aggregator)map.get("affiliateMaster")).getID();
         }
         try {
             this.paymentList.clear();

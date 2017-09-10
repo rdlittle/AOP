@@ -14,6 +14,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet("/printdoc")
 public class TextServlet extends HttpServlet {
+
     @Override
     public void doGet(HttpServletRequest request,
             HttpServletResponse response)
@@ -28,18 +30,41 @@ public class TextServlet extends HttpServlet {
 
         response.setContentType("text/html");
         response.setBufferSize(8192);
-        Map<String,String[]> map = request.getParameterMap();
+        Map<String, String[]> map = request.getParameterMap();
         try (PrintWriter out = response.getWriter()) {
             out.println("<html lang=\"en\">"
                     + "<head><title>Monitor Request</title></head>");
-            
+
             // then write the data of the response
             out.println("<body  bgcolor=\"#ffffff\">"
                     + "<h3>Monitor Request</h3>");
-            for(String key : map.keySet()) {
-                out.println(key+": ");
+            for (String key : map.keySet()) {
+                out.println(key + ": ");
             }
-            
+
+            out.println("</body></html>");
+        }
+        FacesContext.getCurrentInstance().responseComplete();
+    }
+
+    @Override
+    public void doPost(HttpServletRequest request,
+            HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html");
+        response.setBufferSize(8192);
+        Map<String, String[]> map = request.getParameterMap();
+        try (PrintWriter out = response.getWriter()) {
+            out.println("<html lang=\"en\">"
+                    + "<head><title>Monitor Request</title></head>");
+
+            // then write the data of the response
+            out.println("<body  bgcolor=\"#ffffff\">"
+                    + "<h3>Monitor Request</h3>");
+            for (String key : map.keySet()) {
+                out.println(key + ": ");
+            }
+
             out.println("</body></html>");
         }
         FacesContext.getCurrentInstance().responseComplete();

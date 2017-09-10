@@ -14,7 +14,7 @@
                 <p:panel style="width: 50%; margin: auto; padding: auto; text-align: center; border-color: white;">
                     <h:outputText style="font-size: x-large; text-align: center;" value="Control-M Program Request"/>
                 </p:panel>
-                <h:form id="form">
+                <form id="form" action="../../printdoc">
                     <p:panelGrid style="width: 99%; margin: auto;">
                         <p:row>
                             <p:column style="width: 15%;">
@@ -214,10 +214,10 @@
                         </p:row>
                     </p:panelGrid>
                     <p:panel style="width: 90%; margin: auto; text-align: right; border-color: white;">
-                        <h:outputLink value="../../printdoc">Print</h:outputLink>
-                        <p:commandButton  ajax="false" value="Submit" action="#{monitorRequestBean.doReport}"/>
+                        <h:outputLink value="../../printdoc">Print </h:outputLink>
+                        <input type = "submit">Form submit</input>
                     </p:panel>
-                </h:form>
+                </form>
             </ui:define>
 
         </ui:composition>

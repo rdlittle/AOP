@@ -91,10 +91,10 @@ public class MonitorRequestBean {
         FacesContext fctx = FacesContext.getCurrentInstance();
         ExternalContext ectx = fctx.getExternalContext();
         Map<String,String> map = ectx.getRequestParameterMap();
-        if(!map.containsKey("projectManager")) {
-            map.put("projectManager", projectManager);
-        }
-        return "/printdoc?faces-redirect=true";
+//        if(!map.containsKey("projectManager")) {
+//            map.put("projectManager", projectManager);
+//        }
+        return "../../printdoc?faces-redirect=true";
     }
 
     public String[] getReport() {

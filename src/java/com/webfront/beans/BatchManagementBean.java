@@ -9,7 +9,7 @@ import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.model.AffiliateOrder;
 import com.webfront.model.AffiliateDetail;
-import com.webfront.model.AffiliateMaster;
+import com.webfront.model.Aggregator;
 import com.webfront.model.AffiliatePayment;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -56,7 +56,7 @@ public class BatchManagementBean implements Serializable {
     @ManagedProperty(value = "#{affiliateDetailBean}")
     private AffiliateDetailBean detail;
     @ManagedProperty(value = "#{affiliateMaster}")
-    private AffiliateMaster affiliateMaster;
+    private Aggregator affiliateMaster;
     @ManagedProperty(value = "#{affiliateDetail}")
     private AffiliateDetail affiliateDetail;
     private ArrayList<AffiliateOrder> searchResults;
@@ -405,14 +405,14 @@ public class BatchManagementBean implements Serializable {
     /**
      * @return the affiliateMaster
      */
-    public AffiliateMaster getAffiliateMaster() {
+    public Aggregator getAffiliateMaster() {
         return affiliateMaster;
     }
 
     /**
      * @param affiliateMaster the affiliateMaster to set
      */
-    public void setAffiliateMaster(AffiliateMaster affiliateMaster) {
+    public void setAffiliateMaster(Aggregator affiliateMaster) {
         this.affiliateMaster = affiliateMaster;
     }
 

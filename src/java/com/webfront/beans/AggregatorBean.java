@@ -22,12 +22,12 @@ import javax.inject.Named;
  *
  * @author rlittle
  */
-@Named("affiliateMasterBean")
+@Named("aggregatorBean")
 @ApplicationScoped
-public class AffiliateMasterBean implements Serializable {
+public class AggregatorBean implements Serializable {
 
     private RedObject rbo;
-    private LinkedList<SelectItem> affiliateMasterList;
+    private LinkedList<SelectItem> aggregatorList;
     private ArrayList<SelectItem> networkList;
     private int todayInternal;
     private String todayExternal;
@@ -38,14 +38,15 @@ public class AffiliateMasterBean implements Serializable {
     private String userId;
     private String countryCode;
     private String commType;
+    private Boolean showAll;
 
     /**
      * Creates a new instance of WebDEBean
      */
-    public AffiliateMasterBean() {
+    public AggregatorBean() {
         todayInternal = 1;
-        rbo = new RedObject("WDE", "Affiliates:Master");
-        affiliateMasterList = new LinkedList<>();
+        rbo = new RedObject("WDE", "AFFILIATE:Aggregator");
+        aggregatorList = new LinkedList<>();
         networkList = new ArrayList<>();
         mappedFields = new LinkedList<>();
         accessMethods = new ArrayList<>();
@@ -53,10 +54,11 @@ public class AffiliateMasterBean implements Serializable {
         networkId = "";
         commType = "";
         countryCode = "";
+        showAll = false;
     }
 
     public void init() {
-        System.out.println("AffiliateMasterBean.init()");
+        System.out.println("AggregatorBean.init()");
     }
 
     /**
@@ -76,7 +78,7 @@ public class AffiliateMasterBean implements Serializable {
     /**
      * @return the vendorNames
      */
-    public LinkedList<SelectItem> getAffiliateMasterList() {
+    public LinkedList<SelectItem> getAggregatorList() {
         LinkedList<SelectItem> list = new LinkedList<>();
         try {
             if (networkId != null) {
@@ -88,7 +90,9 @@ public class AffiliateMasterBean implements Serializable {
             if (commType != null) {
                 getRbo().setProperty("type", commType);
             }
-            getRbo().callMethod("getMasterList");
+            getRbo().setProperty("isInactive", showAll? "1" : "0");
+            
+            getRbo().callMethod("getAffiliateAggregatorList");
             int errStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
             String errCode = rbo.getProperty("svrCtrlCode");
             String errMessage = rbo.getProperty("svrMessage");
@@ -97,8 +101,8 @@ public class AffiliateMasterBean implements Serializable {
                 FacesMessage msg = new FacesMessage(errCode + ": " + errMessage);
                 ctx.addMessage(null, msg);
             } else {
-                UniDynArray vendorNames = getRbo().getPropertyToDynArray("affiliateName");
-                UniDynArray vendorIds = getRbo().getPropertyToDynArray("masterId");
+                UniDynArray vendorNames = getRbo().getPropertyToDynArray("aggregatorName");
+                UniDynArray vendorIds = getRbo().getPropertyToDynArray("aggregatorID");
                 int vals = vendorNames.dcount(1);
                 SelectItem defaultItem = new SelectItem("-1", "Select Affiliate");
                 list.add(defaultItem);
@@ -109,10 +113,10 @@ public class AffiliateMasterBean implements Serializable {
                 }
             }
         } catch (RbException ex) {
-            Logger.getLogger(AffiliateMasterBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AggregatorBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        affiliateMasterList = list;
-        return affiliateMasterList;
+        aggregatorList = list;
+        return aggregatorList;
     }
 
     /**
@@ -120,9 +124,9 @@ public class AffiliateMasterBean implements Serializable {
      */
     public void setAffiliateMasterList(LinkedList<SelectItem> vendors) {
         try {
-            getRbo().callMethod("getMasterList");
+            getRbo().callMethod("getAffiliateAggregatorList");
             UniDynArray vendorNames = getRbo().getPropertyToDynArray("affiliateName");
-            UniDynArray vendorIds = getRbo().getPropertyToDynArray("masterId");
+            UniDynArray vendorIds = getRbo().getPropertyToDynArray("aggregatorID");
             int vals = vendorNames.dcount(1);
             SelectItem defaultItem = new SelectItem("-1", "Select Affiliate");
             vendors.add(defaultItem);
@@ -131,9 +135,9 @@ public class AffiliateMasterBean implements Serializable {
                 String vid = vendorIds.extract(1, i).toString();
                 vendors.add(new SelectItem(vid, str));
             }
-            this.affiliateMasterList = vendors;
+            this.aggregatorList = vendors;
         } catch (RbException ex) {
-            Logger.getLogger(AffiliateMasterBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AggregatorBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -155,7 +159,7 @@ public class AffiliateMasterBean implements Serializable {
             String iDate = getRbo().getProperty("iDate");
             todayInternal = Integer.parseInt(iDate);
         } catch (RbException ex) {
-            Logger.getLogger(AffiliateMasterBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AggregatorBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -170,7 +174,7 @@ public class AffiliateMasterBean implements Serializable {
             String oDate = getRbo().getProperty("oDate");
             setTodayExternal(oDate);
         } catch (RbException ex) {
-            Logger.getLogger(AffiliateMasterBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AggregatorBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return todayExternal;
     }
@@ -212,7 +216,7 @@ public class AffiliateMasterBean implements Serializable {
                 mf.add(new SelectItem(key, value));
             }
         } catch (RbException ex) {
-            Logger.getLogger(AffiliateMasterBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AggregatorBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.mappedFields = mf;
     }
@@ -241,7 +245,7 @@ public class AffiliateMasterBean implements Serializable {
             }
 
         } catch (RbException rbe) {
-            Logger.getLogger(AffiliateMasterBean.class.getName()).log(Level.SEVERE, null, rbe);
+            Logger.getLogger(AggregatorBean.class.getName()).log(Level.SEVERE, null, rbe);
         }
         this.accessMethods = list;
     }
@@ -250,6 +254,31 @@ public class AffiliateMasterBean implements Serializable {
      * @return the fileFormats
      */
     public ArrayList<SelectItem> getFileFormats() {
+        try {
+            RedObject rb = new RedObject("WDE", "UTILS:Files");
+            rb.setProperty("fileName", "PARAMS");
+            rb.setProperty("id", "DATA.FEED.FORMATS");
+            rb.setProperty("keyField", "1");
+            rb.setProperty("valueField", "1");
+            rb.callMethod("getSelectObject");
+            String errStat = rb.getProperty("errStat");
+            String errCode = rb.getProperty("errCode");
+            String errMsg = rb.getProperty("errMsg");
+            UniDynArray keys = rb.getPropertyToDynArray("keyList");
+            UniDynArray values = rb.getPropertyToDynArray("valueList");
+            int vals = keys.dcount(1);
+            for (int val = 1; val <= vals; val++) {
+                SelectItem item = new SelectItem();
+                String key = keys.extract(1, val).toString();
+                String value = values.extract(1, val).toString();
+                item.setKey(key);
+                item.setValue(value);
+                fileFormats.add(item);
+            }
+
+        } catch (RbException rbe) {
+            Logger.getLogger(AggregatorBean.class.getName()).log(Level.SEVERE, null, rbe);
+        }
         return fileFormats;
     }
 
@@ -280,7 +309,7 @@ public class AffiliateMasterBean implements Serializable {
             }
 
         } catch (RbException rbe) {
-            Logger.getLogger(AffiliateMasterBean.class.getName()).log(Level.SEVERE, null, rbe);
+            Logger.getLogger(AggregatorBean.class.getName()).log(Level.SEVERE, null, rbe);
         }
         this.fileFormats = fileFormats;
     }
@@ -296,7 +325,7 @@ public class AffiliateMasterBean implements Serializable {
                 userId = getRbo().getProperty("logName");
                 setUserId(userId);
             } catch (RbException ex) {
-                Logger.getLogger(AffiliateMasterBean.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(AggregatorBean.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return userId;
@@ -313,8 +342,8 @@ public class AffiliateMasterBean implements Serializable {
      * @return the networkList
      */
     public ArrayList<SelectItem> getNetworkList() {
-        if (networkList == null) {
-            this.networkList = new ArrayList<SelectItem>();
+        if (networkList.isEmpty()) {
+            setNetworkList();
         }
         return networkList;
     }
@@ -322,7 +351,7 @@ public class AffiliateMasterBean implements Serializable {
     /**
      * @param networkList the networkList to set
      */
-    public void setNetworkList(ArrayList<SelectItem> networkList) {
+    public void setNetworkList() {
         try {
             RedObject networkRbo = new RedObject("WDE", "Affiliates:Network");
             networkRbo.callMethod("getNetworkList");
@@ -334,9 +363,8 @@ public class AffiliateMasterBean implements Serializable {
                 String netName = networkNames.extract(1, i).toString();
                 networkList.add(new SelectItem(netId, netName));
             }
-            this.networkList = networkList;
         } catch (RbException ex) {
-            Logger.getLogger(AffiliateMasterBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AggregatorBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -380,5 +408,23 @@ public class AffiliateMasterBean implements Serializable {
      */
     public void setCommType(String commType) {
         this.commType = commType;
+    }
+
+    /**
+     * @return the showAll
+     */
+    public Boolean getShowAll() {
+        return showAll;
+    }
+
+    /**
+     * @param showAll the showAll to set
+     */
+    public void setShowAll(Boolean showAll) {
+        this.showAll = showAll;
+    }
+    
+    public void toggleShowAll() {
+        getAggregatorList();
     }
 }

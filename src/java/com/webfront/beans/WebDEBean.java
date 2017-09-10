@@ -25,7 +25,7 @@ import javax.faces.bean.SessionScoped;
 public final class WebDEBean implements Serializable {
 
     private RedObject rbo;
-    private LinkedList<SelectItem> affiliateMasterList;
+    private LinkedList<SelectItem> aggregatorList;
     private ArrayList<SelectItem> networkList;
     private int todayInternal;
     private String todayExternal;
@@ -44,7 +44,7 @@ public final class WebDEBean implements Serializable {
         todayInternal = 1;
         setTodayInternal(1);
         setRbo(new RedObject("WDE", "AOP:Forms"));
-        setAffiliateMasterList(new LinkedList<>());
+        setAggregatorList(new LinkedList<>());
         setNetworkList(new ArrayList<>());
         setCurrencyTypes(new LinkedList<>());
         setCountryCodes(new LinkedList<>());
@@ -70,17 +70,17 @@ public final class WebDEBean implements Serializable {
     /**
      * @return the vendorNames
      */
-    public LinkedList<SelectItem> getAffiliateMasterList() {
-        if (affiliateMasterList.isEmpty()) {
-            setAffiliateMasterList(this.affiliateMasterList);
+    public LinkedList<SelectItem> getAggregatorList() {
+        if (aggregatorList.isEmpty()) {
+            setAggregatorList(this.aggregatorList);
         }
-        return affiliateMasterList;
+        return aggregatorList;
     }
 
     /**
      * @param vendors the vendorNames to set
      */
-    public void setAffiliateMasterList(LinkedList<SelectItem> vendors) {
+    public void setAggregatorList(LinkedList<SelectItem> vendors) {
         try {
             getRbo().callMethod("getAffiliateMasterList");
             UniDynArray vendorNames = getRbo().getPropertyToDynArray("affiliateMasterList");
@@ -93,7 +93,7 @@ public final class WebDEBean implements Serializable {
                 String vid = vendorIds.extract(1, i).toString();
                 vendors.add(new SelectItem(vid, str));
             }
-            this.affiliateMasterList = vendors;
+            this.aggregatorList = vendors;
         } catch (RbException ex) {
             Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -8,7 +8,7 @@ package com.webfront.beans;
 import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
-import com.webfront.controller.AffiliateMasterController;
+import com.webfront.controller.AffiliateAggregatorController;
 import com.webfront.controller.AopQueueController;
 import com.webfront.model.AffiliateMapping;
 import com.webfront.model.ErrorObject;
@@ -156,7 +156,7 @@ public class AffiliateMappingBean {
                     }
                 }
             } catch (RbException ex) {
-                Logger.getLogger(AffiliateMasterController.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(AffiliateAggregatorController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -299,7 +299,7 @@ public class AffiliateMappingBean {
                 fileSaved = true;
             }
         } catch (RbException ex) {
-            Logger.getLogger(AffiliateMasterController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AffiliateAggregatorController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
