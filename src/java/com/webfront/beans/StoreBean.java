@@ -16,10 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.application.FacesMessage;
-import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Named;
 
@@ -27,7 +24,7 @@ import javax.inject.Named;
  *
  * @author rlittle
  */
-@Named
+@Named("storeBean")
 @ApplicationScoped
 public class StoreBean {
 
@@ -35,6 +32,7 @@ public class StoreBean {
     private String aggregatorId;
     private ArrayList<SelectItem> storeList;
 //    private StoreConverter converter;
+    private ArrayList<SelectItem> currencyCodeList;
 
     private RedObject rbo;
 
@@ -42,6 +40,7 @@ public class StoreBean {
         selectedStore = new Store();
         aggregatorId = "";
         storeList = new ArrayList<>();
+        currencyCodeList = new ArrayList<>();
         rbo = new RedObject("WDE", "AFFILIATE:Store");
 //        converter = new StoreConverter();
     }
@@ -51,13 +50,16 @@ public class StoreBean {
         Map<String, String> map = fCtx.getExternalContext().getRequestParameterMap();
         if (map.containsKey("aggregatorId")) {
             aggregatorId = map.get("aggregatorId");
+            selectedStore = new Store();
         }
     }
 
     public void changeStore(AjaxBehaviorEvent evt) {
         Logger.getLogger(StoreBean.class.getName()).log(Level.INFO, null, "changeStore");
         try {
+            String storeId = selectedStore.getStoreId();
             rbo.setProperty("aggregatorID", aggregatorId);
+            rbo.setProperty("storeID", storeId);
             rbo.callMethod("getAffiliateStore");
             String errStatus = rbo.getProperty("svrStatus");
             String errCode = rbo.getProperty("svrCtrlCode");
@@ -68,18 +70,18 @@ public class StoreBean {
                 FacesMessage msg = new FacesMessage(errCode + ": " + errMessage);
                 ctx.addMessage(null, msg);
             } else {
-                UniDynArray storeIds = rbo.getPropertyToDynArray("storeID");
+                rbo.getPropertyToDynArray("storeID");
                 UniDynArray storeNames = rbo.getPropertyToDynArray("storeName");
                 UniDynArray currencyTypes = rbo.getPropertyToDynArray("currencyType");
-                int itemCount = storeIds.dcount(1);
-                for (int val = 1; val <= itemCount; val++) {
-                    Store s = new Store();
-                    s.setAggregatorId(aggregatorId);
-                    s.setStoreId(storeIds.extract(1, val).toString());
-                    s.setStoreName(storeNames.extract(1, val).toString());
-                    s.setReportingCurrency(currencyTypes.extract(1, val).toString());
-//                    storeList.add(s);
-                }
+                Store s = new Store();
+                s.setAggregatorId(aggregatorId);
+                s.setStoreId(storeId);
+                s.setStoreName(rbo.getPropertyToDynArray("storeName").toString());
+                s.setInactive(rbo.getPropertyToDynArray("storeID").toString().equals("1"));
+                s.setReportingCurrency(rbo.getPropertyToDynArray("currencyType").toString());
+                s.setSabpType(rbo.getPropertyToDynArray("sabpType").toString());
+                s.setZeroCommission(rbo.getPropertyToDynArray("zeroCommission").toString());
+                setSelectedStore(s);
             }
         } catch (RbException ex) {
             Logger.getLogger(StoreBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -118,36 +120,35 @@ public class StoreBean {
      * @return the storeList
      */
     public ArrayList<SelectItem> getStoreList() {
-        if (storeList.isEmpty()) {
-            try {
-                rbo.setProperty("aggregatorID", aggregatorId);
-                rbo.callMethod("getAffiliateStoreList");
-                String errStatus = rbo.getProperty("svrStatus");
-                String errCode = rbo.getProperty("svrCtrlCode");
-                String errMessage = rbo.getProperty("svrMessage");
-                String errName = rbo.getProperty("svrCtrlName");
-                if ("-1".equals(errStatus)) {
-                    FacesContext ctx = FacesContext.getCurrentInstance();
-                    FacesMessage msg = new FacesMessage(errCode + ": " + errMessage);
-                    ctx.addMessage(null, msg);
-                } else {
-                    UniDynArray storeIds = rbo.getPropertyToDynArray("storeID");
-                    UniDynArray storeNames = rbo.getPropertyToDynArray("storeName");
-                    UniDynArray currencyTypes = rbo.getPropertyToDynArray("currencyType");
-                    int itemCount = storeIds.dcount(1);
-                    for (int val = 1; val <= itemCount; val++) {
-                        Store s = new Store();
-                        s.setAggregatorId(aggregatorId);
-                        s.setStoreId(storeIds.extract(1, val).toString());
-                        s.setStoreName(storeNames.extract(1, val).toString());
-                        s.setReportingCurrency(currencyTypes.extract(1, val).toString());
-                        SelectItem se = new SelectItem(aggregatorId+"*"+s.getStoreId(),s.getStoreName());
-                        storeList.add(se);
-                    }
+        storeList.clear();
+        try {
+            rbo.setProperty("aggregatorID", aggregatorId);
+            rbo.callMethod("getAffiliateStoreList");
+            String errStatus = rbo.getProperty("svrStatus");
+            String errCode = rbo.getProperty("svrCtrlCode");
+            String errMessage = rbo.getProperty("svrMessage");
+            String errName = rbo.getProperty("svrCtrlName");
+            if ("-1".equals(errStatus)) {
+                FacesContext ctx = FacesContext.getCurrentInstance();
+                FacesMessage msg = new FacesMessage(errCode + ": " + errMessage);
+                ctx.addMessage(null, msg);
+            } else {
+                UniDynArray storeIds = rbo.getPropertyToDynArray("storeID");
+                UniDynArray storeNames = rbo.getPropertyToDynArray("storeName");
+                UniDynArray currencyTypes = rbo.getPropertyToDynArray("currencyType");
+                int itemCount = storeIds.dcount(1);
+                for (int val = 1; val <= itemCount; val++) {
+                    Store s = new Store();
+                    s.setAggregatorId(aggregatorId);
+                    s.setStoreId(storeIds.extract(1, val).toString());
+                    s.setStoreName(storeNames.extract(1, val).toString());
+                    s.setReportingCurrency(currencyTypes.extract(1, val).toString());
+                    SelectItem se = new SelectItem(s.getStoreId(), s.getStoreName());
+                    storeList.add(se);
                 }
-            } catch (RbException ex) {
-                Logger.getLogger(StoreBean.class.getName()).log(Level.SEVERE, null, ex);
             }
+        } catch (RbException ex) {
+            Logger.getLogger(StoreBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return storeList;
     }
@@ -159,8 +160,38 @@ public class StoreBean {
 //        this.storeList = storeList;
     }
 
-    public void storeChangeListener() {
-
+    /**
+     * @return the currencyTypeList
+     */
+    public ArrayList<SelectItem> getCurrencyCodeList() {
+        if (currencyCodeList.isEmpty()) {
+            try {
+                RedObject rb = new RedObject("WDE", "UTIL:Currency");
+                rb.callMethod("getUtilCurrencyRateList");
+                String errStatus = rb.getProperty("svrStatus");
+                String errCode = rb.getProperty("svrCtrlCode");
+                String errMessage = rb.getProperty("svrMessage");
+                String errName = rb.getProperty("svrCtrlName");
+                if ("-1".equals(errStatus)) {
+                    FacesContext ctx = FacesContext.getCurrentInstance();
+                    FacesMessage msg = new FacesMessage(errCode + ": " + errMessage);
+                    ctx.addMessage(null, msg);
+                } else {
+                    UniDynArray currencyCodes = rb.getPropertyToDynArray("currencyCode");
+                    UniDynArray currencyNames = rb.getPropertyToDynArray("currencyName");
+                    int itemCount = Integer.parseInt(rb.getProperty("itemCount"));
+                    for (int val = 1; val <= itemCount; val++) {
+                        SelectItem s = new SelectItem();
+                        s.setKey(currencyCodes.extract(1, val).toString());
+                        s.setValue(currencyNames.extract(1, val).toString());
+                        currencyCodeList.add(s);
+                    }
+                }
+            } catch (RbException ex) {
+                Logger.getLogger(StoreBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return currencyCodeList;
     }
 
     /**
@@ -170,7 +201,6 @@ public class StoreBean {
 //    public StoreConverter getConverter() {
 //        return this.converter;
 //    }
-
 //    @FacesConverter(value = "storeConverter")
 //    public class StoreConverter implements Converter {
 //
@@ -199,5 +229,4 @@ public class StoreBean {
 //            return null;
 //        }
 //    }
-
 }

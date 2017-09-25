@@ -5,7 +5,6 @@
  */
 package com.webfront.controller;
 
-import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.beans.WebDEBean;

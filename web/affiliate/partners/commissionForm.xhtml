@@ -1,0 +1,136 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="../../layout.xhtml">
+
+            <ui:define name="banner">
+                banner
+            </ui:define>
+
+            <ui:define name="content">
+                <span style="width: 99%; text-align: center; margin: 2em auto;">
+                    <h2>Affiliate Store Commission Maintenance</h2>
+                </span>
+                <p:breadCrumb homeDisplay="false" styleClass="plain">
+                    <p:menuitem value ="#{aggregator.name}" url="aggregatorForm.xhtml"/>
+                    <p:menuitem value ="#{storeBean.selectedStore.storeName}" url="storeForm.xhtml"/>
+                </p:breadCrumb>
+                <h:form id="form">
+                    <p:panelGrid styleClass="custom">
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Aggregator Name"/>
+                            </p:column>                            
+                            <p:column>
+                                <h:outputText value="Aggregator Id"/>
+                            </p:column>                            
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:inputText disabled="true" value="#{aggregator.name}"/>
+                            </p:column>                            
+                            <p:column>
+                                <h:inputText disabled="true" value="#{storeBean.selectedStore.aggregatorId}"/>
+                            </p:column>                            
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Store Name"/>
+                            </p:column>                            
+                            <p:column>
+                                <h:outputText value="Store Id"/>
+                            </p:column>                            
+                        </p:row> 
+                        <p:row>
+                            <p:column>
+                                <h:inputText disabled="true" value="#{storeBean.selectedStore.storeName}"/>
+                            </p:column>                            
+                            <p:column>
+                                <h:inputText disabled="true" value="#{storeBean.selectedStore.storeId}"/>
+                            </p:column>                            
+                        </p:row>                        
+                        <p:row>
+                            <p:column colspan="2">
+                                <p:outputPanel style="margin-top: 1.0em;">
+                                    <p:outputLabel value="SABP Type (#{commissionBean.selectedCommission.sabpType})"/>
+                                    <p:selectOneRadio layout="grid" columns="1" value="#{commissionBean.selectedCommission.sabpType}">
+                                        <f:selectItem itemValue="1" itemLabel="Exclude all orders"/>
+                                        <f:selectItem itemValue="2" itemLabel="Exclude zero commission orders"/>
+                                        <f:selectItem itemValue="3" itemLabel="Exclude none"/>
+                                    </p:selectOneRadio>
+                                </p:outputPanel>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column colspan="2">
+                                <p:selectBooleanCheckbox label="Tiered"/>
+                                <h:outputLabel value="Tiered"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column colspan="2">
+                                <p:panelGrid styleClass="custom">
+                                    <p:row>
+                                        <p:column>
+                                            <p:outputLabel value="Commission type"/>
+                                        </p:column>
+                                        <p:column>
+                                            <p:outputLabel value="Commission"/>
+                                        </p:column>
+                                        <p:column>
+                                            <p:outputLabel value="IBV"/>
+                                        </p:column>
+                                        <p:column>
+                                            <p:outputLabel value="Cashback"/>
+                                        </p:column>
+                                        <p:column>
+                                            <p:outputLabel value="MA Profit"/>
+                                        </p:column>
+                                        <p:column>
+                                            
+                                        </p:column>
+                                    </p:row>
+                                    <p:row>
+                                        <p:column>
+                                            <p:selectOneMenu id="commTypes" 
+                                                             value="#{commissionBean.selectedCommission.commissionType}">
+                                                <f:selectItem itemValue="" itemLabel="Select"/>
+                                                <f:selectItems value="#{commissionBean.commissionTypeList}" var="comm"
+                                                               itemValue = "#{comm.key}" itemLabel="#{comm.value}"/>
+                                            </p:selectOneMenu>
+                                        </p:column>
+                                        <p:column>
+                                            <p:inputText value="${commissionBean.selectedCommission.commission}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <p:inputText value="${commissionBean.selectedCommission.ibv}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <p:inputText value="${commissionBean.selectedCommission.cashback}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <p:inputText value="${commissionBean.selectedCommission.maProfit}"/>
+                                        </p:column>
+                                        <p:column>
+                                            
+                                        </p:column>
+                                    </p:row>                                    
+                                </p:panelGrid>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

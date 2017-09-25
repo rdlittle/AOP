@@ -129,3 +129,9 @@ a:link:hover, a:visited:hover  {
     padding: .5em;
     list-style: none;
 }
+
+.plain.ui-breadcrumb {
+    background-color: #ffffff;
+    background-image: none;
+    border: none;
+}

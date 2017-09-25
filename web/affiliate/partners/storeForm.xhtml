@@ -11,25 +11,68 @@
         <ui:composition template="../../layout.xhtml">
 
             <ui:define name="content">
+                
                 <f:metadata>
                     <f:event type="preRenderView" listener='#{storeBean.init()}'/>
                 </f:metadata>
+                
                 <span style="width: 99%; text-align: center; margin: 2em auto;">
                     <h2>Affiliate Store Maintenance</h2>
                 </span>
-
+                
+                <p:breadCrumb homeDisplay="false" styleClass="plain">
+                    <p:menuitem value ="#{aggregator.name}" url="aggregatorForm.xhtml"/>
+                </p:breadCrumb>
+                
                 <p:growl id="msgs"></p:growl>
 
                 <h:form id="form">
-                    <p:selectOneMenu id="storeSelector" value="#{storeBean.selectedStore}">
-
-                        <f:selectItems value="#{storeBean.storeList}" var = "st" 
-                                       itemLabel = "#{st.value}" 
-                                       itemValue = "#{st.key}"/>
-                        <p:ajax listener="#{storeBean.changeStore()}" update="@form"/>
-                    </p:selectOneMenu>
-
                     <p:panelGrid id="topGrid" styleClass="custom" style="margin: auto;">
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value = "Select Store"/>
+                            </p:column>  
+                            <p:column>
+                                <p:selectOneMenu id="storeSelector" value="#{storeBean.selectedStore.storeId}">
+                                    <f:selectItem itemLabel="" itemValue="-1"/>
+                                    <f:selectItems value="#{storeBean.storeList}" var = "st" 
+                                                   itemLabel = "#{st.value}" 
+                                                   itemValue = "#{st.key}">
+                                    </f:selectItems>
+                                    <p:ajax listener="#{storeBean.changeStore}" update="@form"/>
+                                </p:selectOneMenu>                                
+                            </p:column>
+                        </p:row>                                                                    
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value = "Store id"/>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value = "#{storeBean.selectedStore.storeId}"/>
+                            </p:column>
+                        </p:row>                        
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Reporting currency"/>
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="currencyType" value="#{storeBean.selectedStore.reportingCurrency}">
+                                    <f:selectItem itemLabel="" itemValue=""/>
+                                    <f:selectItems var="cu" value="#{storeBean.currencyCodeList}"
+                                                   itemLabel="#{cu.label}" itemValue="#{cu.key}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>    
+                        <p:row>
+                            <p:column>
+                            </p:column>
+                            <p:column>
+                                <p:button outcome="commissionForm.xhtml" value="Commission">
+                                    <f:param name="aggregatorId" value="#{storeBean.selectedStore.aggregatorId}"/>
+                                    <f:param name="storeId" value="#{storeBean.selectedStore.storeId}"/>
+                                </p:button>
+                            </p:column>
+                        </p:row>
                     </p:panelGrid>
 
                 </h:form>

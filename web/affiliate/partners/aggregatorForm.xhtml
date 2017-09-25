@@ -19,8 +19,6 @@
                 <h:form id="form">
                     <p:growl id="notifications"/>
 
-
-
                     <p:panelGrid styleClass="custom" style="width: 85%; margin: auto auto;">
 
                         <p:row style="margin-bottom: 1.5em;">
@@ -61,7 +59,7 @@
                                 <h:outputText value="Network"/>
                             </p:column>
                             <p:column>
-                                <h:selectOneMenu id="network" value="#{aggregator.networkId}">
+                                <h:selectOneMenu id="network" value="#{aggregator.invPrefix}">
                                     <f:selectItem itemValue="-1" itemLabel="Select network"/>
                                     <f:selectItems value="#{aggregatorBean.networkList}" var="network" 
                                                    itemLabel="#{network.value}"

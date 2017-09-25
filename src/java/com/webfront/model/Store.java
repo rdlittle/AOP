@@ -19,8 +19,10 @@ public class Store {
     private String reportingCurrency;
     private Boolean inactive;
     private String userId;
+    private String sabpType;
     private String createDate;
     private String createTime;
+    private String zeroCommission;
     
     public Store() {
         aggregatorId = "";
@@ -31,6 +33,7 @@ public class Store {
         userId = "";
         createDate = "";
         createTime = "";
+        sabpType = "";
     }
 
     /**
@@ -169,5 +172,33 @@ public class Store {
         hash = 41 * hash + Objects.hashCode(this.storeId);
         return hash;
     }    
+
+    /**
+     * @return the sabpType
+     */
+    public String getSabpType() {
+        return sabpType;
+    }
+
+    /**
+     * @param sabpType the sabpType to set
+     */
+    public void setSabpType(String sabpType) {
+        this.sabpType = sabpType;
+    }
+
+    /**
+     * @return the zeroCommission
+     */
+    public String getZeroCommission() {
+        return zeroCommission;
+    }
+
+    /**
+     * @param zeroCommission the zeroCommission to set
+     */
+    public void setZeroCommission(String zeroCommission) {
+        this.zeroCommission = zeroCommission;
+    }
     
 }
