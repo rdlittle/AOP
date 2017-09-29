@@ -7,6 +7,7 @@ package com.webfront.beans;
 import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
+import com.webfront.model.Aggregator;
 import com.webfront.model.SelectItem;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ public class AggregatorBean implements Serializable {
     private String countryCode;
     private String commType;
     private Boolean showAll;
+    private Aggregator selectedAggregator = null;
 
     /**
      * Creates a new instance of WebDEBean
@@ -55,6 +57,9 @@ public class AggregatorBean implements Serializable {
         commType = "";
         countryCode = "";
         showAll = false;
+        if(selectedAggregator == null) {
+            selectedAggregator = new Aggregator();
+        }
     }
 
     public void init() {
@@ -426,5 +431,19 @@ public class AggregatorBean implements Serializable {
     
     public void toggleShowAll() {
         getAggregatorList();
+    }
+
+    /**
+     * @return the selectedAggregator
+     */
+    public Aggregator getSelectedAggregator() {
+        return selectedAggregator;
+    }
+
+    /**
+     * @param selectedAggregator the selectedAggregator to set
+     */
+    public void setSelectedAggregator(Aggregator selectedAggregator) {
+        this.selectedAggregator = selectedAggregator;
     }
 }

@@ -13,6 +13,7 @@ public class AopQueue extends Queue {
 
     private String aggregatorId;
     private String aggregatorName;
+    private String lineCount;    
     private String orderCount;
     private String errorCount;
     private String checkId;
@@ -24,8 +25,27 @@ public class AopQueue extends Queue {
     private String endDate;
     private String endTime;
     private String completionStatus;
+    private String runLevel;
+    private String reportType;
+    private String reportTitle;
 
     public AopQueue() {
+        this.aggregatorId="";
+        this.aggregatorName="";
+        this.lineCount="";
+        this.orderCount="";
+        this.errorCount="";
+        this.checkId="";
+        this.checkAmount="";
+        this.disabled=false;
+        this.startDate="";
+        this.endDate="";
+        this.startTime="";
+        this.endTime="";
+        this.completionStatus="";
+        this.runLevel="";
+        this.reportType="";
+        this.reportTitle="";
     }
 
     /**
@@ -208,6 +228,62 @@ public class AopQueue extends Queue {
      */
     public void setCompletionStatus(String completionStatus) {
         this.completionStatus = completionStatus;
+    }
+
+    /**
+     * @return the runLevel
+     */
+    public String getRunLevel() {
+        return runLevel;
+    }
+
+    /**
+     * @param runLevel the runLevel to set
+     */
+    public void setRunLevel(String runLevel) {
+        this.runLevel = runLevel;
+    }
+
+    /**
+     * @return the lineCount
+     */
+    public String getLineCount() {
+        return lineCount;
+    }
+
+    /**
+     * @param lineCount the lineCount to set
+     */
+    public void setLineCount(String lineCount) {
+        this.lineCount = lineCount;
+    }
+
+    /**
+     * @return the reportType
+     */
+    public String getReportType() {
+        return reportType;
+    }
+
+    /**
+     * @param reportType the reportType to set
+     */
+    public void setReportType(String reportType) {
+        this.reportType = reportType;
+    }
+
+    /**
+     * @return the reportTitle
+     */
+    public String getReportTitle() {
+        return reportTitle;
+    }
+
+    /**
+     * @param reportTitle the reportTitle to set
+     */
+    public void setReportTitle(String reportTitle) {
+        this.reportTitle = reportTitle;
     }
 
 }

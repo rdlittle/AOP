@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <body>
+
+        <ui:composition template="./../../layout.xhtml">
+
+            <ui:define name="content">
+                <span style="width: 99%; text-align: center; margin: 2em auto;">
+                    <h2>Affiliate Order Reports</h2>
+                </span>
+                <h:form>
+                    <p:panelGrid styleClass="custom">
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Aggregator"/>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="Date"/>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="Report Type"/>
+                            </p:column>
+                            <p:column>
+                                <p:commandButton value="Search" actionListener="#{reportBean.doReport}" update="list"/>
+                            </p:column>       
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:selectOneMenu id="aggId" value="#{reportBean.selectedItem.aggregatorId}">
+                                    <f:selectItem itemValue="" itemLabel="All"/>
+                                    <f:selectItems var="agg" value="#{aggregatorBean.aggregatorList}"
+                                                   itemValue="#{agg.key}" itemLabel="#{agg.label}">
+                                    </f:selectItems>
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column>
+                                <p:calendar id="date" value="#{reportBean.date}"/>
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="reportType" value="#{reportBean.selectedItem.reportType}">
+                                    <f:selectItem itemValue="" itemLabel="All"/>
+                                    <f:selectItems var="rt" value="#{reportBean.reportTypeList}"
+                                                   itemValue="#{rt.key}" itemLabel="#{rt.label}"/>
+                                </p:selectOneMenu>                                
+                            </p:column>                            
+                            <p:column>
+
+                            </p:column>
+                        </p:row>                        
+                    </p:panelGrid>
+                    <p:dataTable id="list" var="item" value="#{reportBean.reportList}">
+                        <p:column headerText="Aggregator" style="width: 6%;">
+                            <h:outputText value ="#{item.aggregatorId}"/>
+                        </p:column>
+                        <p:column headerText="Date" style="width: 6%;">
+                            <h:outputText value="#{item.createDate}"/>
+                        </p:column>
+                        <p:column headerText="Time" style="width: 6%;">
+                            <h:outputText value="#{item.createTime}"/>
+                        </p:column>
+                        <p:column headerText="Report Name">
+                            <h:outputText value="#{item.reportTitle}"/>
+                        </p:column>
+                        <p:column headerText="Type" style="width: 6%;">
+                            <h:outputText value="#{item.reportType}"/>
+                        </p:column>
+                        <p:column headerText="User" style="width: 6%;">
+                            <h:outputText value="#{item.userName}"/>
+                        </p:column>
+                    </p:dataTable>
+
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

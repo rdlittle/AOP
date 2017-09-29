@@ -79,6 +79,7 @@ public class AopQueueBean implements Serializable {
         this.selected = false;
         this.queueType = new QueueItem();
         this.hasItems = false;
+        this.running = false;
         runLevels = new ArrayList<>();
         runLevelNames = new HashMap<>();
     }
@@ -128,7 +129,7 @@ public class AopQueueBean implements Serializable {
         queueList.clear();
         ArrayList<AopQueue> list = (ArrayList<AopQueue>) controller.getQueueList(getQueueType().getQueueType(), aopUser.getUserName().toUpperCase(), showAll);
         queueList = list;
-        this.running = controller.isMonitorRunning();
+        this.setRunning(controller.isMonitorRunning());
         this.hasItems = !this.queueList.isEmpty();
     }
 
@@ -136,8 +137,8 @@ public class AopQueueBean implements Serializable {
         return controller.isMonitorRunning();
     }
 
-    public void onBtnStartQueue() {
-        controller.startQueue(getQueueType().getQueueType());
+    public void onBtnToggleQueue() {
+        controller.toggleQueue(getQueueType().getQueueType());
     }
 
     public void onEditError(CellEditEvent evt) {
@@ -228,7 +229,7 @@ public class AopQueueBean implements Serializable {
 //        }
 
         if (affiliateMasterId != null) {
-            rbo.setProperty("aggregatorId", affiliateMasterId);
+            rbo.setProperty("aggregatorID", affiliateMasterId);
         }
 
         for (QueueItem item : queueTypes) {
@@ -238,7 +239,7 @@ public class AopQueueBean implements Serializable {
             }
         }
         rbo.setProperty("fileName", getFile().getFileName());
-        rbo.setProperty("userName", userId);
+        rbo.setProperty("userID", userId);
         rbo.setProperty("queueType", getQueueType().getQueueType());
         rbo.setProperty("runLevel", runLevel);
 
@@ -470,9 +471,13 @@ public class AopQueueBean implements Serializable {
             } else {
                 UniDynArray uda = rbo.getPropertyToDynArray("runLevel");
                 uda.insert(2, rbo.getPropertyToDynArray("runLevelName"));
+                uda.insert(3, rbo.getPropertyToDynArray("isDisabled"));
                 runLevels.clear();
                 int vals = uda.dcount(1);
                 for (int val = 1; val <= vals; val++) {
+                    if(uda.extract(3, val).toString().equals("1")) {
+                        continue;
+                    }                    
                     RunLevel rl = new RunLevel();
                     rl.setLevel(uda.extract(1, val).toString());
                     rl.setName(uda.extract(2, val).toString());
@@ -579,6 +584,13 @@ public class AopQueueBean implements Serializable {
      */
     public void setChanged(boolean changed) {
         this.changed = changed;
+    }
+
+    /**
+     * @param running the running to set
+     */
+    public void setRunning(boolean running) {
+        this.running = running;
     }
 
     public static class ErrorLine {

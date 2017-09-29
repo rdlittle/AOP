@@ -26,7 +26,7 @@
 
                     <p:commandButton id="btnStartMonitor" value='#{aopQueueBean.running ? "Stop" : "Start"}' 
                                      style="margin-bottom: 1.5em;"
-                                     actionListener="#{aopQueueBean.onBtnStartQueue()}" update="form">
+                                     actionListener="#{aopQueueBean.onBtnToggleQueue()}" update="form">
                     </p:commandButton> 
 
                     <h:outputLabel value="Show all" style="margin-left: 1.5em; margin-right: 1.5em;"/>
@@ -42,29 +42,37 @@
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="5,10,15,20"
                                  style="width: 99%; margin: auto;">
+
+                        <p:column headerText="Aggregator" style="width: 8%;">
+                            <h:outputText value="#{queueItem.aggregatorId}"/>
+                        </p:column>
                         
-                        <p:column headerText="Report">
+                        <p:column headerText="Report Name" style="width: 20%;">
                             <h:outputText value="#{queueItem.fileName}"/>
                         </p:column>
-                        
-                        <p:column headerText="User" style="width: 4%;">
+
+                        <p:column headerText="User" style="width: 10%;">
                             <h:outputText value="#{queueItem.userName}"/>
                         </p:column>
-                        
+
                         <p:column headerText="Date" style="width: 4%;">
-                            <h:outputText value="#{queueItem.createDate}"/>
+                            <h:outputText value="#{queueItem.endDate}"/>
                         </p:column>
+                        
                         <p:column headerText="Time" style="width: 4%;">
-                            <h:outputText value="#{queueItem.createTime}"/>
-                        </p:column>  
-                        
-                        
-                        <p:column headerText="Start" style="width: 4%;">
-                            <h:outputText value="#{queueItem.startTime}"/>
-                        </p:column>                        
-                        
-                        <p:column headerText="End" style="width: 4%;">
                             <h:outputText value="#{queueItem.endTime}"/>
+                        </p:column>
+                        
+                        <p:column headerText="Lines" style="width: 4%;">
+                            <h:outputText value="#{queueItem.lineCount}"/>
+                        </p:column>                        
+
+                        <p:column headerText="Orders" style="width: 4%;">
+                            <h:outputText value="#{queueItem.orderCount}"/>
+                        </p:column>
+
+                        <p:column headerText="Errors" style="width: 4%;">
+                            <h:outputText value="#{queueItem.errorCount}"/>
                         </p:column>                        
                         
                         <p:ajax event="cellEdit" listener="#{aopQueueBean.onCellEdit}" update="runLevel"/>
@@ -84,19 +92,6 @@
                             </p:cellEditor>
                         </p:column>
 
-                        <p:column headerText="Lines" style="width: 4%;">
-                            <h:outputText value="#{queueItem.lineCount}" style="width: 4%;"/>
-                        </p:column> 
- 
-                        <p:column headerText="Errors" style="width: 4%;">
-                            <h:commandLink action="#{aopQueueBean.onGetErrorListing()}" value="#{queueItem.errorCount}" style="width: 4%;">
-                                <f:param name="aopQueueId" value="#{queueItem.id}"/>
-                            </h:commandLink>
-                        </p:column> 
-                        
-                        <p:column headerText="Orders" style="width: 4%;">
-                            <h:outputText value="#{queueItem.orderCount}" style="width: 4%;"/>
-                        </p:column>
                     </p:dataTable>
                     <p:poll id="poll" interval="15" listener="#{aopQueueBean.rePoll}" update="form" autoStart="true" process="form"/>
                 </h:form>
