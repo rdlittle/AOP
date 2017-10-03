@@ -7,11 +7,12 @@ package com.webfront.beans;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Named;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
@@ -19,13 +20,13 @@ import org.primefaces.model.StreamedContent;
  *
  * @author rlittle
  */
-@ManagedBean
+@Named
 @SessionScoped
-public class DownloadBean {
+public class DownloadBean implements Serializable {
 
     private StreamedContent content;
     private String fileName;
-    private final String pathName = "/usr/local/dmcdev/REPORT.QUEUE/";
+    private final String pathName = "/usr/local/dmcdev/AOP.REPORTS/";
 
     public DownloadBean() {
         fileName = "";
@@ -54,9 +55,9 @@ public class DownloadBean {
     /**
      * @param content the content to set
      */
-    public void setContent(StreamedContent content) {
-        this.content = content;
-    }
+//    public void setContent(StreamedContent content) {
+//        this.content = content;
+//    }
 
     /**
      * @return the fileName
@@ -73,6 +74,6 @@ public class DownloadBean {
     }
 
     public void setDownload() {
-
+        Logger.getLogger(DownloadBean.class.getName()).log(Level.INFO, "DownloadBean.setDownload()");
     }
 }

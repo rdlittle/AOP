@@ -19,8 +19,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
+import org.primefaces.model.StreamedContent;
 
 /**
  *
@@ -35,8 +37,14 @@ public class ReportBean implements Serializable {
     private ArrayList<SelectItem> reportTypeList = null;
     private final RedObject rbo = new RedObject("WDE", "AFFILIATE:Report");
     private Date date = null;
-
+    @ManagedProperty(value = "#{downloadBean}")
+    private DownloadBean downLoader;
+    private StreamedContent report;
+    
     public ReportBean() {
+        if(this.downLoader == null) {
+            this.downLoader = new DownloadBean();
+        }
         if (this.reportList == null) {
             this.reportList = new ArrayList<>();
         }
@@ -87,6 +95,10 @@ public class ReportBean implements Serializable {
         setReportList();
     }
 
+    public StreamedContent getReport() {
+        this.report = this.getDownLoader().getContent();
+        return this.report;
+    }
     /**
      *
      */
@@ -164,5 +176,19 @@ public class ReportBean implements Serializable {
         } catch (RbException ex) {
             Logger.getLogger(ReportBean.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    /**
+     * @return the downLoader
+     */
+    public DownloadBean getDownLoader() {
+        return this.downLoader;
+    }
+
+    /**
+     * @param downLoader the downLoader to set
+     */
+    public void setDownLoader(DownloadBean downLoader) {
+        this.downLoader = downLoader;
     }
 }

@@ -67,6 +67,12 @@
                         <p:column headerText="Report Name">
                             <h:outputText value="#{item.reportTitle}"/>
                         </p:column>
+                        <p:column>
+                            <p:commandLink value="View" ajax="false">
+                                <f:setPropertyActionListener target="#{reportBean.downLoader.fileName}" value="#{item.reportTitle}"/>
+                                <p:fileDownload value="#{reportBean.downLoader.content}"/>
+                            </p:commandLink>
+                        </p:column>
                         <p:column headerText="Type" style="width: 6%;">
                             <h:outputText value="#{item.reportType}"/>
                         </p:column>
