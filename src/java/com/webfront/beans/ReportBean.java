@@ -127,21 +127,23 @@ public class ReportBean implements Serializable {
             } else {
                 UniDynArray queueIdList = rbo.getPropertyToDynArray("queueId");
                 UniDynArray aggList = rbo.getPropertyToDynArray("aggregatorId");
+                UniDynArray successList = rbo.getPropertyToDynArray("successReportId");
+                UniDynArray errorList = rbo.getPropertyToDynArray("errorReportId");
                 UniDynArray titleList = rbo.getPropertyToDynArray("reportTitle");
-                UniDynArray typeList = rbo.getPropertyToDynArray("reportType");
                 UniDynArray dateList = rbo.getPropertyToDynArray("processDate");
                 UniDynArray timeList = rbo.getPropertyToDynArray("processTime");
                 UniDynArray userList = rbo.getPropertyToDynArray("userId");
                 int itemCount = queueIdList.dcount(1);
-                this.reportTypeList.clear();
+                this.reportList.clear();
                 for (int i = 1; i <= itemCount; i++) {
                     AopQueue q = new AopQueue();
                     q.setAggregatorId(aggList.extract(1, i).toString());
                     q.setUserName(userList.extract(1, i).toString());
                     q.setCreateDate(dateList.extract(1, i).toString());
                     q.setCreateTime(timeList.extract(1, i).toString());
+                    q.setSuccessReport(successList.extract(1, i).toString());
+                    q.setErrorReport(errorList.extract(1, i).toString());
                     q.setReportTitle(titleList.extract(1, i).toString());
-                    q.setReportType(typeList.extract(1, i).toString());
                     this.reportList.add(q);
                 }
             }

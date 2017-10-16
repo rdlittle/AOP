@@ -64,23 +64,25 @@
                         <p:column headerText="Time" style="width: 6%;">
                             <h:outputText value="#{item.createTime}"/>
                         </p:column>
+                        <p:column headerText="User" style="width: 6%;">
+                            <h:outputText value="#{item.userName}"/>
+                        </p:column>                         
                         <p:column headerText="Report Name">
                             <h:outputText value="#{item.reportTitle}"/>
                         </p:column>
-                        <p:column>
-                            <p:commandLink value="View" ajax="false">
-                                <f:setPropertyActionListener target="#{reportBean.downLoader.fileName}" value="#{item.reportTitle}"/>
+                        <p:column style="width: 6%;" >
+                            <p:commandLink value="Success" ajax="false" rendered='#{item.successReport != ""}'>
+                                <f:setPropertyActionListener target="#{reportBean.downLoader.fileName}" value="#{item.successReport}"/>
+                                <p:fileDownload value="#{reportBean.downLoader.content}"/>
+                            </p:commandLink>
+                        </p:column>                       
+                        <p:column style="width: 6%;">
+                            <p:commandLink value="Error" ajax="false" rendered='#{item.errorReport != ""}'>>
+                                <f:setPropertyActionListener target="#{reportBean.downLoader.fileName}" value="#{item.errorReport}"/>
                                 <p:fileDownload value="#{reportBean.downLoader.content}"/>
                             </p:commandLink>
                         </p:column>
-                        <p:column headerText="Type" style="width: 6%;">
-                            <h:outputText value="#{item.reportType}"/>
-                        </p:column>
-                        <p:column headerText="User" style="width: 6%;">
-                            <h:outputText value="#{item.userName}"/>
-                        </p:column>
                     </p:dataTable>
-
                 </h:form>
             </ui:define>
 

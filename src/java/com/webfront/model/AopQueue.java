@@ -28,6 +28,8 @@ public class AopQueue extends Queue {
     private String runLevel;
     private String reportType;
     private String reportTitle;
+    private String successReport;
+    private String errorReport;
 
     public AopQueue() {
         this.aggregatorId="";
@@ -46,6 +48,8 @@ public class AopQueue extends Queue {
         this.runLevel="";
         this.reportType="";
         this.reportTitle="";
+        this.successReport="";
+        this.errorReport="";
     }
 
     /**
@@ -284,6 +288,34 @@ public class AopQueue extends Queue {
      */
     public void setReportTitle(String reportTitle) {
         this.reportTitle = reportTitle;
+    }
+
+    /**
+     * @return the successReport
+     */
+    public String getSuccessReport() {
+        return successReport;
+    }
+
+    /**
+     * @param successReport the successReport to set
+     */
+    public void setSuccessReport(String successReport) {
+        this.successReport = successReport;
+    }
+
+    /**
+     * @return the errorReport
+     */
+    public String getErrorReport() {
+        return errorReport;
+    }
+
+    /**
+     * @param errorReport the errorReport to set
+     */
+    public void setErrorReport(String errorReport) {
+        this.errorReport = errorReport;
     }
 
 }
