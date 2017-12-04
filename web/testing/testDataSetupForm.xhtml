@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./../layout.xhtml">
+
+            <ui:define name="content">
+                <p:growl id="msg"/>
+                <h1>Test Data Generator</h1>
+                <h:form id="form">
+                    <p:panelGrid styleClass="custom">
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="User Id"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="userId" value="#{testingProfileBean.userId}">
+                                    <p:ajax event="blur" listener="#{testingProfileBean.getProfile}" update="@form"/>
+                                </p:inputText>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Orders per cust"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="ordersPerCust" value="#{testingProfileBean.ordersPerCust}">
+                                    <p:ajax event="keyup" listener="#{testingProfileBean.changeListener()}" update="btnSave"/>
+                                </p:inputText>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Items per order"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="itemsPerOrder" value="#{testingProfileBean.itemsPerOrder}"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Refund type"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="refundType" value="#{testingProfileBean.refundType}"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="PC ids separated by a comma"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="pcList" value="#{testingProfileBean.pcList}"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Aggregator Id"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="aggregatorId" value="#{testingProfileBean.aggregatorId}"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Store ids separated by a comma"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="storeList" value="#{testingProfileBean.storeList}"/>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                    <p:panel>
+                        <p:commandButton id="btnSave" value="Save" disabled="#{!testingProfileBean.changed}" 
+                                         actionListener="#{testingProfileBean.setProfile()}"/>
+                        <p:commandButton id="btnSubmit" value="Submit" disabled="#{!testingProfileBean.hasFormData}"
+                                         action="#{testingProfileBean.setTestData}"/>
+                    </p:panel>
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

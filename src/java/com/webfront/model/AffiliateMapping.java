@@ -5,33 +5,31 @@
  */
 package com.webfront.model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  *
  * @author rlittle
  */
-public class AffiliateMapping extends Mapping {
+public class AffiliateMapping {
 
     private String id;
     private String aggregatorId;
     private String fileType;
-    private String fieldSeparator;
     private boolean hasHeader;
     private String dataStartRow;
+    private String dataStrip;
+    private String fieldDelimiter;
+
     private boolean fieldSaved;
     private int fieldCount;
-    private ArrayList<Mapping> fields;
-    private HashMap<String,Mapping> subFields;
-    
+    private HashMap<String, MappingField> fieldMap;
 
     public AffiliateMapping() {
         id = "";
         dataStartRow = "0";
         fieldSaved = false;
-        fields = new ArrayList<>();
-        subFields = new HashMap<>();
+        fieldMap = new HashMap<>();
     }
 
     /**
@@ -49,17 +47,17 @@ public class AffiliateMapping extends Mapping {
     }
 
     /**
-     * @return the fieldSeparator
+     * @return the fieldDelimiter
      */
     public String getFieldSeparator() {
-        return fieldSeparator;
+        return fieldDelimiter;
     }
 
     /**
-     * @param fs the fieldSeparator to set
+     * @param fs the fieldDelimiter to set
      */
     public void setFieldSeparator(String fs) {
-        fieldSeparator = fs;
+        fieldDelimiter = fs;
     }
 
     /**
@@ -91,20 +89,6 @@ public class AffiliateMapping extends Mapping {
     }
 
     /**
-     * @return the subFields
-     */
-    public ArrayList<Mapping> getFields() {
-        return fields;
-    }
-
-    /**
-     * @param fields the subFields to set
-     */
-    public void setFields(ArrayList<Mapping> fields) {
-        this.fields = fields;
-    }
-
-    /**
      * @return the dataStartRow
      */
     public String getDataStartRow() {
@@ -116,6 +100,20 @@ public class AffiliateMapping extends Mapping {
      */
     public void setDataStartRow(String dataStartRow) {
         this.dataStartRow = dataStartRow;
+    }
+
+    /**
+     * @return the dataStrip
+     */
+    public String getDataStrip() {
+        return dataStrip;
+    }
+
+    /**
+     * @param dataStrip the dataStrip to set
+     */
+    public void setDataStrip(String dataStrip) {
+        this.dataStrip = dataStrip;
     }
 
     /**
@@ -161,10 +159,10 @@ public class AffiliateMapping extends Mapping {
     }
 
     /**
-     * @return the subFields
+     * @return the secondaryFields
      */
-    public HashMap<String,Mapping> getSubFields() {
-        return subFields;
+    public HashMap<String, MappingField> getFieldMap() {
+        return this.fieldMap;
     }
 
 }

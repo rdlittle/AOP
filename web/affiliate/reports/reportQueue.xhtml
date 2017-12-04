@@ -70,13 +70,13 @@
                         <p:column headerText="Report Name">
                             <h:outputText value="#{item.reportTitle}"/>
                         </p:column>
-                        <p:column style="width: 6%;" >
+                        <p:column headerText="Success" style="width: 6%;" >
                             <p:commandLink value="Success" ajax="false" rendered='#{item.successReport != ""}'>
                                 <f:setPropertyActionListener target="#{reportBean.downLoader.fileName}" value="#{item.successReport}"/>
                                 <p:fileDownload value="#{reportBean.downLoader.content}"/>
                             </p:commandLink>
                         </p:column>                       
-                        <p:column style="width: 6%;">
+                        <p:column headerText="Error" style="width: 6%;">
                             <p:commandLink value="Error" ajax="false" rendered='#{item.errorReport != ""}'>>
                                 <f:setPropertyActionListener target="#{reportBean.downLoader.fileName}" value="#{item.errorReport}"/>
                                 <p:fileDownload value="#{reportBean.downLoader.content}"/>
