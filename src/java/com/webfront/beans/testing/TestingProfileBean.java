@@ -8,13 +8,20 @@ package com.webfront.beans.testing;
 import asjava.uniclientlibs.UniDynArray;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
+import com.webfront.beans.StoreBean;
+import com.webfront.model.SelectItem;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.convert.Converter;
+import javax.faces.convert.FacesConverter;
 
 /**
  *
@@ -30,7 +37,7 @@ public class TestingProfileBean {
     private String refundType;
     private String pcList;
     private String aggregatorId;
-    private String storeList;
+//    private String storeList;
     private String tierList;
     private String message;
     private boolean newProfile;
@@ -38,6 +45,11 @@ public class TestingProfileBean {
     private String profile;
     private String buttonText;
     private boolean hasFormData;
+    @ManagedProperty(value = "#{storeBean}")
+    private StoreBean storeBean;
+    private ArrayList<SelectItem> storeList;
+    private ArrayList<SelectItem> storeSelector;
+    private SelectItemConverter storeConverter;
 
     public TestingProfileBean() {
         userId = "";
@@ -46,20 +58,18 @@ public class TestingProfileBean {
         refundType = "";
         pcList = "";
         aggregatorId = "";
-        storeList = "";
         tierList = "";
         message = "";
         newProfile = true;
         changed = false;
         hasFormData = false;
-//        FacesContext ctx = FacesContext.getCurrentInstance();
-//        Logger.getLogger(TestingProfileBean.class.getName()).log(Level.INFO,"TestingProfileBean(): "+ctx.getCurrentPhaseId().getName());
+        storeList = new ArrayList<>();
+        storeSelector = new ArrayList<>();
+        storeConverter = new SelectItemConverter();
     }
 
     @PostConstruct
     public void init() {
-//        FacesContext ctx = FacesContext.getCurrentInstance();
-//        Logger.getLogger(TestingProfileBean.class.getName()).log(Level.INFO,"TestingProfileBean.init(): "+ctx.getCurrentPhaseId().getName());
     }
 
     public String getProfile() {
@@ -79,6 +89,8 @@ public class TestingProfileBean {
                 newProfile = true;
             } else {
                 newProfile = false;
+                storeList.clear();
+                storeSelector.clear();
                 this.userId = userId;
                 this.ordersPerCust = rbo.getProperty("ordersPerCust");
                 this.itemsPerOrder = rbo.getProperty("itemsPerOrder");
@@ -93,12 +105,17 @@ public class TestingProfileBean {
                     }
                 }
                 this.aggregatorId = rbo.getProperty("aggregatorId");
+                this.storeBean.setAggregatorId(this.aggregatorId);
+                storeSelector = this.storeBean.getStoreList();
                 work = rbo.getPropertyToDynArray("storeList");
                 vals = work.dcount(1);
                 for (int val = 1; val <= vals; val++) {
-                    this.storeList = work.extract(1, val).toString();
-                    if (val < vals) {
-                        this.storeList += ",";
+                    String sid = work.extract(1, val).toString();
+                    for (SelectItem s : storeSelector) {
+                        if (s.getKey().equalsIgnoreCase(sid)) {
+                            storeList.add(s);
+                            break;
+                        }
                     }
                 }
                 work = rbo.getPropertyToDynArray("tierList");
@@ -126,7 +143,7 @@ public class TestingProfileBean {
         rbo.setProperty("refundType", this.refundType);
         rbo.setProperty("pcList", this.pcList);
         rbo.setProperty("aggregatorId", this.aggregatorId);
-        rbo.setProperty("storeList", this.storeList);
+        rbo.setProperty("storeList", listToString(storeList));
         rbo.setProperty("tierList", this.tierList);
         try {
             rbo.callMethod("setAffiliateTestingProfile");
@@ -155,7 +172,7 @@ public class TestingProfileBean {
         rbo.setProperty("refundType", this.refundType);
         rbo.setProperty("pcList", this.pcList);
         rbo.setProperty("aggregatorId", this.aggregatorId);
-        rbo.setProperty("storeList", this.storeList);
+        rbo.setProperty("storeList", listToString(this.storeList));
         rbo.setProperty("tierList", this.tierList);
         try {
             rbo.callMethod("setAffiliateTestData");
@@ -252,14 +269,14 @@ public class TestingProfileBean {
     /**
      * @return the storeList
      */
-    public String getStoreList() {
+    public ArrayList<SelectItem> getStoreList() {
         return storeList;
     }
 
     /**
      * @param storeList the storeList to set
      */
-    public void setStoreList(String storeList) {
+    public void setStoreList(ArrayList<SelectItem> storeList) {
         this.storeList = storeList;
     }
 
@@ -352,4 +369,79 @@ public class TestingProfileBean {
         return !"".equals(this.storeList);
     }
 
+    /**
+     * @return the storeBean
+     */
+    public StoreBean getStoreBean() {
+        return storeBean;
+    }
+
+    /**
+     * @param storeBean the storeBean to set
+     */
+    public void setStoreBean(StoreBean storeBean) {
+        this.storeBean = storeBean;
+    }
+
+    /**
+     * @return the storeSelector
+     */
+    public ArrayList<SelectItem> getStoreSelector() {
+        return storeSelector;
+    }
+
+    public void aggregatorListener() {
+        this.storeBean.setAggregatorId(this.aggregatorId);
+        storeSelector = this.storeBean.getStoreList();
+    }
+
+    /**
+     * @param storeSelector the storeSelector to set
+     */
+    public void setStoreSelector(ArrayList<SelectItem> storeSelector) {
+        this.storeSelector = storeSelector;
+    }
+
+    private String listToString(ArrayList<SelectItem> list) {
+        String s = "";
+        for (SelectItem si : list) {
+            s += si.getKey() + ",";
+        }
+        return s;
+    }
+
+    /**
+     * @return the storeConverter
+     */
+    public SelectItemConverter getStoreConverter() {
+        return storeConverter;
+    }
+
+    @FacesConverter(forClass = SelectItem.class)
+    public class SelectItemConverter implements Converter {
+
+        @Override
+        public Object getAsObject(FacesContext context, UIComponent component, String value) {
+            for (SelectItem si : storeSelector) {
+                if (si.equals(value)) {
+                    return si;
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public String getAsString(FacesContext context, UIComponent component, Object value) {
+            for (SelectItem si : storeSelector) {
+                SelectItem store = (SelectItem) value;
+                if (store.equals(si)) {
+                    String label = si.getLabel();
+                    String key = si.getKey();
+                    return key;
+                }
+            }
+            return null;
+        }
+
+    }
 }

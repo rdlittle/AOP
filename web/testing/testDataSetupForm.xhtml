@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <body>
 
@@ -13,7 +14,7 @@
                 <p:growl id="msg"/>
                 <h1>Test Data Generator</h1>
                 <h:form id="form">
-                    <p:panelGrid styleClass="custom">
+                    <p:panelGrid>
                         <p:row>
                             <p:column>
                                 <p:outputLabel value="User Id"/>
@@ -63,21 +64,30 @@
                                 <p:outputLabel value="Aggregator Id"/>
                             </p:column>
                             <p:column>
-                                <p:inputText id="aggregatorId" value="#{testingProfileBean.aggregatorId}"/>
+                                <p:selectOneMenu id="aggregatorId" value="#{testingProfileBean.aggregatorId}" >
+                                    <p:ajax event="change" listener="#{testingProfileBean.aggregatorListener}" update="storeList"/>
+                                    <f:selectItems value="#{aggregatorBean.aggregatorList}" var="aggItem"
+                                                   itemLabel = "#{aggItem.label}" itemValue="#{aggItem.key}">
+                                    </f:selectItems>
+                                </p:selectOneMenu>
                             </p:column>
                         </p:row>
                         <p:row>
                             <p:column>
-                                <p:outputLabel value="Store ids separated by a comma"/>
+                                <p:outputLabel value="Store ids: (Ctrl-click to select multiples)"/>
                             </p:column>
-                            <p:column>
-                                <p:inputText id="storeList" value="#{testingProfileBean.storeList}"/>
+                            <p:column style="width: 400px;">
+                                <p:selectManyMenu id="storeList" value="#{testingProfileBean.storeList}"
+                                                  converter="#{testingProfileBean.storeConverter}" style="width:100%;">
+                                    <f:selectItems value="#{testingProfileBean.storeSelector}" var="store"
+                                                   itemLabel="#{store.value}" itemValue="#{store}" />
+                                </p:selectManyMenu>
                             </p:column>
                         </p:row>
                     </p:panelGrid>
-                    <p:panel>
+                    <p:panel style="text-align: right; border-width: 0px; width: 40%;">
                         <p:commandButton id="btnSave" value="Save" disabled="#{!testingProfileBean.changed}" 
-                                         actionListener="#{testingProfileBean.setProfile()}"/>
+                                         actionListener="#{testingProfileBean.setProfile()}" style="margin-right: 1em;"/>
                         <p:commandButton id="btnSubmit" value="Submit" disabled="#{!testingProfileBean.hasFormData}"
                                          action="#{testingProfileBean.setTestData}"/>
                     </p:panel>
