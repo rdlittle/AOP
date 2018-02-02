@@ -6,11 +6,14 @@
 package com.webfront.beans.testing;
 
 import asjava.uniclientlibs.UniDynArray;
+import asjava.uniclientlibs.UniStringException;
+import asjava.uniobjects.UniObjectsTokens;
 import com.rs.u2.wde.redbeans.RbException;
 import com.rs.u2.wde.redbeans.RedObject;
 import com.webfront.beans.StoreBean;
 import com.webfront.model.SelectItem;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -27,7 +30,7 @@ import javax.faces.convert.FacesConverter;
  *
  * @author rlittle
  */
-@ManagedBean(name = "testingProfileBean")
+@ManagedBean
 @SessionScoped
 public class TestingProfileBean {
 
@@ -164,8 +167,10 @@ public class TestingProfileBean {
         }
     }
 
-    public String setTestData() {
+    public void setTestData() {
+        FacesContext ctx = FacesContext.getCurrentInstance();
         RedObject rbo = new RedObject("WDE", "AFFILIATE:Testing");
+
         rbo.setProperty("userId", this.userId);
         rbo.setProperty("ordersPerCust", this.ordersPerCust);
         rbo.setProperty("itemsPerOrder", this.itemsPerOrder);
@@ -173,13 +178,25 @@ public class TestingProfileBean {
         rbo.setProperty("pcList", this.pcList);
         rbo.setProperty("aggregatorId", this.aggregatorId);
         rbo.setProperty("storeList", listToString(this.storeList));
+        
         rbo.setProperty("tierList", this.tierList);
         try {
             rbo.callMethod("setAffiliateTestData");
+            String errStatus = rbo.getProperty("svrStatus");
+            String errCode = rbo.getProperty("svrCtrlCode");
+            String errMessage = rbo.getProperty("svrMessage");
+            String errName = rbo.getProperty("svrCtrlName");
+            if ("-1".equals(errStatus)) {
+                FacesMessage msg = new FacesMessage(errCode + ": " + errMessage);
+                ctx.addMessage(null, msg);
+            } else {
+                setChanged(false);
+                String outcome = "/affiliate/queue/aopQueue.xhtml?faces-redirect=true";
+                ctx.getApplication().getNavigationHandler().handleNavigation(ctx, null, outcome);
+            }
         } catch (RbException ex) {
             Logger.getLogger(TestingProfileBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return "/affiliate/queue/aopQueue.xhtml?faces-redirect=true";
     }
 
     /**
@@ -404,8 +421,13 @@ public class TestingProfileBean {
 
     private String listToString(ArrayList<SelectItem> list) {
         String s = "";
-        for (SelectItem si : list) {
-            s += si.getKey() + ",";
+        Iterator<SelectItem> liter = list.iterator();
+        while(liter.hasNext()) {
+            SelectItem si = liter.next();
+            s = s.concat(si.getKey());
+            if(liter.hasNext()) {
+                s = s.concat(",");
+            }
         }
         return s;
     }
@@ -423,7 +445,7 @@ public class TestingProfileBean {
         @Override
         public Object getAsObject(FacesContext context, UIComponent component, String value) {
             for (SelectItem si : storeSelector) {
-                if (si.equals(value)) {
+                if (si.getKey().equals(value)) {
                     return si;
                 }
             }

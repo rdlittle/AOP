@@ -26,6 +26,7 @@ public class MappingField {
     @param fieldType Either FieldType.SINGLE or FieldType.DOUBLE
     @param fieldWeight Either FieldWeight.PRIMARY or FieldWeight.SECONDARY
     */
+    private String fieldNumber;
     private String fieldLabel;
     private String fieldKey;
     private String fieldValue;
@@ -202,6 +203,20 @@ public class MappingField {
      */
     public void setFieldWeight(String weight) {
         this.fieldWeight = weight.equalsIgnoreCase("S") ? FieldWeight.SECONDARY : FieldWeight.PRIMARY;
+    }
+
+    /**
+     * @return the fieldNumber
+     */
+    public String getFieldNumber() {
+        return fieldNumber;
+    }
+
+    /**
+     * @param fieldNumber the fieldNumber to set
+     */
+    public void setFieldNumber(String fieldNumber) {
+        this.fieldNumber = fieldNumber;
     }
 
 }

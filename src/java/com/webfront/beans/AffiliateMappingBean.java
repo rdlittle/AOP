@@ -13,6 +13,7 @@ import com.webfront.model.AffiliateMapping;
 import com.webfront.model.Aggregator;
 import com.webfront.model.ErrorObject;
 import com.webfront.model.MappingField;
+import com.webfront.model.SelectItem;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,9 +22,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
-import org.primefaces.event.CellEditEvent;
-import org.primefaces.model.DefaultTreeNode;
-import org.primefaces.model.TreeNode;
+import org.primefaces.event.DragDropEvent;
 
 /**
  *
@@ -38,82 +37,78 @@ public class AffiliateMappingBean {
     private Aggregator aggregator;
     private String aggregatorId;
     protected String _aggregatorId;
-    private String mappingId;
-    private boolean newField;
-    private boolean fieldCommitted;
-    private boolean fileSaved;
     private final ArrayList<String> fileTypes;
-    private TreeNode tree;
     public ErrorObject errObj;
-    private final ArrayList<AopQueueController.ColumnModel> columnHeaders;
-    private final ArrayList<MappingField> fields;
+    private final ArrayList<MappingField> reportFields;
+    private ArrayList<SelectItem> availableFields;
     private int index;
+    private SelectItem[] list;
 
     private final int AGG_ID = 1;
     private final int HAS_HEADER = 2;
     private final int DATA_START_ROW = 3;
     private final int DATA_STRIP = 4;
     private final int FIELD_DELIMITER = 5;
-    private final int FIELD_LABEL = 6;
-    private final int FIELD_KEY = 7;
-    private final int FIELD_VALUE = 8;
-    private final int FIELD_TYPE = 9;
-    private final int FIELD_WEIGHT = 10;
-    private final int FIELD_SOURCE = 11;
-    private final int FIELD_STRIP = 12;
-    private final int FIELD_SEPARATOR = 13;
-    private final int FIELD_EXTRACT = 14;
+    private final int FIELD_NUMBER = 6;
+    private final int FIELD_LABEL = 7;
+    private final int FIELD_KEY = 8;
+    private final int FIELD_VALUE = 9;
+    private final int FIELD_TYPE = 10;
+    private final int FIELD_WEIGHT = 11;
+    private final int FIELD_SOURCE = 12;
+    private final int FIELD_STRIP = 13;
+    private final int FIELD_SEPARATOR = 14;
+    private final int FIELD_EXTRACT = 15;
+    private final int MAX_FIELDS = 50;
 
     public AffiliateMappingBean() {
         affiliateMapping = new AffiliateMapping();
         aggregator = new Aggregator();
         aggregatorId = "";
         _aggregatorId = "";
-        mappingId = "";
-        newField = false;
-        fieldCommitted = false;
-        fileSaved = true;
         fileTypes = new ArrayList<>();
-        tree = new DefaultTreeNode();
         errObj = new ErrorObject();
-        columnHeaders = new ArrayList<>();
-        fields = new ArrayList<>();
+        availableFields = new ArrayList<>();
+        reportFields = new ArrayList<>();
         index = 1;
+        list = new SelectItem[MAX_FIELDS];
     }
 
     @PostConstruct
     public void init() {
-//        try {
-//            RedObject rb = new RedObject("WDE", "UTILS:Files");
-//            rb.setProperty("fileName", "PARAMS");
-//            rb.setProperty("id", "AFFILIATE.MAPPING.CONTROL");
-//            rb.setProperty("keyField", "1");
-//            rb.setProperty("valueField", "3");
-//            rb.callMethod("getSelectObject");
-//            String errStat = rb.getProperty("errStat");
-//            String errCode = rb.getProperty("errCode");
-//            String errMsg = rb.getProperty("errMsg");
-//            UniDynArray keys = rb.getPropertyToDynArray("keyList");
-//            UniDynArray values = rb.getPropertyToDynArray("valueList");
-//            int vals = keys.dcount(1);
-//            for (int i = 1; i <= vals; i++) {
-//                String key = keys.extract(1, i).toString();
-//                String value = values.extract(1, i).toString();
-//                fieldValues.put(key, value);
-//            }
-//        } catch (RbException ex) {
-//            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+        try {
+            RedObject rb = new RedObject("WDE", "UTILS:Files");
+            rb.setProperty("fileName", "PARAMS");
+            rb.setProperty("id", "AFFILIATE.MAPPING.CONTROL");
+            rb.setProperty("keyField", "1");
+            rb.setProperty("valueField", "3");
+            rb.callMethod("getSelectObject");
+            String errStat = rb.getProperty("errStat");
+            String errCode = rb.getProperty("errCode");
+            String errMsg = rb.getProperty("errMsg");
+            UniDynArray keys = rb.getPropertyToDynArray("keyList");
+            UniDynArray values = rb.getPropertyToDynArray("valueList");
+            int vals = keys.dcount(1);
+            for (int i = 1; i <= vals; i++) {
+                String key = keys.extract(1, i).toString();
+                String value = values.extract(1, i).toString();
+                SelectItem se = new SelectItem(key,value);
+                getAvailableFields().add(se);
+                list[i] = se;
+            }
+        } catch (RbException ex) {
+            Logger.getLogger(WebDEBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
-    public ArrayList<MappingField> getFields() {
-        return this.fields;
+    public ArrayList<MappingField> getReportFields() {
+        return this.reportFields;
     }
     /**
      * @return the index
      */
     public int getIndex() {
-        return index;
+        return reportFields.size();
     }
 
     /**
@@ -124,9 +119,9 @@ public class AffiliateMappingBean {
     }
 
     public void setAggregator() {
-        _aggregatorId = aggregatorId;
+        _aggregatorId = getAggregatorId();
         RedObject aggrbo = new RedObject("WDE", "AFFILIATE:Aggregator");
-        aggrbo.setProperty("aggregatorID", aggregatorId);
+        aggrbo.setProperty("aggregatorID", getAggregatorId());
         try {
             aggrbo.callMethod("getAffiliateAggregator");
             String errStat = aggrbo.getProperty("svrStatus");
@@ -139,30 +134,18 @@ public class AffiliateMappingBean {
                 FacesContext ctx = FacesContext.getCurrentInstance();
                 ctx.addMessage("msg", fmsg);
             } else {
-                aggregator.setID(aggregatorId);
+                aggregator.setID(getAggregatorId());
                 aggregator.setName(aggrbo.getProperty("aggregatorName"));
                 UniDynArray uda = aggrbo.getPropertyToDynArray("reportFormat");
                 int sz = uda.dcount(1);
-                fileTypes.clear();
+                getFileTypes().clear();
                 for(int s=1;s<=sz;s++) {
-                    this.fileTypes.add(uda.extract(1, s).toString());
+                    this.getFileTypes().add(uda.extract(1, s).toString());
                 }
             }
         } catch (RbException ex) {
             Logger.getLogger(AffiliateMappingBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        setFileTypes();
-    }
-
-    public void onCellEdit(CellEditEvent event) {
-//        String oldValue = (String) event.getOldValue();
-//        String newValue = (String) event.getNewValue();
-//        if (!newValue.equals(oldValue)) {
-//            AffiliateMapping item = (AffiliateMapping) mapping.get(event.getRowIndex());
-//            item.setFieldKey(newValue);
-//            item.setFieldValue(fieldValues.get(newValue));
-//            fileSaved = false;
-//        }
     }
 
     public AffiliateMapping getMapping() {
@@ -170,7 +153,7 @@ public class AffiliateMappingBean {
     }
 
     public void onChangeFileType() {
-        readMapping(aggregatorId);
+        readMapping(getAggregatorId());
     }
     
     public void readMapping(String aggregatorId) {
@@ -197,6 +180,7 @@ public class AffiliateMappingBean {
                 oList.insert(DATA_START_ROW, rbo.getProperty("dataStartRow"));
                 oList.insert(DATA_STRIP, rbo.getProperty("dataStrip"));
                 oList.insert(FIELD_DELIMITER, rbo.getProperty("fieldDelimiter"));
+                oList.insert(FIELD_NUMBER, rbo.getPropertyToDynArray("fieldNumber"));
                 oList.insert(FIELD_LABEL, rbo.getPropertyToDynArray("fieldLabel"));
                 oList.insert(FIELD_KEY, rbo.getPropertyToDynArray("fieldKey"));
                 oList.insert(FIELD_VALUE, rbo.getPropertyToDynArray("fieldValue"));
@@ -206,10 +190,11 @@ public class AffiliateMappingBean {
                 oList.insert(FIELD_STRIP, rbo.getPropertyToDynArray("fieldStrip"));
                 oList.insert(FIELD_SEPARATOR, rbo.getPropertyToDynArray("fieldSeparator"));
                 oList.insert(FIELD_EXTRACT, rbo.getPropertyToDynArray("fieldExtract"));
-
-                fields.clear();
+                
+                reportFields.clear();
                 int vals = oList.dcount(FIELD_LABEL);
                 for (int val = 1; val <= vals; val++) {
+                    String fieldNum = oList.extract(FIELD_NUMBER,val).toString();
                     String label = oList.extract(FIELD_LABEL, val).toString();
                     String key = oList.extract(FIELD_KEY, val).toString();
                     String value = oList.extract(FIELD_VALUE, val).toString();
@@ -219,7 +204,7 @@ public class AffiliateMappingBean {
                     String strip = oList.extract(FIELD_STRIP, val).toString();
                     String separator = oList.extract(FIELD_SEPARATOR, val).toString();
                     String extract = oList.extract(FIELD_EXTRACT, val).toString();
-
+                    
                     MappingField mf = new MappingField();
                     mf.setFieldLabel(label);
                     mf.setFieldKey(key);
@@ -230,11 +215,24 @@ public class AffiliateMappingBean {
                     mf.setFieldStrip(strip);
                     mf.setFieldSeparator(separator);
                     mf.setFieldExtract(extract);
+                    mf.setFieldNumber(fieldNum);
                     
                     this.affiliateMapping.getFieldMap().put(source, mf);
-                    fields.add(mf);
+                    reportFields.add(mf);
+                    
                 }
-
+                
+                list = new SelectItem[MAX_FIELDS];
+                for(MappingField mf : reportFields) {
+                    String k = mf.getFieldKey();
+                    String v = mf.getFieldValue();
+                    SelectItem se = new SelectItem(k,v);
+                    availableFields.remove(se);
+                }
+                index = 1;
+                for (SelectItem se : availableFields) {
+                    list[index++] = se;
+                }
                 this.affiliateMapping.setAggregatorId(aggregatorId);
                 this.affiliateMapping.setFileType(fileType);
                 this.affiliateMapping.setHasHeader(oList.extract(HAS_HEADER).toString().equals("1"));
@@ -248,95 +246,41 @@ public class AffiliateMappingBean {
             Logger.getLogger(AopQueueController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    public void setMapping() {
-//        if (getMappingId().isEmpty()) {
-//            return;
-//        }
-//        UniDynArray uda = new UniDynArray();
-//        int fieldCount = 1;
-//        for (AffiliateMapping mf : mapping) {
-//            uda.insert(1, fieldCount, mf.getFieldLabel());
-//            String key = mf.getFieldKey();
-//            String value = mf.getFieldValue();
-//            if (key == null) {
-//                key = " ";
-//                value = " ";
-//            }
-//            uda.insert(2, fieldCount, key);
-//            uda.insert(3, fieldCount, value);
-//            uda.insert(5, fieldCount, mf.getFieldSeparator() == null ? "" : mf.getFieldSeparator());
-//            fieldCount++;
-//        }
-//        rbo.setProperty("aggregatorId", getMappingId());
-//        rbo.setProperty("fileType", fileType);
-//        rbo.setProperty("fieldLabel", uda.extract(1));
-//        rbo.setProperty("fieldKey", uda.extract(2));
-//        rbo.setProperty("fieldValue", uda.extract(3));
-//        rbo.setProperty("fieldSeparator", uda.extract(5));
-//        rbo.setProperty("hasHeader", hasHeader ? "1" : "0");
-//        rbo.setProperty("dataStartRow", dataStartRow);
-//        rbo.setProperty("subFieldKey", uda.extract(6));
-//        rbo.setProperty("subFieldValue", uda.extract(7));
-//        try {
-//            rbo.callMethod("putAffiliateMapping");
-//            int errStat = Integer.parseInt(rbo.getProperty("svrStatus"));
-//            if (errStat == -1) {
-//                String errCode = rbo.getProperty("svrCtrlCode");
-//                String errMsg = "[" + errCode + "] " + rbo.getProperty("svrMessage");
-//                JSFHelper.sendFacesMessage(errMsg, "Error");
-//            } else {
-//                JSFHelper.sendFacesMessage("msgs", mappingId + " saved", "Info");
-//                fileSaved = true;
-//            }
-//        } catch (RbException ex) {
-//            Logger.getLogger(AffiliateAggregatorController.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-    }
-
-    public void addField() {
-//        int nextColumn = getAffiliateMapping()();
-//        nextColumn++;
-//        setNewField(true);
-//        AffiliateMapping m = new AffiliateMapping();
-//        getMapping().add(m);
-//        setNewField(true);
-//        setFieldCommitted(false);
-//        fileSaved = false;
-    }
-
-    public void removeField(AffiliateMapping se) {
-//        if (mapping.contains(se)) {
-//            mapping.remove(se);
-//            newField = false;
-//            fileSaved = false;
-//        }
-    }
-
-    public void commitField(AffiliateMapping am) {
-        if (am.isFieldSaved()) {
-            removeField(am);
-        } else {
-            am.setFieldSaved(true);
-//            saveField();
-            setNewField(false);
-            setFieldCommitted(true);
+    
+    public void onFieldDrop(DragDropEvent ddEvent) {
+        SelectItem se = ((SelectItem) ddEvent.getData());
+        availableFields.remove(se);
+        boolean isFound = false;
+        for(MappingField mf : reportFields) {
+            if(mf.getFieldKey().equals(se.getKey())) {
+                isFound = true;
+                break;
+            }
+        }
+        if(!isFound) {
+            MappingField mf = new MappingField();
+            mf.setFieldKey(se.getKey());
         }
     }
 
-    public void saveField() {
-        setNewField(false);
-        setFieldCommitted(true);
-        setMapping();
+    /**
+     * @return the availableFields
+     */
+    public ArrayList<SelectItem> getAvailableFields() {
+        return availableFields;
+    }
+
+    /**
+     * @param availableFields the availableFields to set
+     */
+    public void setAvailableFields(ArrayList<SelectItem> availableFields) {
+        this.availableFields = availableFields;
     }
 
     /**
      * @return the aggregatorId
      */
     public String getAggregatorId() {
-        if (aggregatorId.isEmpty()) {
-            return _aggregatorId;
-        }
         return aggregatorId;
     }
 
@@ -348,138 +292,17 @@ public class AffiliateMappingBean {
     }
 
     /**
-     * @return the newField
-     */
-    public boolean isNewField() {
-        return newField;
-    }
-
-    /**
-     * @param newField the newField to set
-     */
-    public void setNewField(boolean tf) {
-        this.newField = tf;
-    }
-
-    /**
-     * @return the fieldCommitted
-     */
-    public boolean isFieldCommitted() {
-        return fieldCommitted;
-    }
-
-    /**
-     * @param fieldCommitted the fieldCommitted to set
-     */
-    public void setFieldCommitted(boolean fieldCommitted) {
-        this.fieldCommitted = fieldCommitted;
-    }
-
-    /**
-     * @return the mappingId
-     */
-    public String getMappingId() {
-        return mappingId;
-    }
-
-    /**
-     * @param mappingId the mappingId to set
-     */
-    public void setMappingId(String mappingId) {
-        this.mappingId = mappingId;
-    }
-
-    /**
      * @return the fileTypes
      */
     public ArrayList<String> getFileTypes() {
-        return this.fileTypes;
-    }
-
-    public void setFileTypes() {
-//        if (!aggregatorId.isEmpty()) {
-//            mappingId = aggregatorId;
-//            aggregatorId = "";
-//            fileTypes.clear();
-//            rbo.setProperty("aggregatorId", mappingId);
-//            try {
-//                rbo.callMethod("getAffiliateMappingFileTypeList");
-//                int errStatus = Integer.parseInt(rbo.getProperty("svrStatus"));
-//                if (errStatus == -1) {
-//                    String errCode = rbo.getProperty("svrCtrlCode");
-//                    String errMsg = "[" + errCode + "] " + rbo.getProperty("svrMessage");
-//                    JSFHelper.sendFacesMessage(errMsg, "Error");
-//                } else {
-//                    UniDynArray uda = rbo.getPropertyToDynArray("fileType");
-//                    int cnt = uda.count(1);
-//                    for (int c = 1; c <= cnt; c++) {
-//                        fileTypes.add(uda.extract(1, c).toString());
-//                    }
-//                }
-//
-//            } catch (RbException ex) {
-//                Logger.getLogger(AffiliateMappingBean.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
+        return fileTypes;
     }
 
     /**
-     * @return the tree
+     * @return the list
      */
-    public TreeNode getTree() {
-        return tree;
+    public SelectItem[] getList() {
+        return list;
     }
 
-    /**
-     * @param tree the tree to set
-     */
-    public void setTree(TreeNode tree) {
-        this.tree = tree;
-    }
-
-    /**
-     * @return the fileSaved
-     */
-    public boolean isFileSaved() {
-        return fileSaved;
-    }
-
-    /**
-     * @param fileSaved the fileSaved to set
-     */
-    public void setFileSaved(boolean fileSaved) {
-        this.fileSaved = fileSaved;
-    }
-
-    /**
-     * @return the columnHeaders
-     */
-    public ArrayList<AopQueueController.ColumnModel> getColumnHeaders() {
-        return columnHeaders;
-    }
-
-//    @FacesConverter(forClass = AffiliateMapping.class)
-//    public class MappingConverter implements Converter {
-//
-//        @Override
-//        public Object getAsObject(FacesContext context, UIComponent component, String value) {
-//            if (value == null) {
-//                return new AffiliateMapping();
-//            }
-//            for (AffiliateMapping am : mapping) {
-//                if (am.getFieldKey().equalsIgnoreCase(value)) {
-//                    return am;
-//                }
-//            }
-//            return null;
-//        }
-//
-//        @Override
-//        public String getAsString(FacesContext context, UIComponent component, Object value) {
-//            if (value == null) {
-//                return "";
-//            }
-//            return ((AffiliateMapping) value).getFieldKey();
-//        }
-//    }
 }
